@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v1.96** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v1.97** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -431,9 +431,10 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
 ### 10.4 Nyitott TODO-k / ismert ügyek
 
 - [x] UI verziócímke v1.94-re frissítve (release-kor továbbra is bumpolandó).
-- [ ] Kihosszabbítás (`ext`) csak a kurzorhoz közeli elem (`nearEnts`)
-      meghosszabbítására aktív; ívekre még nincs. Merőleges/Párhuzamos csak
-      vonalas elemre + körre/ívre (perp); spline/ellipszis nincs.
+- [x] Kihosszabbítás (`ext`) v1.97-től végpont-megjegyzéssel (acquire) működik:
+      a végpont fölé víve megjegyzi a kifelé irányt (`extAcq`, max 4 FIFO), majd a
+      folytatás mentén bármeddig pattan. Ívekre még nincs. Merőleges/Párhuzamos
+      csak vonalas elemre + körre/ívre (perp); spline/ellipszis nincs.
 - [ ] FTR export: jelkulcs (Type 30 forrás + 7x katalógus) üres; felirat
       méret/szín egyszerűsített.
 - [ ] Sraff méretarány-csúszka felső határa 20 m – nagy területeknél emelhető.
@@ -471,6 +472,11 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   mozgathatók (`sGrip`/`sraffGripHit`; a working-copy + az élő entitás is
   frissül, raszterre pattan, undo-zható). A generikus fogók sraff-szerkesztés
   alatt tiltva (`gripsBlocked` most `sraffState`-re is figyel). UI címke v1.96.
+- **v1.97**: **Kihosszabbítás (`ext`) újraírva** AutoCAD-módra – végpont-megjegyzés
+  (`extAcq` [{ox,oy,dx,dy,z}], `extAcqAdd`): a vonal/vonallánc végpontja fölé víve
+  megjegyzi a kifelé mutató irányt, majd a képzeletbeli folytatás mentén BÁRMILYEN
+  távolságra rápattan (szaggatott segédvonallal). A korábbi verzió csak a kurzorhoz
+  közeli elemre (`nearEnts`) működött. UI címke v1.97.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
