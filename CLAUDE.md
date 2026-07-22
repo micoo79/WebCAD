@@ -20,9 +20,8 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v1.93** a munkafájl (`webcad_v1_93.html`).
-  FIGYELEM: a HTML-ben a látható verziócímke (`#wcVer`, `#verTag`) még
-  „v1.90"-en áll – release-kor bumpolni kell (lásd 10.4).
+- Aktuális állapot: **v1.94** a munkafájl (`webcad.html`).
+  A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
 
@@ -201,7 +200,10 @@ render() → renderScene() → composite() → updateCogoUi()
   `#secLayers` (Réteg-tulajdonságkezelő), `#secXref` (rejtett, ha nincs xref).
   Húzható grip, `body.noside` kapcsoló.
 - **Alsó sáv**: snapBar (3 állású SNAP: on/safe/off + módok: end/mid/node/
-  center/int/aint/near), rács/tengely checkbox, LWT, koordináta-kijelző, hint.
+  center/int/aint/near/**ext**/**perp**/**par**), rács/tengely checkbox, LWT,
+    koordináta-kijelző, hint. Az utóbbi három AutoCAD-stílusú kiegészítő snap:
+    Kihosszabbítás (`ext`), Merőleges (`perp`), Párhuzamos (`par`); a perp/par
+    csak rajzolás közben, a `drawPts` utolsó pontjából (horgony) számol.
 - **Dialógusok**: natív `<dialog>`; üzenet/kérdés a `uiAlert(msg,title)`
   msg-modallal. `optModalOpen/Close` a lebegő opciópanelekhez (zászló, sraff).
 - **Színválasztó:** MINDEN `input[type=color]`-t az `uc128Wrap()` cserél
@@ -411,7 +413,10 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
 
 ### 10.4 Nyitott TODO-k / ismert ügyek
 
-- [ ] UI verziócímke v1.90-en ragadt → v1.93-ra (release-kor mindig bump).
+- [x] UI verziócímke v1.94-re frissítve (release-kor továbbra is bumpolandó).
+- [ ] Kihosszabbítás (`ext`) csak a kurzorhoz közeli elem (`nearEnts`)
+      meghosszabbítására aktív; ívekre még nincs. Merőleges/Párhuzamos csak
+      vonalas elemre + körre/ívre (perp); spline/ellipszis nincs.
 - [ ] FTR export: jelkulcs (Type 30 forrás + 7x katalógus) üres; felirat
       méret/szín egyszerűsített.
 - [ ] Sraff méretarány-csúszka felső határa 20 m – nagy területeknél emelhető.
@@ -432,6 +437,12 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
 - **v1.93**: Műhold default, Hibrid törölve, „Utca" név, váltók csak aktív
   rétegnél; „Google maps" → **„Maps Link"**; sraff-szerkesztésnél nincs
   gumiszalag; **Terület: pipa után lezárt alakzat** (st.done).
+- **v1.94**: SNAP-ikonok AutoCAD-stílusra (snapBar SVG-k + `drawSnapMarker`
+  glyphek); **3 új tárgyraszter**: Kihosszabbítás (`ext`), Merőleges (`perp`),
+  Párhuzamos (`par`). A perp/par a `drawPts` utolsó pontjából (horgony) számol,
+  a `par` a legutóbb megcélzott vonal irányát jegyzi meg (`parRef` globális,
+  rajzoláson kívül nullázódik). Szaggatott segédvonal a `curSnap.guide`
+  mezőből. Új mezők a `snapModes`-ban: `ext/perp/par` (alapból ki).
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
