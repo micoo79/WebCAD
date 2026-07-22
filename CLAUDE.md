@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v1.95** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v1.96** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -277,6 +277,13 @@ render() → renderScene() → composite() → updateCogoUi()
   hogy önmagára ne ragadjon). `snapshot()` a megfogáskor (undo). Minta: a
   zászló/szöveg fogó-rendszere (down/move/up a pointer-router tetején). Csak
   `select`/`none` eszköznél aktív (`gripsBlocked`).
+- **Sraff SZERKESZTŐ mód csúcs-fogói** (v1.96, `sGrip`/`sraffGripHit`): amikor egy
+  sraffot a **Sraff** gombbal szerkesztésre nyitsz (`sraffState.edit`), a
+  csúcsokon **2× méretű** kék fogók jelennek meg (`drawSraffOverlay`), húzással
+  mozgathatók. A húzás a `sraffState.pts` working-copyt ÉS az élő entitást is
+  frissíti (`_hk=null`, hatch újraszámol), raszterre pattan (`snapExclude`),
+  `snapshot()` a megfogáskor. A generikus fogók (`gripsBlocked`) sraff-szerkesztés
+  alatt ki vannak kapcsolva, hogy ne duplázódjanak.
 
 ---
 
@@ -459,6 +466,11 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   (lásd 6. fejezet): kék fogó-négyzetek vonal/vonallánc/3D-vonallánc/sraff/kör/ív
   kijelölésekor, húzással mozgathatók, raszterre pattannak, undo-zhatók.
   `entCacheClear` most a sraff hatch-cache-t is üríti. UI verziócímke v1.95.
+- **v1.96**: **Sraff szerkesztő mód csúcs-szerkesztés** – a Sraff gombbal
+  szerkesztésre nyitott sraff csúcsain **2× méretű** kék fogók, húzással
+  mozgathatók (`sGrip`/`sraffGripHit`; a working-copy + az élő entitás is
+  frissül, raszterre pattan, undo-zható). A generikus fogók sraff-szerkesztés
+  alatt tiltva (`gripsBlocked` most `sraffState`-re is figyel). UI címke v1.96.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
