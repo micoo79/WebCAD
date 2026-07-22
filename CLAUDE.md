@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v1.94** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v1.95** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -127,7 +127,8 @@ Fülváltáskor teljes állapot-csere (undo-stackekkel együtt).
 **Cache-konvenció:** minden `_`-sal kezdődő mező (pl. `_bb`, `_hatch`, `_hk`,
 `_pts`) futásidejű gyorsítótár – a `snapshot()` és a WCD-mentés
 `(k,v)=>k.startsWith("_")?undefined:v` replacerrel **kihagyja**. Geometria-
-módosítás után a cache-t nullázni kell (`e._bb=null` stb., ill. `entCacheClear`).
+módosítás után a cache-t nullázni kell (`e._bb=null` stb., ill. `entCacheClear`,
+amely v1.95-től a sraff `_hatch`/`_hk` hatch-cache-t is üríti).
 
 ### 3.3 Nézet és transzformáció
 
@@ -267,6 +268,15 @@ render() → renderScene() → composite() → updateCogoUi()
   illesztés (NW/NE/SW sarkok), max 80 csempe/nézet, 400-as LRU cache,
   crossOrigin="anonymous" + fallback; csak EOV-tartományban tölt.
   Váltógombok (Műhold default / Utca) csak bekapcsolt rétegnél látszanak.
+- **Grip-szerkesztés** (v1.95, `vGrip`/`gripHit`/`gripsFor`/`applyGrip`/`drawGrips`):
+  kijelölt elem csúcsain kék négyzetek, megfogva húzhatók. Típusok: vonal (2 vég),
+  vonallánc / 3D vonallánc és **sraff** (minden `pts[i]`, max 400 csúcs/elem),
+  kör (közép = mozgatás + 4 kvadráns = sugár), ív (2 vég + közép → `arc3p`
+  újraszámítás; a fix pontok `vGrip.arcPts`-ban rögzülnek a megfogáskor). A húzás
+  a tárgyraszterre pattan (`snapExclude` = az elem kimarad a `computeSnap`-ből,
+  hogy önmagára ne ragadjon). `snapshot()` a megfogáskor (undo). Minta: a
+  zászló/szöveg fogó-rendszere (down/move/up a pointer-router tetején). Csak
+  `select`/`none` eszköznél aktív (`gripsBlocked`).
 
 ---
 
@@ -443,6 +453,12 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   a `par` a legutóbb megcélzott vonal irányát jegyzi meg (`parRef` globális,
   rajzoláson kívül nullázódik). Szaggatott segédvonal a `curSnap.guide`
   mezőből. Új mezők a `snapModes`-ban: `ext/perp/par` (alapból ki).
+- **v1.95**: „Poligon"/„3D poligon" eszköz átnevezve **„Vonallánc"/„3D vonallánc"**-ra
+  (gombok, hintek). **Szétvetés** (`btnExplode`) most vonalláncot is szétbont
+  külön vonalakra (per-csúcs Z megtartva). **Grip-szerkesztés** bevezetve
+  (lásd 6. fejezet): kék fogó-négyzetek vonal/vonallánc/3D-vonallánc/sraff/kör/ív
+  kijelölésekor, húzással mozgathatók, raszterre pattannak, undo-zhatók.
+  `entCacheClear` most a sraff hatch-cache-t is üríti. UI verziócímke v1.95.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
