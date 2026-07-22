@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v1.97** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v1.98** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -246,9 +246,12 @@ render() → renderScene() → composite() → updateCogoUi()
   half-edge lapkeresés, azonosító feliratok réteg szerint, eredménylista,
   szűrt megjelenítés (`areaRepFilter`).
 - **Zászló** (`type:"zaszlo"`, `CL`, `clOpen`): horgony + könyök + szár,
-  Y/X/Z pipálható, 4 irány-ikon, helyi fogók (mozgatás töréspontnál, forgatás
-  a száron), „Alaphelyzet" gomb csak ha volt mozgatás/forgatás, szerkesztés
-  alatt SNAP off. Beállítás mentve: `localStorage["webcad.coordlab"]`.
+  Y/X/Z pipálható, 4 irány-ikon, helyi fogók (mozgatás töréspontnál `move`,
+  forgatás a száron `rot`, és v1.98-tól a **kezdőpont/horgony** `anchor` – kék
+  négyzet a `(x,y)`-on: húzva a horgony mozog, a könyök (E) a helyén marad
+  (`zGrip.E0`), raszterre pattan (`snapExclude`), a koordináták frissülnek),
+  „Alaphelyzet" gomb csak ha volt mozgatás/forgatás, szerkesztés alatt SNAP off.
+  Beállítás mentve: `localStorage["webcad.coordlab"]`.
 - **PDF export** (`pdfPrint`): A4–A0, álló/fekvő, méretarány 1:50…1:10000 +
   egyedi + illesztett, színes/FF, húzható zöld keret, teljes képernyős
   előnézet, VEKTOROS PDF-írás kézzel (nem raszter!). Papír-nézetben
@@ -477,6 +480,10 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   megjegyzi a kifelé mutató irányt, majd a képzeletbeli folytatás mentén BÁRMILYEN
   távolságra rápattan (szaggatott segédvonallal). A korábbi verzió csak a kurzorhoz
   közeli elemre (`nearEnts`) működött. UI címke v1.97.
+- **v1.98**: **Zászló kezdőpont-fogó** (`anchor`) – a horgony `(x,y)`-án kék
+  négyzet, húzva mozgatható; a könyök (E) a helyén marad (`zGrip.E0`), a horgony
+  raszterre pattan (`snapExclude`), a felirat koordinátái frissülnek. Új zászlónál
+  (textToFlag) és meglévő kijelölésekor is (`selectedZaszlo`). UI címke v1.98.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
