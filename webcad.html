@@ -903,7 +903,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v1.98</span>
+      <span class="ver" id="wcVer">v1.99</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -920,7 +920,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v1.98</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v1.99</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -2799,6 +2799,7 @@ function drawEntity(e, sel){
       ctx.beginPath(); ctx.arc(sx,sy,1.4,0,Math.PI*2); ctx.fill();
       break; }
     case "text": {
+      if(e._editing) break;                    // helyben-szerkesztés alatt az overlay mutatja
       const [sx,sy]=W2S(e.x,e.y);
       const hpx=e.h*view.s;
       if(hpx<2.2) { if(sel){ctx.fillStyle="#4ea1ff";ctx.fillRect(sx-2,sy-2,4,4);} break; }
@@ -3582,6 +3583,7 @@ function setTool(t){
   if(typeof modOp!=="undefined" && modOp && !modGuard) modCancel(true);
   if(typeof vGrip!=="undefined" && vGrip){ vGrip=null; snapExclude=null; }
   if(typeof sGrip!=="undefined" && sGrip){ sGrip=null; snapExclude=null; }
+  if(typeof txtEdit!=="undefined" && txtEdit) txtEditClose(true);
   if(typeof coordLab!=="undefined" && coordLab && !modGuard){ coordLab=null; }
   if(typeof lenLabel!=="undefined" && lenLabel && !modGuard){ lenLabel=null; $("lenBar").style.display="none"; optModalClose("len"); }
   if(typeof measState!=="undefined" && measState && !modGuard){ measState=null; measHidePops(); }
@@ -4597,7 +4599,12 @@ if(typeof window.PointerEvent==="undefined" && "ontouchstart" in window){
   cv.addEventListener("touchend",   bridge("pointerup"),   {passive:false});
   cv.addEventListener("touchcancel",bridge("pointercancel"),{passive:false});
 }
-cv.addEventListener("dblclick", ev=>{ if(ev.button===1) zoomExtents(); });
+cv.addEventListener("dblclick", ev=>{
+  if(ev.button===1){ zoomExtents(); return; }
+  const [sx,sy]=evtPos(ev);
+  const hit=hitTest(sx,sy, 20);
+  if(hit && hit.type==="text"){ ev.preventDefault(); selection.clear(); selection.add(hit.id); refreshProps(); txtEditOpen(hit); }
+});
 document.addEventListener("contextmenu", ev=>{
   const t=ev.target;
   if(t && (t.tagName==="INPUT"||t.tagName==="TEXTAREA")) return;  // beviteli mezőben maradhat
@@ -13962,6 +13969,88 @@ function drawZGrips(){
   ctx.setLineDash([]); ctx.fillStyle="#2f7fff"; ctx.strokeStyle="#0a2f6f"; ctx.lineWidth=1;
   ctx.fillRect(ax-5,ay-5,10,10); ctx.strokeRect(ax-5,ay-5,10,10);
   ctx.restore();
+}
+
+/* ==================================================================
+   HELYBEN SZERKESZTÉS – felirat (text) dupla kattintásra a valós helyén
+   és méretében átírható; méret-léptető (▲▼ 0.1) + számmező. Enter: kész,
+   Esc: mégse. A szerkesztés alatt az eredeti (canvas) szöveg rejtve (_editing).
+   ================================================================== */
+let txtEdit=null;    // {ent, wrap, field, hnum}
+function txtEditOpen(e){
+  if(!e || e.type!=="text") return;
+  if(txtEdit) txtEditClose(true);
+  snapshot();
+  const FS = (e.font||FONT_SANS);
+  const wrap=document.createElement("div");
+  wrap.style.cssText="position:fixed;z-index:6000;transform-origin:left top;";
+  // méret-eszköztár (a szöveg fölött, fix kis méretben)
+  const tools=document.createElement("div");
+  tools.style.cssText="position:absolute;bottom:100%;left:0;margin-bottom:6px;display:flex;align-items:center;gap:4px;"
+    +"background:#20262e;border:1px solid #3a4653;border-radius:4px;padding:3px 6px;white-space:nowrap;"
+    +"box-shadow:0 2px 10px rgba(0,0,0,.45);font:600 11px "+FS+";color:#cfd6e0;";
+  const lbl=document.createElement("span"); lbl.textContent="Méret"; lbl.style.cssText="opacity:.8";
+  const hnum=document.createElement("input"); hnum.type="number"; hnum.step="0.1"; hnum.min="0.1";
+  hnum.value=(+e.h||1).toFixed(1);
+  hnum.style.cssText="width:52px;text-align:right;font:600 12px "+FS+";background:#12181e;color:#fff;border:1px solid #3a4653;border-radius:3px;padding:2px 4px;";
+  const spin=document.createElement("div"); spin.style.cssText="display:flex;flex-direction:column;gap:1px;";
+  const inc=document.createElement("button"); inc.textContent="▲";
+  const dec=document.createElement("button"); dec.textContent="▼";
+  for(const b of [inc,dec]){ b.style.cssText="width:18px;height:11px;line-height:1;padding:0;border:1px solid #4a5766;background:#2b333c;color:#cfe0ff;border-radius:3px;cursor:pointer;font-size:8px;";
+    b.onmousedown=ev=>ev.preventDefault(); }   // ne vegye el a fókuszt a szövegmezőtől
+  spin.append(inc,dec);
+  tools.append(lbl,hnum,spin);
+  // maga a szerkesztő mező
+  const field=document.createElement("input"); field.type="text"; field.value=e.text||"";
+  field.style.cssText="display:block;margin:0;box-sizing:content-box;padding:0 2px;line-height:1.1;"
+    +"border:1px dashed #4ea1ff;background:rgba(16,22,28,.55);outline:none;font-family:"+FS+";";
+  wrap.append(tools,field);
+  document.body.appendChild(wrap);
+  txtEdit={ent:e, wrap, field, hnum};
+  e._editing=true; render();
+  txtEditReposition();
+  field.focus(); field.select();   // alapból MINDEN kijelölve
+
+  const applyH=v=>{ v=+v; if(!isFinite(v)||v<0.1) v=0.1; v=Math.round(v*10)/10; e.h=v; hnum.value=v.toFixed(1); entCacheClear(e); txtEditReposition(); };
+  inc.onclick=()=>{ applyH((+e.h||1)+0.1); field.focus(); };
+  dec.onclick=()=>{ applyH((+e.h||1)-0.1); field.focus(); };
+  hnum.oninput=()=>applyH(hnum.value);
+  field.oninput=()=>{ e.text=field.value; entCacheClear(e); txtEditReposition(); };
+  const key=ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); ev.stopPropagation(); txtEditClose(true); }
+                  else if(ev.key==="Escape"){ ev.preventDefault(); ev.stopPropagation(); txtEditClose(false); } };
+  field.onkeydown=key; hnum.onkeydown=key;
+  const deferClose=()=>setTimeout(()=>{ if(txtEdit && !txtEdit.wrap.contains(document.activeElement)) txtEditClose(true); },120);
+  field.onblur=deferClose; hnum.onblur=deferClose;
+}
+function txtEditReposition(){
+  if(!txtEdit) return;
+  const e=txtEdit.ent, rect=cv.getBoundingClientRect();
+  const [sx,sy]=W2S(e.x,e.y);
+  const hpx=Math.max(6,(e.h||1)*view.s);
+  const wrap=txtEdit.wrap, field=txtEdit.field;
+  field.style.fontSize=hpx.toFixed(1)+"px";
+  field.style.color=entDrawColor(e,false);
+  ctx.save(); ctx.font=hpx.toFixed(1)+"px "+(e.font||FONT_SANS);
+  const tw=ctx.measureText(field.value||" ").width; ctx.restore();
+  field.style.width=Math.max(hpx*1.5, tw+hpx*0.5)+"px";
+  wrap.style.left=(rect.left+sx-2)+"px";
+  wrap.style.top =(rect.top+sy-hpx*0.82)+"px";     // alfabetikus alapvonal ~0.82·h a doboz tetejétől
+  wrap.style.transform="rotate("+(-(e.rot||0)*180/Math.PI).toFixed(3)+"deg)";
+}
+function txtEditClose(commit){
+  if(!txtEdit) return;
+  const e=txtEdit.ent, val=txtEdit.field.value;
+  txtEdit.wrap.remove(); const t=txtEdit; txtEdit=null;
+  delete e._editing;
+  if(commit){
+    if(val.trim()===""){ doc.entities=doc.entities.filter(q=>q.id!==e.id); selection.delete(e.id); }
+    else e.text=val;
+    entCacheClear(e); refreshProps(); render(); setHint("Felirat frissítve.");
+  }else{
+    if(typeof undo==="function") undo();   // Esc: a nyitáskori snapshot visszaállítása
+    else { entCacheClear(e); render(); }
+    setHint("Szerkesztés megszakítva.");
+  }
 }
 
 /* ==================================================================

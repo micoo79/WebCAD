@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v1.98** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v1.99** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -287,6 +287,13 @@ render() → renderScene() → composite() → updateCogoUi()
   frissíti (`_hk=null`, hatch újraszámol), raszterre pattan (`snapExclude`),
   `snapshot()` a megfogáskor. A generikus fogók (`gripsBlocked`) sraff-szerkesztés
   alatt ki vannak kapcsolva, hogy ne duplázódjanak.
+- **Felirat helyben szerkesztése** (v1.99, `txtEdit`/`txtEditOpen`/`txtEditReposition`/
+  `txtEditClose`): egy `text` elemre **duplán kattintva** a valós helyén és méretében
+  átírható (fixen pozicionált `<input>` overlay, `font-size = h·view.s`, `-rot`
+  forgatással). Induláskor minden kijelölve. Fölötte kis eszköztár: **méret-léptető
+  ▲▼ (0.1) + számmező**, ami élőben állítja `e.h`-t. Enter: kész, Esc: `undo()`
+  (a nyitáskori `snapshot()`). Üresre törölve az elem törlődik. Szerkesztés alatt
+  az eredeti canvas-szöveg rejtve (`e._editing` → a `text` rajz-ág kihagyja).
 
 ---
 
@@ -484,6 +491,11 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   négyzet, húzva mozgatható; a könyök (E) a helyén marad (`zGrip.E0`), a horgony
   raszterre pattan (`snapExclude`), a felirat koordinátái frissülnek. Új zászlónál
   (textToFlag) és meglévő kijelölésekor is (`selectedZaszlo`). UI címke v1.98.
+- **v1.99**: **Felirat helyben szerkesztése** – `text` elemre duplán kattintva a
+  valós helyén és méretében átírható (`txtEdit` overlay-input), induláskor minden
+  kijelölve; fölötte méret-léptető (▲▼, 0.1 lépés) + számmező, ami élőben állítja a
+  betűméretet. Enter: kész, Esc: mégse (undo). Üres szöveg → az elem törlődik.
+  Szerkesztés alatt az eredeti szöveg rejtve (`_editing`). UI címke v1.99.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
