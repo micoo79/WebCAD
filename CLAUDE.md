@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v2.0** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v2.1** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -300,8 +300,9 @@ render() → renderScene() → composite() → updateCogoUi()
   számmező + nagy ▲▼ léptető (0.1), élőben állítja `e.h`-t. A felirat-fogók
   (`textGripCenters`/`textGripHit`/`drawTextGrips`) mostantól: `move` (fölül),
   `flag` (zászlózás), és **`rot`** – forgatás-fogó a **bal alsó sarokban**
-  (`loc(-3,16)`), a beszúrási pont körül forgat (`e.rot = rot0 − (angScr − ang0)`,
-  a képernyő y-tükrözés miatt −), a zászló `rot` fogójának mintájára.
+  (`loc(-3,16)`). Forgáspont a bal alsó sarok (beszúrási pont), az egér a JOBB alsó
+  sarkot húzza: abszolút leképezés `e.rot = −atan2(sy−ay, sx−ax)` (v2.1), így az
+  alapvonal a kurzor felé néz.
 
 ---
 
@@ -509,6 +510,10 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   nem csak dupla kattintáskor (`textHud`, a `composite()` frissíti). Új
   **forgatás-fogó** a felirat **bal alsó sarkában** (`textGrip` `rot` kind), a
   beszúrási pont körül forgat – a zászló forgató-fogójának mintájára. UI címke v2.0.
+- **v2.1**: a felirat **forgatás-fogója** finomítva – a forgáspont a **bal alsó
+  sarok** (beszúrási pont), az egér a **jobb alsó sarkot** képviseli (abszolút
+  leképezés `e.rot = −atan2(kurzor−pivot)`), így az alapvonal a kurzor felé néz.
+  UI címke v2.1.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
