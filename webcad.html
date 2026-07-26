@@ -903,7 +903,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v2.1</span>
+      <span class="ver" id="wcVer">v2.2</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -920,7 +920,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v2.1</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v2.2</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -3804,7 +3804,7 @@ cv.addEventListener("pointerdown", ev=>{
       if(tgh.kind==="rot"){
         textGrip={kind:"rot", ent:tgh.ent, id:ev.pointerId};
         mouse.in=false;
-        setHint("Felirat forgatása – az egér a jobb alsó sarkot húzza, a bal alsó a forgáspont.");
+        setHint("Felirat forgatása – az egér a felirat közepét húzza, a bal alsó sarok a forgáspont.");
         return;
       }
       textGrip={kind:"move", ent:tgh.ent, id:ev.pointerId, dx:tgh.ent.x-wx, dy:tgh.ent.y-wy};
@@ -4319,7 +4319,9 @@ cv.addEventListener("pointermove", ev=>{
     const e=textGrip.ent;
     if(textGrip.kind==="rot"){
       const [rax,ray]=W2S(e.x,e.y);            // forgatási pont: bal alsó (beszúrási pont)
-      let r=-Math.atan2(sy-ray, sx-rax);       // a kurzor a JOBB alsó sarkot képviseli → az alapvonal arra néz
+      const b=textScreenBox(e);                // a kurzor a felirat KÖZÉPPONTJÁT képviseli
+      const baseAng=Math.atan2(-b.hpx/2, b.wpx/2);
+      let r=baseAng - Math.atan2(sy-ray, sx-rax);
       while(r>Math.PI) r-=2*Math.PI; while(r<-Math.PI) r+=2*Math.PI;
       e.rot=r;
     } else {
@@ -13846,7 +13848,7 @@ function textGripCenters(e){
   return {
     flag: loc(9, topY),          // zászlózás – bal felső sarok fölött
     move: loc(33, topY),         // mozgatás – közvetlenül mellette
-    rot:  loc(-3, 16),           // forgatás – bal alsó sarok
+    rot:  loc(b.wpx/2, -b.hpx/2), // forgatás-ikon a felirat KÖZEPÉN
     box: b
   };
 }

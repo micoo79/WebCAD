@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v2.1** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v2.2** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -300,9 +300,9 @@ render() → renderScene() → composite() → updateCogoUi()
   számmező + nagy ▲▼ léptető (0.1), élőben állítja `e.h`-t. A felirat-fogók
   (`textGripCenters`/`textGripHit`/`drawTextGrips`) mostantól: `move` (fölül),
   `flag` (zászlózás), és **`rot`** – forgatás-fogó a **bal alsó sarokban**
-  (`loc(-3,16)`). Forgáspont a bal alsó sarok (beszúrási pont), az egér a JOBB alsó
-  sarkot húzza: abszolút leképezés `e.rot = −atan2(sy−ay, sx−ax)` (v2.1), így az
-  alapvonal a kurzor felé néz.
+  (v2.2: a felirat **közepén**, `loc(b.wpx/2,-b.hpx/2)`). Forgáspont a bal alsó sarok
+  (beszúrási pont), az egér a felirat **középpontját** húzza: abszolút leképezés
+  `e.rot = atan2(-hpx/2,wpx/2) − atan2(sy−ay, sx−ax)` – középen megfogva nincs ugrás.
 
 ---
 
@@ -514,6 +514,10 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   sarok** (beszúrási pont), az egér a **jobb alsó sarkot** képviseli (abszolút
   leképezés `e.rot = −atan2(kurzor−pivot)`), így az alapvonal a kurzor felé néz.
   UI címke v2.1.
+- **v2.2**: a felirat **forgatás-ikonja a szöveg közepére** került, és az egér a
+  **középpontot** húzza (forgáspont továbbra is a bal alsó/beszúrási pont):
+  `e.rot = atan2(-hpx/2,wpx/2) − atan2(kurzor−pivot)`. Középen megfogva nincs
+  kezdeti ugrás. UI címke v2.2.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
