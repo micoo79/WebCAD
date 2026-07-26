@@ -903,7 +903,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v1.99</span>
+      <span class="ver" id="wcVer">v2.0</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -920,7 +920,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v1.99</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v2.0</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -2687,6 +2687,7 @@ function composite(){
   drawZGrips();
   if(typeof drawTextGrips==="function") drawTextGrips();
   if(typeof drawGrips==="function") drawGrips();
+  if(typeof updateTextHud==="function") updateTextHud();
   if(typeof drawAreaRepHilite==="function") drawAreaRepHilite();
   clViewWatch();
   drawTpCadMarks();
@@ -3800,6 +3801,13 @@ cv.addEventListener("pointerdown", ev=>{
       }
       snapshot();
       const [wx,wy]=S2W(sx,sy);
+      if(tgh.kind==="rot"){
+        const [rax,ray]=W2S(tgh.ent.x, tgh.ent.y);
+        textGrip={kind:"rot", ent:tgh.ent, id:ev.pointerId, ang0:Math.atan2(sy-ray, sx-rax), rot0:(tgh.ent.rot||0)};
+        mouse.in=false;
+        setHint("Felirat forgatása… (a beszúrási pont körül)");
+        return;
+      }
       textGrip={kind:"move", ent:tgh.ent, id:ev.pointerId, dx:tgh.ent.x-wx, dy:tgh.ent.y-wy};
       textGrip._snapWas=snapMode;            // SNAP ideiglenes kikapcsolása mozgatás alatt
       if(snapMode!=="off"){ snapMode="off"; applySnapMode(); }
@@ -4310,7 +4318,15 @@ cv.addEventListener("pointermove", ev=>{
     ev.preventDefault();
     const [wx,wy]=S2W(sx,sy);
     const e=textGrip.ent;
-    e.x=wx+textGrip.dx; e.y=wy+textGrip.dy;
+    if(textGrip.kind==="rot"){
+      const [rax,ray]=W2S(e.x,e.y);
+      const ang=Math.atan2(sy-ray, sx-rax);
+      let r=(textGrip.rot0||0) - (ang - (textGrip.ang0||0));   // képernyő-szög → text rot (y-tükrözés miatt −)
+      while(r>Math.PI) r-=2*Math.PI; while(r<-Math.PI) r+=2*Math.PI;
+      e.rot=r;
+    } else {
+      e.x=wx+textGrip.dx; e.y=wy+textGrip.dy;
+    }
     entCacheClear(e);
     tgRender();
     return;
@@ -13832,6 +13848,7 @@ function textGripCenters(e){
   return {
     flag: loc(9, topY),          // zászlózás – bal felső sarok fölött
     move: loc(33, topY),         // mozgatás – közvetlenül mellette
+    rot:  loc(-3, 16),           // forgatás – bal alsó sarok
     box: b
   };
 }
@@ -13843,6 +13860,7 @@ function textGripHit(sx,sy,touch){
   const R=touch? 24:14;
   if(Math.hypot(sx-g.move[0],sy-g.move[1])<=R) return {kind:"move", ent:e};
   if(Math.hypot(sx-g.flag[0],sy-g.flag[1])<=R) return {kind:"flag", ent:e};
+  if(g.rot && Math.hypot(sx-g.rot[0],sy-g.rot[1])<=R) return {kind:"rot", ent:e};
   return null;
 }
 function drawTextGrips(){
@@ -13862,6 +13880,15 @@ function drawTextGrips(){
   ctx.beginPath(); ctx.arc(fx,fy,11,0,Math.PI*2); ctx.fill();
   ctx.strokeStyle="#4ea1ff"; ctx.lineWidth=1.3; ctx.stroke();
   drawFlagGlyph(fx,fy);
+  /* forgatás-fogó (bal alsó sarok) – kör + forgató nyíl, mint a zászlónál */
+  const [rx,ry]=g.rot;
+  ctx.fillStyle="rgba(30,36,44,.85)";
+  ctx.beginPath(); ctx.arc(rx,ry,10,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle="#4ea1ff"; ctx.lineWidth=1.3; ctx.stroke();
+  ctx.strokeStyle="#9fceff"; ctx.lineWidth=1.6;
+  ctx.beginPath(); ctx.arc(rx,ry,5,-0.4,Math.PI*1.35); ctx.stroke();
+  const raA=Math.PI*1.35, rtx=rx+5*Math.cos(raA), rty=ry+5*Math.sin(raA);
+  ctx.beginPath(); ctx.moveTo(rtx-3.2,rty-1.3); ctx.lineTo(rtx,rty); ctx.lineTo(rtx+0.4,rty-3.6); ctx.stroke();
   ctx.restore();
 }
 /* kis zászló-ikon (átalakítás jelzése) */
@@ -13984,43 +14011,20 @@ function txtEditOpen(e){
   const FS = (e.font||FONT_SANS);
   const wrap=document.createElement("div");
   wrap.style.cssText="position:fixed;z-index:6000;transform-origin:left top;";
-  // méret-eszköztár (a szöveg fölött, fix kis méretben)
-  const tools=document.createElement("div");
-  tools.style.cssText="position:absolute;bottom:100%;left:0;margin-bottom:6px;display:flex;align-items:center;gap:4px;"
-    +"background:#20262e;border:1px solid #3a4653;border-radius:4px;padding:3px 6px;white-space:nowrap;"
-    +"box-shadow:0 2px 10px rgba(0,0,0,.45);font:600 11px "+FS+";color:#cfd6e0;";
-  const lbl=document.createElement("span"); lbl.textContent="Méret"; lbl.style.cssText="opacity:.8";
-  const hnum=document.createElement("input"); hnum.type="number"; hnum.step="0.1"; hnum.min="0.1";
-  hnum.value=(+e.h||1).toFixed(1);
-  hnum.style.cssText="width:52px;text-align:right;font:600 12px "+FS+";background:#12181e;color:#fff;border:1px solid #3a4653;border-radius:3px;padding:2px 4px;";
-  const spin=document.createElement("div"); spin.style.cssText="display:flex;flex-direction:column;gap:1px;";
-  const inc=document.createElement("button"); inc.textContent="▲";
-  const dec=document.createElement("button"); dec.textContent="▼";
-  for(const b of [inc,dec]){ b.style.cssText="width:18px;height:11px;line-height:1;padding:0;border:1px solid #4a5766;background:#2b333c;color:#cfe0ff;border-radius:3px;cursor:pointer;font-size:8px;";
-    b.onmousedown=ev=>ev.preventDefault(); }   // ne vegye el a fókuszt a szövegmezőtől
-  spin.append(inc,dec);
-  tools.append(lbl,hnum,spin);
-  // maga a szerkesztő mező
   const field=document.createElement("input"); field.type="text"; field.value=e.text||"";
   field.style.cssText="display:block;margin:0;box-sizing:content-box;padding:0 2px;line-height:1.1;"
     +"border:1px dashed #4ea1ff;background:rgba(16,22,28,.55);outline:none;font-family:"+FS+";";
-  wrap.append(tools,field);
+  wrap.append(field);
   document.body.appendChild(wrap);
-  txtEdit={ent:e, wrap, field, hnum};
+  txtEdit={ent:e, wrap, field};
   e._editing=true; render();
   txtEditReposition();
   field.focus(); field.select();   // alapból MINDEN kijelölve
 
-  const applyH=v=>{ v=+v; if(!isFinite(v)||v<0.1) v=0.1; v=Math.round(v*10)/10; e.h=v; hnum.value=v.toFixed(1); entCacheClear(e); txtEditReposition(); };
-  inc.onclick=()=>{ applyH((+e.h||1)+0.1); field.focus(); };
-  dec.onclick=()=>{ applyH((+e.h||1)-0.1); field.focus(); };
-  hnum.oninput=()=>applyH(hnum.value);
   field.oninput=()=>{ e.text=field.value; entCacheClear(e); txtEditReposition(); };
-  const key=ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); ev.stopPropagation(); txtEditClose(true); }
-                  else if(ev.key==="Escape"){ ev.preventDefault(); ev.stopPropagation(); txtEditClose(false); } };
-  field.onkeydown=key; hnum.onkeydown=key;
-  const deferClose=()=>setTimeout(()=>{ if(txtEdit && !txtEdit.wrap.contains(document.activeElement)) txtEditClose(true); },120);
-  field.onblur=deferClose; hnum.onblur=deferClose;
+  field.onkeydown=ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); ev.stopPropagation(); txtEditClose(true); }
+                        else if(ev.key==="Escape"){ ev.preventDefault(); ev.stopPropagation(); txtEditClose(false); } };
+  field.onblur=()=>setTimeout(()=>{ if(txtEdit && document.activeElement!==txtEdit.field && !(textHud&&textHud.wrap.contains(document.activeElement))) txtEditClose(true); },140);
 }
 function txtEditReposition(){
   if(!txtEdit) return;
@@ -14051,6 +14055,56 @@ function txtEditClose(commit){
     else { entCacheClear(e); render(); }
     setHint("Szerkesztés megszakítva.");
   }
+}
+
+/* ==================================================================
+   FELIRAT MÉRET-HUD – kijelölt text elemtől BALRA állandóan látszik:
+   „Méret" számmező + nagy ▲▼ léptető (0.1). A composite() hívja (updateTextHud).
+   ================================================================== */
+let textHud=null;
+function ensureTextHud(){
+  if(textHud) return textHud;
+  const FS=FONT_SANS;
+  const wrap=document.createElement("div");
+  wrap.style.cssText="position:fixed;z-index:5500;display:none;align-items:center;gap:6px;"
+    +"background:#20262e;border:1px solid #3a4653;border-radius:6px;padding:4px 7px;"
+    +"box-shadow:0 2px 10px rgba(0,0,0,.45);font:600 12px "+FS+";color:#cfd6e0;white-space:nowrap;";
+  const lbl=document.createElement("span"); lbl.textContent="Méret"; lbl.style.opacity=".8";
+  const hnum=document.createElement("input"); hnum.type="number"; hnum.step="0.1"; hnum.min="0.1";
+  hnum.style.cssText="width:58px;text-align:right;font:600 14px "+FS+";background:#12181e;color:#fff;border:1px solid #3a4653;border-radius:4px;padding:3px 5px;";
+  const spin=document.createElement("div"); spin.style.cssText="display:flex;flex-direction:column;gap:2px;";
+  const inc=document.createElement("button"); inc.textContent="▲";
+  const dec=document.createElement("button"); dec.textContent="▼";
+  for(const b of [inc,dec]){ b.style.cssText="width:34px;height:20px;line-height:1;padding:0;border:1px solid #4a5766;background:#2b333c;color:#cfe0ff;border-radius:4px;cursor:pointer;font-size:13px;";
+    b.onmousedown=ev=>ev.preventDefault(); }
+  spin.append(inc,dec);
+  wrap.append(lbl,hnum,spin);
+  document.body.appendChild(wrap);
+  const applyH=v=>{ const e=selectedText(); if(!e) return; v=+v; if(!isFinite(v)||v<0.1) v=0.1; v=Math.round(v*10)/10;
+    e.h=v; hnum.value=v.toFixed(1); entCacheClear(e); if(txtEdit&&txtEdit.ent===e) txtEditReposition(); render(); };
+  inc.onclick=()=>{ const e=selectedText(); if(e) applyH((+e.h||1)+0.1); };
+  dec.onclick=()=>{ const e=selectedText(); if(e) applyH((+e.h||1)-0.1); };
+  hnum.oninput=()=>applyH(hnum.value);
+  textHud={wrap, hnum};
+  return textHud;
+}
+function updateTextHud(){
+  const e = (typeof selectedText==="function")? selectedText() : null;
+  const blocked = (typeof modOp!=="undefined"&&modOp)||(typeof tpActive!=="undefined"&&tpActive)
+    ||(typeof imgPlace!=="undefined"&&imgPlace)||(typeof coordLab!=="undefined"&&coordLab)
+    ||(typeof textLab!=="undefined"&&textLab)||(typeof xrefMove!=="undefined"&&xrefMove)
+    ||(typeof cogoPlace!=="undefined"&&cogoPlace)||(typeof pendingInsert!=="undefined"&&pendingInsert)
+    ||(typeof blkDefPicking!=="undefined"&&blkDefPicking);
+  if(!e || blocked){ if(textHud) textHud.wrap.style.display="none"; return; }
+  const hud=ensureTextHud();
+  const rect=cv.getBoundingClientRect();
+  const [sx,sy]=W2S(e.x,e.y);
+  const hpx=(e.h||1)*view.s;
+  hud.wrap.style.display="flex";
+  const hw=hud.wrap.offsetWidth||130, hh=hud.wrap.offsetHeight||30;
+  hud.wrap.style.left=(rect.left + sx - hw - 14)+"px";   // a felirattól BALRA
+  hud.wrap.style.top =(rect.top + sy - hpx*0.5 - hh/2)+"px";
+  if(document.activeElement!==hud.hnum) hud.hnum.value=(+e.h||1).toFixed(1);
 }
 
 /* ==================================================================

@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v1.99** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v2.0** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -294,6 +294,14 @@ render() → renderScene() → composite() → updateCogoUi()
   ▲▼ (0.1) + számmező**, ami élőben állítja `e.h`-t. Enter: kész, Esc: `undo()`
   (a nyitáskori `snapshot()`). Üresre törölve az elem törlődik. Szerkesztés alatt
   az eredeti canvas-szöveg rejtve (`e._editing` → a `text` rajz-ág kihagyja).
+- **Felirat méret-HUD + forgatás-fogó** (v2.0): a méret-panel már NEM a
+  szerkesztőben van, hanem **állandó HUD**ként a kijelölt `text` elemtől BALRA
+  (`textHud`/`ensureTextHud`/`updateTextHud`, a `composite()` hívja): „Méret"
+  számmező + nagy ▲▼ léptető (0.1), élőben állítja `e.h`-t. A felirat-fogók
+  (`textGripCenters`/`textGripHit`/`drawTextGrips`) mostantól: `move` (fölül),
+  `flag` (zászlózás), és **`rot`** – forgatás-fogó a **bal alsó sarokban**
+  (`loc(-3,16)`), a beszúrási pont körül forgat (`e.rot = rot0 − (angScr − ang0)`,
+  a képernyő y-tükrözés miatt −), a zászló `rot` fogójának mintájára.
 
 ---
 
@@ -496,6 +504,11 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   kijelölve; fölötte méret-léptető (▲▼, 0.1 lépés) + számmező, ami élőben állítja a
   betűméretet. Enter: kész, Esc: mégse (undo). Üres szöveg → az elem törlődik.
   Szerkesztés alatt az eredeti szöveg rejtve (`_editing`). UI címke v1.99.
+- **v2.0**: **Felirat méret-HUD** – a méret-léptető (▲▼ 0.1) + számmező már a
+  `text` **kijelölésekor** látszik, a felirattól BALRA (nagyobb nyilakkal),
+  nem csak dupla kattintáskor (`textHud`, a `composite()` frissíti). Új
+  **forgatás-fogó** a felirat **bal alsó sarkában** (`textGrip` `rot` kind), a
+  beszúrási pont körül forgat – a zászló forgató-fogójának mintájára. UI címke v2.0.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
