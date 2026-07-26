@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v2.2** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v2.3** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -300,9 +300,10 @@ render() → renderScene() → composite() → updateCogoUi()
   számmező + nagy ▲▼ léptető (0.1), élőben állítja `e.h`-t. A felirat-fogók
   (`textGripCenters`/`textGripHit`/`drawTextGrips`) mostantól: `move` (fölül),
   `flag` (zászlózás), és **`rot`** – forgatás-fogó a **bal alsó sarokban**
-  (v2.2: a felirat **közepén**, `loc(b.wpx/2,-b.hpx/2)`). Forgáspont a bal alsó sarok
-  (beszúrási pont), az egér a felirat **középpontját** húzza: abszolút leképezés
-  `e.rot = atan2(-hpx/2,wpx/2) − atan2(sy−ay, sx−ax)` – középen megfogva nincs ugrás.
+  (v2.3: a felirat **alján-középen**, `loc(b.wpx/2, 9)`). Forgáspont a bal alsó sarok
+  (beszúrási pont), az egér az **alján-középet** húzza: `e.rot = atan2(9,wpx/2) −
+  atan2(sy−ay, sx−ax)` – a fogón megfogva nincs ugrás. A forgató-ikon glyphje a közös
+  `drawRotArrow(cx,cy,r)` (körív + ÉRINTŐ-irányú nyílhegy); a zászló forgató-fogója is ezt használja.
 
 ---
 
@@ -518,6 +519,12 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   **középpontot** húzza (forgáspont továbbra is a bal alsó/beszúrási pont):
   `e.rot = atan2(-hpx/2,wpx/2) − atan2(kurzor−pivot)`. Középen megfogva nincs
   kezdeti ugrás. UI címke v2.2.
+- **v2.3**: a felirat **forgatás-ikonja az aljára-középre** került (`loc(wpx/2,9)`),
+  az egér az alján-közepet húzza. A forgató-nyíl iránya javítva: közös
+  `drawRotArrow()` a körív **érintője** szerinti nyílheggyel – a **zászló** forgató-
+  fogója is ezt kapta (ugyanaz a hibás glyph volt). A méret-HUD ▲▼ gombjai már
+  CSS-háromszögek (nem szöveg-karakterek) + `user-select:none`, így nem jelölődnek
+  ki szövegként. UI címke v2.3.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
