@@ -875,6 +875,11 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
 #pdfPreview .btn{height:30px; padding:0 18px;}
 #pdfSaveLayout.savedOk{background:#2e8b57 !important; border-color:#3cb371 !important; color:#eafff2 !important;}
 #pdfSaveLayout:disabled{cursor:default; opacity:.92;}
+@media (pointer:coarse){
+  .clSw{width:26px; height:26px;}
+  .measPop .cpy{width:32px; height:30px;}
+  .mbBtn{height:44px; padding:0 18px; font-size:14px;}
+}
 </style>
 </head>
 <body>
@@ -903,7 +908,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v2.4</span>
+      <span class="ver" id="wcVer">v2.5</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -920,7 +925,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v2.4</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v2.5</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -3258,7 +3263,7 @@ function extAcqAdd(ox,oy,dx,dy,z){    // kihosszabbítás-sugár megjegyzése (d
 function computeSnap(){
   curSnap=null;
   if(!snapMaster) { $("snapInfo").textContent=""; return; }
-  const apW = SNAP_APERTURE/view.s, ap2 = apW*apW;
+  const apW = (SNAP_APERTURE*(isTouchMode()?1.7:1))/view.s, ap2 = apW*apW;   // érintésen nagyobb tűrés
   const mx=mouse.wx, my=mouse.wy;
   const cands=[]; // {x,y,kind,prio,d2,label}
   const push=(x,y,kind,prio,label,src,z)=>{ const d2=dist2(x,y,mx,my); if(d2<=ap2) cands.push({x,y,kind,prio,d2,label,src,z:(z==null?0:z)}); };
@@ -3789,6 +3794,7 @@ cv.addEventListener("pointercancel", ev=>{
 
 cv.addEventListener("pointerdown", ev=>{
   cv.setPointerCapture(ev.pointerId);
+  if(isTouchEv(ev) && (vGrip||sGrip||zGrip||textGrip)){ ev.preventDefault(); return; }  // grip-húzás közben a 2. ujj ne pan/zoomoljon
   const [sx,sy]=evtPos(ev);
   if(ev.button===0 || isTouchEv(ev)){
     const gh=zGripHit(sx,sy,isTouchEv(ev));
@@ -4310,7 +4316,8 @@ function primaryAction(sx, sy, shiftKey, isTouch){
   }
 }
 cv.addEventListener("pointermove", ev=>{
-  const [sx,sy]=evtPos(ev);
+  let [sx,sy]=evtPos(ev);
+  if(isTouchEv(ev) && (vGrip||sGrip||zGrip||textGrip)){ const [ax,ay]=aimTarget(sx,sy); sx=ax; sy=ay; }  // érintés: a fogott pont a take-off szálkereszten (ujj fölött-balra), ne az ujj alatt
   if(zGrip && zGrip.id===ev.pointerId){
     ev.preventDefault();
     const [wx,wy]=S2W(sx,sy);
@@ -14047,7 +14054,7 @@ function txtEditOpen(e){
   snapshot();
   const FS = (e.font||FONT_SANS);
   const wrap=document.createElement("div");
-  wrap.style.cssText="position:fixed;z-index:6000;transform-origin:left top;";
+  wrap.style.cssText="position:fixed;z-index:6000;transform-origin:left top;touch-action:manipulation;";
   const field=document.createElement("input"); field.type="text"; field.value=e.text||"";
   field.style.cssText="display:block;margin:0;box-sizing:content-box;padding:0 2px;line-height:1.1;"
     +"border:1px dashed #4ea1ff;background:rgba(16,22,28,.55);outline:none;font-family:"+FS+";";
@@ -14074,8 +14081,8 @@ function txtEditReposition(){
   ctx.save(); ctx.font=hpx.toFixed(1)+"px "+(e.font||FONT_SANS);
   const tw=ctx.measureText(field.value||" ").width; ctx.restore();
   field.style.width=Math.max(hpx*1.5, tw+hpx*0.5)+"px";
-  wrap.style.left=(rect.left+sx-2)+"px";
-  wrap.style.top =(rect.top+sy-hpx*0.82)+"px";     // alfabetikus alapvonal ~0.82·h a doboz tetejétől
+  wrap.style.left=Math.max(6, Math.min(rect.left+sx-2, window.innerWidth-44))+"px";
+  wrap.style.top =Math.max(6, Math.min(rect.top+sy-hpx*0.82, window.innerHeight-24))+"px";   // alapvonal ~0.82·h
   wrap.style.transform="rotate("+(-(e.rot||0)*180/Math.PI).toFixed(3)+"deg)";
 }
 function txtEditClose(commit){
@@ -14106,7 +14113,7 @@ function ensureTextHud(){
   wrap.style.cssText="position:fixed;z-index:5500;display:none;align-items:center;gap:6px;"
     +"background:#20262e;border:1px solid #3a4653;border-radius:6px;padding:4px 7px;"
     +"box-shadow:0 2px 10px rgba(0,0,0,.45);font:600 12px "+FS+";color:#cfd6e0;white-space:nowrap;"
-    +"user-select:none;-webkit-user-select:none;";
+    +"user-select:none;-webkit-user-select:none;touch-action:manipulation;";
   const lbl=document.createElement("span"); lbl.textContent="Méret"; lbl.style.opacity=".8";
   const hnum=document.createElement("input"); hnum.type="number"; hnum.step="0.1"; hnum.min="0.1";
   hnum.style.cssText="width:58px;text-align:right;font:600 14px "+FS+";background:#12181e;color:#fff;border:1px solid #3a4653;border-radius:4px;padding:3px 5px;";
@@ -14116,7 +14123,7 @@ function ensureTextHud(){
     +"border-left:6px solid transparent;border-right:6px solid transparent;"+(up?"border-bottom:8px solid #cfe0ff;":"border-top:8px solid #cfe0ff;"); return s; };
   inc.appendChild(tri(true)); dec.appendChild(tri(false));
   for(const b of [inc,dec]){ b.style.cssText="display:flex;align-items:center;justify-content:center;width:34px;height:20px;padding:0;"
-    +"border:1px solid #4a5766;background:#2b333c;border-radius:4px;cursor:pointer;user-select:none;-webkit-user-select:none;";
+    +"border:1px solid #4a5766;background:#2b333c;border-radius:4px;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;";
     b.onmousedown=ev=>ev.preventDefault(); }
   spin.append(inc,dec);
   wrap.append(lbl,hnum,spin);
@@ -14143,8 +14150,12 @@ function updateTextHud(){
   const hpx=(e.h||1)*view.s;
   hud.wrap.style.display="flex";
   const hw=hud.wrap.offsetWidth||130, hh=hud.wrap.offsetHeight||30;
-  hud.wrap.style.left=(rect.left + sx - hw - 14)+"px";   // a felirattól BALRA
-  hud.wrap.style.top =(rect.top + sy - hpx*0.5 - hh/2)+"px";
+  let hl=rect.left + sx - hw - 14;                        // a felirattól BALRA
+  if(hl < 6) hl = rect.left + sx + 14;                    // ha kilógna balra → a felirattól JOBBRA
+  hl=Math.max(6, Math.min(hl, window.innerWidth - hw - 6));
+  let ht=Math.max(6, Math.min(rect.top + sy - hpx*0.5 - hh/2, window.innerHeight - hh - 6));
+  hud.wrap.style.left=hl+"px";
+  hud.wrap.style.top =ht+"px";
   if(document.activeElement!==hud.hnum) hud.hnum.value=(+e.h||1).toFixed(1);
 }
 

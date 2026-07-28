@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v2.4** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v2.5** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -539,6 +539,17 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   MÉG HÁTRA (audit): grip-húzás nem követi a take-off szálkeresztet (M2/M3), érintéses
   ablakos kijelölés, rétegátnevezés érintésen, HUD képernyő-szélre csúszása/`touch-action`,
   apró (44px alatti) koppintás-célok, snap-tűrés érintésre, 2. ujj grip-húzás közben.
+- **v2.5**: **Érintés-audit 2. kör.** (a) **Grip-húzás take-off szálkereszttel**: a
+  `pointermove` tetején, ha `vGrip||sGrip||zGrip||textGrip` aktív és érintés, a hatásos
+  pont `aimTarget(sx,sy)` (ujj fölött-balra 52 px) → a fogott csúcs/handle láthatóvá
+  válik, nem takarja az ujj. (b) **2. ujj kizárása**: `pointerdown` tetején, ha grip-húzás
+  aktív és érintés → `preventDefault(); return` (nem pan/zoom, nem kap új gripet). (c)
+  **snap-tűrés** érintésen 1,7× (`SNAP_APERTURE*(isTouchMode()?1.7:1)`). (d) A méret-HUD
+  és a helyben-szerkesztő **viewportba szorítva** (nem lóg ki bal szélen; balról jobbra
+  fordul) + `touch-action:manipulation` (nincs dupla-koppintás-zoom). (e) Nagyobb
+  koppintás-célok érintés-eszközön (`@media (pointer:coarse)`: `.clSw`, `.measPop .cpy`,
+  `.mbBtn`). UI címke v2.5. MÉG HÁTRA: érintéses ablakos kijelölés, rétegátnevezés
+  érintésen, `title` tooltipek, 136-színű paletta cellaméret.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
