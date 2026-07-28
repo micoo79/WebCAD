@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v2.3** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v2.4** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -525,6 +525,20 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   fogója is ezt kapta (ugyanaz a hibás glyph volt). A méret-HUD ▲▼ gombjai már
   CSS-háromszögek (nem szöveg-karakterek) + `user-select:none`, így nem jelölődnek
   ki szövegként. UI címke v2.3.
+- **v2.4**: **Érintés-audit 1. kör – kritikus javítások.** (a) `selCtx()` most hamis
+  `measState`/`sraffState` alatt → a lassabb (>350 ms) koppintás már nem nyelődik el
+  SHIFT-horgonyként, a mérés/sraff pont lekerül. (b) A hosszú-nyomás (0,6 s jobb klikk)
+  nem indul el pont-célzás (`aimTools()`) / mérés / sraff közben → nem szakítja meg a
+  módosítót / rajzolást a nyugodt célzás. (c) **Dupla-koppintás** felismerés
+  (`lastTap`) a koppintás-ágon → érintésen is megnyílik a felirat helyben-szerkesztője.
+  (d) A zöld pipa (terület/sraff zárás) érintésen mindig 2×-es méretben rajzolódik és
+  akkora a találata (`isTouchMode()`). (e) Új **befejező pipa** vonal/vonallánchoz
+  érintés-módban (`finishBtnRect`, az utolsó csúcs mellett). (f) Vonallánc zárása az
+  első pontra érintésen 18 px (volt 10). (g) Módosító objektum-választás érintésen 18 px
+  (volt 8). Segéd: `isTouchMode()` (forceTouch || `pointer:coarse`). UI címke v2.4.
+  MÉG HÁTRA (audit): grip-húzás nem követi a take-off szálkeresztet (M2/M3), érintéses
+  ablakos kijelölés, rétegátnevezés érintésen, HUD képernyő-szélre csúszása/`touch-action`,
+  apró (44px alatti) koppintás-célok, snap-tűrés érintésre, 2. ujj grip-húzás közben.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
