@@ -938,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v2.7</span>
+      <span class="ver" id="wcVer">v2.8</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -955,7 +955,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v2.7</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v2.8</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -986,6 +986,8 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
             <svg viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13" stroke="#e8ecf2" stroke-width="1.7"/><circle cx="12" cy="12" r="1.4" fill="#e8ecf2" stroke="none"/></svg>Pont</button>
           <button class="rbig" id="btnSraff" title="Sraff – zárt poligon kijelölése pontonként; párhuzamos sraffvonalak a Sraffozás rétegen. Szín, méretarány és szög élőben állítható, élő előnézettel és területtel. Kijelölt sraff szerkeszthető.">
             <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z" fill="none" stroke="#7ee6b0" stroke-width="1.4"/><path d="M4 12L12 4M4 18L18 4M9 20L20 9M15 20L20 15M4 6L6 4" stroke="#12b886" stroke-width="1.2"/></svg>Sraff</button>
+          <button class="rbig" id="btnCimCoord" title="Címkoordináta – COGO pont EGÉSZ MÉTERES rácspontra (kód 5412, z=0, pontszám kezdőtől +1); a végén koordinátajegyzék menthető">
+            <svg viewBox="0 0 24 24"><circle cx="4.5" cy="4.5" r="1" fill="#7f8b98"/><circle cx="10" cy="4.5" r="1" fill="#7f8b98"/><circle cx="15.5" cy="4.5" r="1" fill="#7f8b98"/><circle cx="4.5" cy="10" r="1" fill="#7f8b98"/><circle cx="15.5" cy="10" r="1" fill="#7f8b98"/><circle cx="4.5" cy="15.5" r="1" fill="#7f8b98"/><circle cx="10" cy="15.5" r="1" fill="#7f8b98"/><circle cx="15.5" cy="15.5" r="1" fill="#7f8b98"/><circle cx="10" cy="10" r="2.7" fill="#e0392b"/><path d="M19 13.5v6M16 16.5h6" stroke="#ffd75e" stroke-width="1.3"/></svg>Címkoord.</button>
         </div>
         <div class="ribCap">RAJZOLÁS</div>
       </div>
@@ -1396,6 +1398,24 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
 <input type="file" id="fileFtr" accept=".ftr" style="display:none">
 
 <!-- ======================= KOORDINÁTAJEGYZÉK DIALÓGUS ======================= -->
+<dialog id="dlgCim" style="background:#232a33;color:#e6ebf2;border:1px solid #3a4653;border-radius:8px;padding:16px 18px;min-width:290px">
+  <div style="font-weight:700;font-size:15px;margin-bottom:12px">Címkoordináta</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1">Kezdő pontszám</label><input type="number" id="cimNum" value="1" step="1" style="width:100px;padding:5px;background:#12181e;color:#fff;border:1px solid #3a4653;border-radius:4px"></div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="flex:1">Pontkód</label><input type="text" id="cimCode" value="5412" style="width:100px;padding:5px;background:#12181e;color:#fff;border:1px solid #3a4653;border-radius:4px"></div>
+  <div style="opacity:.65;font-size:12px;margin-bottom:14px">Növekmény: +1 · Z: 0 · csak egész méteres rácspontra rakható</div>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button id="cimGo" style="padding:7px 16px;background:#2f7fff;border:none;color:#fff;border-radius:5px;cursor:pointer;font-weight:600">Indítás</button><button id="cimCancel" style="padding:7px 14px;background:#2b333c;border:1px solid #46525f;color:#dfe6ef;border-radius:5px;cursor:pointer">Mégse</button></div>
+</dialog>
+<dialog id="dlgCimSave" style="background:#232a33;color:#e6ebf2;border:1px solid #3a4653;border-radius:8px;padding:16px 18px;min-width:310px">
+  <div style="font-weight:700;font-size:15px;margin-bottom:10px">Koordinátajegyzék mentése</div>
+  <div id="cimSaveCount" style="opacity:.8;font-size:13px;margin-bottom:10px"></div>
+  <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;cursor:pointer"><input type="checkbox" id="cimWantCode" checked> Pontkód oszlop is</label>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><label style="flex:1">Elválasztó</label>
+    <select id="cimSep" style="padding:5px;background:#12181e;color:#fff;border:1px solid #3a4653;border-radius:4px">
+      <option value="tab" selected>Tabulátor</option><option value=";">Pontosvessző (;)</option><option value=",">Vessző (,)</option><option value="space">Szóköz</option>
+    </select></div>
+  <div style="opacity:.6;font-size:11px;margin-bottom:14px">Oszlopok: pontszám · kelet (Y) · észak (X)<span id="cimCodeCol"> · pontkód</span></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button id="cimSaveGo" style="padding:7px 16px;background:#2f7fff;border:none;color:#fff;border-radius:5px;cursor:pointer;font-weight:600">Mentés TXT</button><button id="cimSaveSkip" style="padding:7px 14px;background:#2b333c;border:1px solid #46525f;color:#dfe6ef;border-radius:5px;cursor:pointer">Kihagyás</button></div>
+</dialog>
 <dialog id="dlgStamp">
   <div class="stampDlg">
     <div class="stampBar">
@@ -2695,6 +2715,7 @@ function renderScene(){
     if(!paperView && typeof drawMapsLayer==="function") drawMapsLayer();   // Maps réteg – mindig a rajzi elemek ALATT
     if(!paperView && $("vGrid").checked) drawGrid();
     if(!paperView && $("vAxes").checked) drawAxes();
+    if(!paperView && typeof drawCimGridDots==="function") drawCimGridDots();   // Címkoordináta rácspontjai a rajz ALATT
     drawRasters();                       // a kép/PDF mindig a rajzi elemek ALATT
     for(const x of (doc.xrefs||[])){
       if(x.kind==="raster") continue;
@@ -2763,6 +2784,7 @@ function composite(){
   if(typeof drawTextLabGhost==="function") drawTextLabGhost();
   if(marquee) drawMarquee();
   if(curSnap) drawSnapMarker();
+  if(typeof drawCimNearest==="function") drawCimNearest();   // Címkoordináta: legközelebbi rácspont piros kiemelése
   drawUcsIcon();
   if(mouse.in){
     if(xrefMove) drawMoveCursor();
@@ -3320,6 +3342,7 @@ function extAcqAdd(ox,oy,dx,dy,z){    // kihosszabbítás-sugár megjegyzése (d
 }
 function computeSnap(){
   curSnap=null;
+  if(cogoPlace && cogoPlace.cim){ if($("snapInfo")) $("snapInfo").textContent=""; return; }   // Címkoordináta: snap kikapcsolva, csak rács
   if(!snapMaster) { $("snapInfo").textContent=""; return; }
   const apW = (SNAP_APERTURE*(isTouchMode()?1.7:1))/view.s, ap2 = apW*apW;   // érintésen nagyobb tűrés
   const mx=mouse.wx, my=mouse.wy;
@@ -3746,7 +3769,7 @@ function setHint(t){ $("hint").textContent=t; }
 const _optModals=new Set();
 function optModalOpen(id){ _optModals.add(id); document.body.classList.add("optModal"); }
 function optModalClose(id){ _optModals.delete(id); if(!_optModals.size) document.body.classList.remove("optModal"); }
-function cancelTool(){ clearShift(); drawPts=[]; marquee=null; pendingBlock=null; pendingInsert=null; cogoPlace=null; cptPending=null; if(xrefMove) xmFinish(); imgPlace=null; arcPoly=null; arc2pr=null; if(typeof hideMiniPops==="function") hideMiniPops(); render(); }
+function cancelTool(){ const _cimSave=(cogoPlace && cogoPlace.cim && cimPts.length); clearShift(); drawPts=[]; marquee=null; pendingBlock=null; pendingInsert=null; cogoPlace=null; cptPending=null; if(xrefMove) xmFinish(); imgPlace=null; arcPoly=null; arc2pr=null; if(typeof hideMiniPops==="function") hideMiniPops(); render(); if(_cimSave) setTimeout(openCimSave,0); }
 
 function evtPos(ev){
   const r=cv.getBoundingClientRect();
@@ -4148,7 +4171,7 @@ function secondaryAction(){
   const wasDrawing = (tool!=="none"&&tool!=="select");
   if(tool==="line"&&drawPts.length) finishLine();
   else if((tool==="pline"||tool==="poly3d")&&drawPts.length>=2) finishPline(false);
-  if(cogoPlace){ cogoPlace=null; setHint("COGO pont-elhelyezés befejezve."); }
+  if(cogoPlace){ const _wasCim=cogoPlace.cim, _hadPts=cimPts.length; cogoPlace=null; if(_wasCim){ setHint("Címkoordináta befejezve."); if(_hadPts) setTimeout(openCimSave,0); } else setHint("COGO pont-elhelyezés befejezve."); }
   drawPts=[]; marquee=null; pendingInsert=null;
   arcPoly=null; arc2pr=null; hideMiniPops();
   if(hadOp || wasDrawing){
@@ -9455,8 +9478,65 @@ $("expDelim").addEventListener("change",()=>{
 });
 
 /* ---------------- COGO pontok elhelyezése ---------------- */
-let cogoPlace=null;   // {num,inc,code,z,zPick,askNum,askCode,askZ}
+let cogoPlace=null;   // {num,inc,code,z,zPick,askNum,askCode,askZ,cim}
 let cptPending=null;  // pontonkénti dialógus alatt: {x,y,z}
+// ---- Címkoordináta (COGO pont csak egész méteres rácspontra) ----
+let cimPts=[];   // {num,kelet,eszak,code} letett pontok az aktuális munkamenetben
+function openCimCoord(){ $("cimNum").value=nextFreeCogoNum(); if(!$("cimCode").value)$("cimCode").value="5412"; $("dlgCim").showModal(); }
+function startCimCoord(){
+  const num=parseInt($("cimNum").value,10);
+  const code=($("cimCode").value||"5412").trim()||"5412";
+  $("dlgCim").close();
+  setTool("none");
+  cogoPlace={num:isFinite(num)?num:nextFreeCogoNum(),inc:1,code,z:0,zPick:false,askNum:false,askCode:false,askZ:false,cim:true};
+  cimPts=[];
+  setHint(`Címkoordináta – kattints a rácspontra (következő: ${cogoPlace.num}). Jobb klikk / Esc: befejezés + koordinátajegyzék mentése.`);
+  render();
+}
+function drawCimGridDots(){
+  if(!(cogoPlace&&cogoPlace.cim)) return;
+  if(view.s<6) return;                              // túl kicsi lépték – ne rajzoljunk pontrácsot
+  const [wx0,wy1]=S2W(0,0),[wx1,wy0]=S2W(cw,ch);
+  if((wx1-wx0)*(wy1-wy0)>40000) return;             // túl sok pont – kihagyjuk
+  ctx.fillStyle="#5c6774";
+  const r=view.s>=18?1.5:1.0;
+  for(let gx=Math.ceil(wx0);gx<=wx1;gx++)
+    for(let gy=Math.ceil(wy0);gy<=wy1;gy++){
+      const [sx,sy]=W2S(gx,gy);
+      ctx.fillRect(sx-r,sy-r,2*r,2*r);
+    }
+}
+function drawCimNearest(){
+  if(!(cogoPlace&&cogoPlace.cim)||!mouse.in) return;
+  const [sx,sy]=W2S(Math.round(mouse.wx),Math.round(mouse.wy));
+  ctx.save();
+  ctx.fillStyle="#e0392b";
+  ctx.beginPath();
+  ctx.arc(sx,sy,Math.max(3.5,(view.s>=18?1.5:1.0)*2),0,Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+function openCimSave(){
+  if(!cimPts.length) return;
+  $("cimSaveCount").textContent=cimPts.length+" pont letéve.";
+  if($("cimCodeCol")) $("cimCodeCol").style.display=$("cimWantCode").checked?"":"none";
+  $("dlgCimSave").showModal();
+}
+function cimDoSave(){
+  const wantCode=$("cimWantCode").checked;
+  const sm={tab:"\t",";":";",",":",","space":" "}, sep=sm[$("cimSep").value]||"\t";
+  const dec=v=>String(Math.round(v*1000)/1000);
+  const lines=cimPts.map(p=>{ const cols=[p.num,dec(p.kelet),dec(p.eszak)]; if(wantCode)cols.push(p.code||""); return cols.join(sep); });
+  $("dlgCimSave").close();
+  downloadBlob("koordinatajegyzek.txt", new Blob([lines.join("\r\n")+"\r\n"],{type:"text/plain;charset=utf-8"}));
+  if(typeof setHint==="function") setHint("Koordinátajegyzék mentve ("+cimPts.length+" pont).");
+}
+if($("btnCimCoord")) $("btnCimCoord").onclick=openCimCoord;
+if($("cimGo")) $("cimGo").onclick=startCimCoord;
+if($("cimCancel")) $("cimCancel").onclick=()=>$("dlgCim").close();
+if($("cimSaveGo")) $("cimSaveGo").onclick=cimDoSave;
+if($("cimSaveSkip")) $("cimSaveSkip").onclick=()=>$("dlgCimSave").close();
+if($("cimWantCode")) $("cimWantCode").onchange=()=>{ const c=$("cimCodeCol"); if(c) c.style.display=$("cimWantCode").checked?"":"none"; };
 function nextFreeCogoNum(){
   let mx=0;
   for(const e of doc.entities) if(e.type==="cogo"){
@@ -9503,6 +9583,7 @@ function afterCogoPoint(usedNum){
 }
 function placeCogoAt(x,y,pz){
   let z=cogoPlace.z;
+  if(cogoPlace.cim){ x=Math.round(x); y=Math.round(y); z=0; }          // Címkoordináta: egész méteres rácspont, z=0
   if(cogoPlace.zPick && pz!=null && isFinite(+pz) && curSnap) z=+pz;   // Z átvétele BÁRMELY rajzi elemről
   if(cogoPlace.askNum||cogoPlace.askCode||cogoPlace.askZ){
     cptPending={x,y,z};
@@ -9518,8 +9599,13 @@ function placeCogoAt(x,y,pz){
     }catch(_){}} ,0);
     return;
   }
-  createCogoPoint(x,y,z,cogoPlace.num,cogoPlace.code);
-  afterCogoPoint(cogoPlace.num);
+  const _un=cogoPlace.num;
+  createCogoPoint(x,y,z,_un,cogoPlace.code);
+  if(cogoPlace.cim){
+    cimPts.push({num:String(_un), kelet:x, eszak:y, code:cogoPlace.code});
+    setHint(`Címkoordináta letéve (${_un}). Következő: ${_un+1}. Jobb klikk / Esc: befejezés + koordinátajegyzék mentése.`);
+  }
+  afterCogoPoint(_un);
 }
 $("cptOk").onclick=()=>{
   if(!cptPending||!cogoPlace){ $("dlgCogoPt").close(); return; }

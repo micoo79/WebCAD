@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v2.7** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v2.8** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -574,6 +574,25 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   `screenPrintPainter()` + `drawPrintTervpecsetOnScreen()` (a `drawPdfPrintOverlay`-ből,
   `drawPrintStampOnScreen` után). `window.TervPecset.setForPrint(model)`. MÉG FINOMÍTHATÓ:
   méret/pozíció fogóval, mezőnkénti betűméret/igazítás, ki/be kapcsoló a PDF-sávban. UI címke v2.7.
+- **v2.8**: **Címkoordináta** – új gomb a RAJZOLÁS panelen (`btnCimCoord`, a Sraff
+  után). Speciálisan elhelyezett COGO pont, amit **csak egész méteres rácspontra**
+  lehet letenni (méter élességgel, kerek értékre). A `cogoPlace` mechanizmusra épül
+  egy `cim:true` zászlóval, így minden meglévő útvonal (kurzor, érintéses aim,
+  `primaryAction`→`placeCogoAt`) újrahasznosul. `dlgCim`: kezdő pontszám + pontkód
+  (alapérték **5412**, z=0, növekmény fix **+1**). `startCimCoord()` állítja be a
+  módot. `placeCogoAt` elején `if(cogoPlace.cim){ x=Math.round(x); y=Math.round(y);
+  z=0; }` → egész rácspont; a letett pontok a `cimPts[]`-be gyűlnek
+  (`{num,kelet,eszak,code}`, kelet=CAD x=EOV Y, észak=CAD y=EOV X). A **snap
+  ideiglenesen KI** (`computeSnap` elején `cim` ág visszatér üres `snapInfo`-val).
+  Vizuál: `drawCimGridDots()` a `renderScene`-ben (rajz ALATT) halvány szürke pontok
+  a rácspontokon (léptékfüggő, `view.s<6` alatt nem rajzol, >40000 pontnál kihagy);
+  `drawCimNearest()` a `composite`-ban (rajz FELETT) a kurzorhoz legközelebbi
+  rácspontot **piros, ~2× akkora** ponttal emeli ki. Befejezés jobb klikk
+  (`secondaryAction`) vagy Esc (`cancelTool`) → ha van letett pont, `openCimSave()`.
+  `dlgCimSave`: pontkód-oszlop opcionális (`cimWantCode`), elválasztó választható
+  (`cimSep`, alap **TAB**; `;` `,` szóköz). `cimDoSave()` → `koordinatajegyzek.txt`
+  (`downloadBlob`), oszlopsorrend: **pontszám · kelet(Y) · észak(X) · [pontkód]**,
+  3 tizedes, CRLF sorvég. UI címke v2.8.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
