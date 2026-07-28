@@ -880,6 +880,36 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
   .measPop .cpy{width:32px; height:30px;}
   .mbBtn{height:44px; padding:0 18px; font-size:14px;}
 }
+/* ===== Tervpecsét tervező ===== */
+#dlgStamp{width:80vw; height:80vh; max-width:80vw; max-height:80vh; padding:0; border:1px solid #3a4653; border-radius:10px; background:#1b2027; color:#e6ebf2; overflow:hidden;}
+#dlgStamp::backdrop{background:rgba(0,0,0,.55);}
+.stampDlg{display:flex; flex-direction:column; height:100%;}
+.stampBar{display:flex; align-items:center; gap:8px; padding:8px 12px; background:#232a33; border-bottom:1px solid #3a4653; flex:0 0 auto; flex-wrap:wrap;}
+.stampBar b{font-size:14px; margin-right:4px;}
+.stampBar button,.stampBar select,.stampBar input{font:600 12px sans-serif; padding:6px 11px; border-radius:5px; border:1px solid #46525f; background:#2b333c; color:#dfe6ef; cursor:pointer;}
+.stampBar input{cursor:text; min-width:160px;}
+.stampWrap{flex:1 1 auto; overflow:auto; padding:22px; display:flex; justify-content:center; align-items:flex-start;}
+.stampCanvas{width:100%; max-width:960px; background:#fff; color:#111; border:2px solid #111;}
+.stampFoot{flex:0 0 auto; padding:9px 12px; background:#232a33; border-top:1px solid #3a4653;}
+.stampFoot button{font:600 13px sans-serif; padding:8px 16px; border-radius:6px; border:none; background:#2f7fff; color:#fff; cursor:pointer;}
+.stRow{display:flex; align-items:stretch; border-bottom:1px solid #111;}
+.stRow:last-child{border-bottom:none;}
+.stGutter{flex:0 0 26px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:#e9edf2; border-right:1px solid #111;}
+.stGutter button{width:22px; height:15px; padding:0; font:700 10px sans-serif; line-height:1; border:1px solid #b9c2cc; background:#fff; color:#334; border-radius:3px; cursor:pointer;}
+.stGutter .stRowDel{color:#c0392b; margin-top:3px;}
+.stCell{position:relative; display:flex; flex-direction:column; min-width:44px;}
+.stDiv{flex:0 0 5px; cursor:col-resize; position:relative; z-index:2; touch-action:none;}
+.stDiv::after{content:""; position:absolute; left:2px; top:0; bottom:0; width:1px; background:#111;}
+.stSlot{position:relative; flex:1 1 0; border-top:1px dashed #c4c4c4; display:flex; align-items:center; justify-content:center; box-sizing:border-box; min-height:0;}
+.stSlot:first-child{border-top:none;}
+.stLabel{position:absolute; left:5px; top:2px; font:600 9px sans-serif; color:#666; outline:none; max-width:70%; overflow:hidden; white-space:nowrap;}
+.stLabel:empty::before{content:"címke"; color:#c8c8c8;}
+.stValue{font:600 15px sans-serif; text-align:center; outline:none; padding:0 8px; max-width:100%; overflow:hidden;}
+.stX{position:absolute; right:2px; top:2px; width:15px; height:15px; padding:0; border-radius:50%; border:none; background:#e0392b; color:#fff; font:700 8px sans-serif; line-height:15px; cursor:pointer;}
+.stMove{position:absolute; right:2px; bottom:2px; display:flex; flex-direction:column; gap:1px;}
+.stMove button{width:15px; height:10px; padding:0; font-size:7px; line-height:1; border:1px solid #b9c2cc; background:#fff; color:#334; border-radius:2px; cursor:pointer;}
+.stAdd{width:28px; height:28px; border-radius:50%; border:none; background:#2ec16b; color:#fff; font:700 17px sans-serif; line-height:1; cursor:pointer;}
+.stAddCol{flex:0 0 22px; background:#e9edf2; border:none; border-left:1px solid #111; color:#1a9a52; font:700 15px sans-serif; cursor:pointer;}
 </style>
 </head>
 <body>
@@ -908,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v2.5</span>
+      <span class="ver" id="wcVer">v2.6</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -925,13 +955,14 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v2.5</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v2.6</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
     <button class="ribTab" data-tab="insert">Import</button>
     <button class="ribTab" data-tab="export">Export</button>
     <button class="ribTab" data-tab="cogo">COGO</button>
+    <button class="ribTab" data-tab="stamp">Tervpecsét</button>
     <button class="ribTab" id="tabSettings">Beállítások</button>
   </div>
   <div id="ribBody">
@@ -1152,7 +1183,17 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       </div>
     </div>
 
-    
+    <div class="ribPage" data-page="stamp">
+      <div class="ribPanel">
+        <div class="ribBtns">
+          <button class="rbig" id="btnStampDesign" title="Tervpecsét tervező megnyitása – egyedi tervpecsét készítése, elnevezése, mentése, betöltése">
+            <svg viewBox="0 0 24 24"><rect x="2.4" y="4" width="19.2" height="16" rx="1.6" fill="#12203a" stroke="#8fb2d9" stroke-width="1.3"/><path d="M2.4 14h19.2M2.4 9h19.2M9 14v6M15 4v10" stroke="#8fb2d9" stroke-width="1"/><path d="M4.4 16.3h3.2M4.4 17.9h2" stroke="#f0b23c" stroke-width="1.1"/><path d="M16.4 16.3h3.2M16.4 17.9h2" stroke="#f0b23c" stroke-width="1.1"/></svg>Tervpecsét tervező</button>
+        </div>
+        <div class="ribCap">TERVEZÉS</div>
+      </div>
+    </div>
+
+
 
   </div>
   <div id="docTabs"></div>
@@ -1355,6 +1396,22 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
 <input type="file" id="fileFtr" accept=".ftr" style="display:none">
 
 <!-- ======================= KOORDINÁTAJEGYZÉK DIALÓGUS ======================= -->
+<dialog id="dlgStamp">
+  <div class="stampDlg">
+    <div class="stampBar">
+      <b>Tervpecsét tervező</b>
+      <button id="stNew" title="Új, üres tervpecsét">Új</button>
+      <input id="stName" placeholder="Tervpecsét neve…">
+      <button id="stSave" title="Mentés (a böngészőben tárolva)">Mentés</button>
+      <select id="stLoad" title="Mentett tervpecsét betöltése"><option value="">Betöltés…</option></select>
+      <button id="stDel" title="A megnevezett tervpecsét törlése">Törlés</button>
+      <span style="flex:1"></span>
+      <button id="stClose" title="Bezárás">Bezár</button>
+    </div>
+    <div class="stampWrap"><div id="stCanvas" class="stampCanvas"></div></div>
+    <div class="stampFoot"><button id="stAddRow">+ Új sor</button></div>
+  </div>
+</dialog>
 <dialog id="dlgImport">
   <div class="dlgHead"><span>Koordinátajegyzék beolvasása</span><button data-close="dlgImport">✕</button></div>
   <div class="dlgBody">
@@ -15422,6 +15479,99 @@ applyFeatures();
 })();
 cacheFonts();
 applyNumKb(document);
+/* ==================================================================
+   TERVPECSÉT TERVEZŐ – táblázatos tervpecsét-szerkesztő (80%-os modal)
+   Modell: stamp={name, rows:[{h:1..4, cells:[{w, items:[{label,value}|null ...h]}]}]}
+   ================================================================== */
+(function(){
+  const ROW_UNIT=46, LS_KEY="webcad.tervpecsetek";
+  let stamp={name:"", rows:[]};
+  const el=id=>document.getElementById(id);
+  const newItem=()=>({label:"", value:"Minta szöveg"});
+  function makeItems(h){ const a=[newItem()]; for(let i=1;i<h;i++) a.push(null); return a; }
+  function newCell(h){ return {w:0, items:makeItems(h)}; }
+  function equalize(row){ const n=row.cells.length||1; row.cells.forEach(c=>c.w=1/n); }
+  function newRow(){ const r={h:1, cells:[newCell(1)]}; equalize(r); return r; }
+  function setRowH(row,h){ h=Math.max(1,Math.min(4,h)); row.h=h; row.cells.forEach(c=>{ while(c.items.length<h) c.items.push(null); while(c.items.length>h) c.items.pop(); if(!c.items.some(Boolean)) c.items[0]=newItem(); }); }
+  function posX(e){ return e.clientX!=null? e.clientX : (e.touches&&e.touches[0]? e.touches[0].clientX : 0); }
+  function mkBtn(txt,fn,title,cls){ const b=document.createElement("button"); b.textContent=txt; if(title)b.title=title; if(cls)b.className=cls; b.onmousedown=e=>e.preventDefault(); b.onclick=fn; return b; }
+
+  function wireDivider(dv,row,ci){
+    dv.addEventListener("pointerdown",ev=>{
+      ev.preventDefault(); try{ dv.setPointerCapture(ev.pointerId); }catch(_){}
+      const rEl=dv.parentElement, cells=[...rEl.querySelectorAll(".stCell")];
+      const leftEl=cells[ci-1], rightEl=cells[ci];
+      const areaW=(leftEl.clientWidth+rightEl.clientWidth)||1;
+      const lw0=row.cells[ci-1].w, rw0=row.cells[ci].w, sum=lw0+rw0, x0=posX(ev);
+      const move=e=>{ let d=(posX(e)-x0)/areaW*sum, nl=lw0+d, nr=rw0-d, min=0.05*sum;
+        if(nl<min)nl=min; if(nr<min)nr=min; const s=nl+nr; nl=nl/s*sum; nr=nr/s*sum;
+        row.cells[ci-1].w=nl; row.cells[ci].w=nr;
+        leftEl.style.flex="0 0 "+(nl*100)+"%"; rightEl.style.flex="0 0 "+(nr*100)+"%"; };
+      const up=()=>{ document.removeEventListener("pointermove",move); document.removeEventListener("pointerup",up); };
+      document.addEventListener("pointermove",move); document.addEventListener("pointerup",up);
+    });
+  }
+
+  function render(){
+    const cv=el("stCanvas"); if(!cv) return; cv.innerHTML="";
+    stamp.rows.forEach((row,ri)=>{
+      if(row.cells.some(c=>!c.w)) equalize(row);
+      const rEl=document.createElement("div"); rEl.className="stRow"; rEl.style.height=(row.h*ROW_UNIT)+"px";
+      const g=document.createElement("div"); g.className="stGutter";
+      g.append(mkBtn("▲",()=>{ setRowH(row,row.h+1); render(); },"Magasabb sor (max 4×)"),
+               mkBtn("▼",()=>{ setRowH(row,row.h-1); render(); },"Alacsonyabb sor"),
+               mkBtn("✕",()=>{ stamp.rows.splice(ri,1); if(!stamp.rows.length) stamp.rows.push(newRow()); render(); },"Sor törlése","stRowDel"));
+      rEl.append(g);
+      row.cells.forEach((cell,ci)=>{
+        if(ci>0){ const dv=document.createElement("div"); dv.className="stDiv"; dv.title="Húzd az átméretezéshez"; wireDivider(dv,row,ci); rEl.append(dv); }
+        const cEl=document.createElement("div"); cEl.className="stCell"; cEl.style.flex="0 0 "+(cell.w*100)+"%";
+        cell.items.forEach((item,si)=>{
+          const s=document.createElement("div"); s.className="stSlot";
+          if(item){
+            const lab=document.createElement("div"); lab.className="stLabel"; lab.contentEditable="true"; lab.textContent=item.label;
+            lab.oninput=()=>{ item.label=lab.textContent; };
+            const val=document.createElement("div"); val.className="stValue"; val.contentEditable="true"; val.textContent=item.value;
+            val.oninput=()=>{ item.value=val.textContent; };
+            s.append(lab,val, mkBtn("✕",()=>{ cell.items[si]=null; render(); },"Mezőérték eltávolítása","stX"));
+            if(row.h>1){
+              const mv=document.createElement("div"); mv.className="stMove";
+              mv.append(mkBtn("▲",()=>{ if(si>0&&!cell.items[si-1]){cell.items[si-1]=item;cell.items[si]=null;render();} },"Feljebb"),
+                        mkBtn("▼",()=>{ if(si<row.h-1&&!cell.items[si+1]){cell.items[si+1]=item;cell.items[si]=null;render();} },"Lejjebb"));
+              s.append(mv);
+            }
+          } else {
+            s.append(mkBtn("+",()=>{ cell.items[si]=newItem(); render(); },"Mezőérték hozzáadása","stAdd"));
+          }
+          cEl.append(s);
+        });
+        rEl.append(cEl);
+      });
+      rEl.append(mkBtn("+",()=>{ row.cells.push(newCell(row.h)); equalize(row); render(); },"Új mező a sorhoz","stAddCol"));
+      cv.append(rEl);
+    });
+  }
+
+  function loadList(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||"[]"); }catch(_){ return []; } }
+  function saveList(l){ try{ localStorage.setItem(LS_KEY, JSON.stringify(l)); }catch(_){} }
+  function refreshLoadSel(){ const sel=el("stLoad"); if(!sel) return; const l=loadList();
+    sel.innerHTML='<option value="">Betöltés…</option>'+l.map((s,i)=>'<option value="'+i+'">'+String(s.name||"Névtelen").replace(/[<>&"]/g,"")+'</option>').join(''); }
+  function stampNew(){ stamp={name:"", rows:[newRow()]}; if(el("stName")) el("stName").value=""; render(); }
+  function doSave(){ const nm=((el("stName")&&el("stName").value)||"").trim()||"Névtelen"; stamp.name=nm;
+    const l=loadList(), rec={name:nm, data:JSON.parse(JSON.stringify(stamp))}, i=l.findIndex(s=>s.name===nm);
+    if(i>=0) l[i]=rec; else l.push(rec); saveList(l); refreshLoadSel(); if(typeof setHint==="function") setHint("Tervpecsét mentve: "+nm); }
+  function doLoad(i){ const rec=loadList()[+i]; if(!rec) return; stamp=JSON.parse(JSON.stringify(rec.data)); stamp.name=rec.name; if(el("stName")) el("stName").value=rec.name; render(); }
+  function doDel(){ const nm=((el("stName")&&el("stName").value)||"").trim(); if(!nm) return; saveList(loadList().filter(s=>s.name!==nm)); refreshLoadSel(); }
+  function openDlg(){ if(!stamp.rows.length) stampNew(); const dg=el("dlgStamp"); if(dg&&!dg.open){ dg.showModal(); refreshLoadSel(); render(); } }
+
+  if(el("btnStampDesign")) el("btnStampDesign").onclick=openDlg;
+  if(el("stNew")) el("stNew").onclick=stampNew;
+  if(el("stSave")) el("stSave").onclick=doSave;
+  if(el("stLoad")) el("stLoad").onchange=e=>{ if(e.target.value!=="") doLoad(e.target.value); };
+  if(el("stDel")) el("stDel").onclick=doDel;
+  if(el("stClose")) el("stClose").onclick=()=>{ const d=el("dlgStamp"); if(d&&d.open) d.close(); };
+  if(el("stAddRow")) el("stAddRow").onclick=()=>{ stamp.rows.push(newRow()); render(); };
+  window.TervPecset={ open:openDlg };
+})();
 uc128Wrap(document);
 patchDialogsForNumKb();
 drawings[0].doc=doc;

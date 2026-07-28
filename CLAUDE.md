@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v2.5** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v2.6** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -550,6 +550,18 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   koppintás-célok érintés-eszközön (`@media (pointer:coarse)`: `.clSw`, `.measPop .cpy`,
   `.mbBtn`). UI címke v2.5. MÉG HÁTRA: érintéses ablakos kijelölés, rétegátnevezés
   érintésen, `title` tooltipek, 136-színű paletta cellaméret.
+- **v2.6**: **TERVPECSÉT TERVEZŐ** – új ribbon-fül „Tervpecsét" (`data-tab="stamp"`,
+  panel „TERVEZÉS", `btnStampDesign`) → 80%-os modal (`#dlgStamp`). Táblázatos
+  tervpecsét-szerkesztő (önálló IIFE-modul a script végén, `window.TervPecset.open()`).
+  Modell: `stamp={name, rows:[{h:1..4, cells:[{w, items:[{label,value}|null …h]}]}]}`,
+  `localStorage["webcad.tervpecsetek"]` (Mentés/Betöltés/Törlés/Új/Név). Sor: föl-le
+  nyíl a magassághoz (1–4×, `setRowH`), sor-törlés; cellák egyenlő szélességgel
+  (`equalize`), közöttük húzható elválasztó (`wireDivider`, pointer-events). Mező:
+  „címke" (bal-fent, kicsi, contentEditable) + „mezőérték" („Minta szöveg", középen,
+  nagyobb, contentEditable); piros X = érték törlése; üres alsor = zöld +; több
+  magasságú sorban az érték ▲▼-vel mozgatható alsorok között, és több alsorba is
+  tehető érték. `+ Új sor`, sor-végi `+` = új mező. MÉG: a tervpecsét rárakása a
+  rajzra/PDF-re (a meglévő Rajzpecsét-motorral integrálva) – következő lépés. UI címke v2.6.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
