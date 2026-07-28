@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v2.6** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v2.7** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -562,6 +562,18 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   magasságú sorban az érték ▲▼-vel mozgatható alsorok között, és több alsorba is
   tehető érték. `+ Új sor`, sor-végi `+` = új mező. MÉG: a tervpecsét rárakása a
   rajzra/PDF-re (a meglévő Rajzpecsét-motorral integrálva) – következő lépés. UI címke v2.6.
+- **v2.7**: **Tervpecsét a nyomtatási képen.** A tervező eszköztárában a „Nyomtatásra"
+  gomb a modellt a `tervpecsetForPrint` globálisba teszi és megnyitja a PDF-módot. A
+  `paintPrintScene(P,r)` sétálóba egy hívás került (`paintTervpecset(P,r)`), így a
+  tervpecsét a papír **jobb-alsó sarkába** rajzolódik – UGYANAZ a kód fut a teljes
+  képernyős előnézeten ÉS a vektoros PDF-ben (a `P` festő absztrakción át:
+  `setStroke/begin/move/line/close/stroke/text/fillRectW`, világkoordináták,
+  `pdfMM2W`/`pdfRectWorld`/`printColor`). Méret: `TP_WIDTH_MM=185`, `TP_ROW_MM=8`;
+  a szöveg balra igazított/alfabetikus alapvonal → a mezőérték középre igazítása
+  szélesség-becsléssel (`0.5·h·hossz`). Az élő rajzvászon-előnézethez egy külön
+  `screenPrintPainter()` + `drawPrintTervpecsetOnScreen()` (a `drawPdfPrintOverlay`-ből,
+  `drawPrintStampOnScreen` után). `window.TervPecset.setForPrint(model)`. MÉG FINOMÍTHATÓ:
+  méret/pozíció fogóval, mezőnkénti betűméret/igazítás, ki/be kapcsoló a PDF-sávban. UI címke v2.7.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 

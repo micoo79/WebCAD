@@ -938,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v2.6</span>
+      <span class="ver" id="wcVer">v2.7</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -955,7 +955,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v2.6</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v2.7</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -1406,6 +1406,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <select id="stLoad" title="Mentett tervpecsét betöltése"><option value="">Betöltés…</option></select>
       <button id="stDel" title="A megnevezett tervpecsét törlése">Törlés</button>
       <span style="flex:1"></span>
+      <button id="stToPrint" title="A tervpecsét rátétele a nyomtatási képre (PDF)" style="background:#2f7fff;border-color:#2f7fff;color:#fff">Nyomtatásra</button>
       <button id="stClose" title="Bezárás">Bezár</button>
     </div>
     <div class="stampWrap"><div id="stCanvas" class="stampCanvas"></div></div>
@@ -6761,6 +6762,7 @@ function applyCogoCfgUi(){
 const PDF_PAPERS={A4:[210,297],A3:[297,420],A2:[420,594],A1:[594,841],A0:[841,1189]};
 const PDF_SCALES=[50,100,200,250,500,1000,2000,2500,5000,10000];
 let pdfPrint=null;   // {paper,land,scale,mono,cx,cy, fitMode,fitPick,drag}
+let tervpecsetForPrint=null;   // a tervezőből "Nyomtatásra" tett tervpecsét-modell (a papír jobb-alsó sarkába kerül)
 let pdfFastOverlay=false;   // igaz, amíg a keretet húzzuk: kihagyja a drága blur-t
 
 function pdfPaperMM(){
@@ -7135,6 +7137,7 @@ function drawPdfPrintOverlay(){
   drawPrintFrameOnScreen();
   /* ---- rajzpecsét: fehér kitakarás + pecsét-tartalom + scale-fogó ---- */
   drawPrintStampOnScreen();
+  drawPrintTervpecsetOnScreen();   // egyedi tervpecsét élő előnézete a papíron
   ctx.restore();
 }
 /* a „Rajzpecsét hozzáadása" gomb képernyő-téglalapja (vagy null) */
@@ -7487,6 +7490,7 @@ function paintPrintScene(P, r){
     P.line(r.x1-mg2, r.y1-mg2); P.line(r.x0+mg2, r.y1-mg2); P.close();
     P.stroke();
   }
+  if(tervpecsetForPrint) paintTervpecset(P, r);   // egyedi tervpecsét a papír jobb-alsó sarkában
 }
 /* egy pecsét-entitás festése a P festőn keresztül (világkoordinátákkal) */
 function paintStampEnt(P, e, col){
@@ -7516,6 +7520,64 @@ function paintStampEnt(P, e, col){
       P.text(c[0],c[1],hW,e.rot||0,txt,false,col,1); break; }
   }
 }
+/* ==================================================================
+   TERVPECSÉT a nyomtatási képen – ugyanaz a paintTervpecset(P,r) fut az
+   előnézeten és a vektoros PDF-ben (P festő), + az élő rajzvásznon.
+   ================================================================== */
+const TP_WIDTH_MM=185, TP_ROW_MM=8;
+function tpPrintBox(r){
+  const m=tervpecsetForPrint; if(!m||!m.rows||!m.rows.length) return null;
+  const marginMM=(pdfPrint&&pdfPrint.frame?5:3);
+  const wMM=Math.min(TP_WIDTH_MM, pdfPaperMM()[0]-2*marginMM);
+  const totalU=m.rows.reduce((a,row)=>a+(row.h||1),0)||1;
+  const wW=pdfMM2W(wMM), hW=pdfMM2W(TP_ROW_MM*totalU), mg=pdfMM2W(marginMM);
+  const x1=r.x1-mg, y0=r.y0+mg;
+  return {x0:x1-wW, y0, x1, y1:y0+hW, w:wW, h:hW, totalU};
+}
+function paintTervpecset(P,r){
+  const m=tervpecsetForPrint; if(!m||!m.rows||!m.rows.length) return;
+  const b=tpPrintBox(r); if(!b) return;
+  const col=printColor("#000000");
+  const lwMM=Math.max(0.2,(pdfPrint&&pdfPrint.frameW)||0.3);
+  if(P.fillRectW) P.fillRectW(b.x0,b.y0,b.x1,b.y1,"#ffffff");
+  P.setStroke(col,lwMM,[],1);
+  P.begin(); P.move(b.x0,b.y0); P.line(b.x1,b.y0); P.line(b.x1,b.y1); P.line(b.x0,b.y1); P.close(); P.stroke();
+  let yTop=b.y1;
+  for(let ri=0;ri<m.rows.length;ri++){
+    const row=m.rows[ri], rhW=b.h*(row.h||1)/b.totalU, yBot=yTop-rhW;
+    if(ri<m.rows.length-1){ P.setStroke(col,lwMM,[],1); P.begin(); P.move(b.x0,yBot); P.line(b.x1,yBot); P.stroke(); }
+    let xL=b.x0; const nC=row.cells.length||1;
+    for(let ci=0;ci<row.cells.length;ci++){
+      const cell=row.cells[ci], cwW=b.w*(cell.w||1/nC), xR=xL+cwW, hh=(row.h||1), shW=rhW/hh;
+      if(ci>0){ P.setStroke(col,lwMM,[],1); P.begin(); P.move(xL,yTop); P.line(xL,yBot); P.stroke(); }
+      for(let si=0;si<hh;si++){
+        const sTop=yTop-si*shW, sBot=sTop-shW;
+        if(si>0){ P.setStroke(col,Math.max(0.15,lwMM*0.65),[],1); P.begin(); P.move(xL,sTop); P.line(xR,sTop); P.stroke(); }
+        const it=cell.items&&cell.items[si];
+        if(it){
+          if(it.label) P.text(xL+pdfMM2W(1.6), sTop-pdfMM2W(2.6), pdfMM2W(2.0),0,it.label,false,col,1);
+          if(it.value){ const vh=Math.min(pdfMM2W(4.2), shW*0.5), est=0.5*vh*(String(it.value).length||1);
+            P.text((xL+xR)/2-est/2, (sTop+sBot)/2-vh*0.33, vh,0,String(it.value),false,col,1); }
+        }
+      }
+      xL=xR;
+    }
+    yTop=yBot;
+  }
+}
+function screenPrintPainter(){
+  return {
+    setStroke(col,lwMM,dash,alpha){ ctx.strokeStyle=col; ctx.lineWidth=Math.max(0.6, pdfMM2W(lwMM)*view.s); ctx.setLineDash((dash||[]).map(v=>Math.max(0.5,pdfMM2W(v)*view.s))); ctx.globalAlpha=alpha==null?1:alpha; ctx.lineCap="round"; ctx.lineJoin="round"; },
+    begin(){ ctx.beginPath(); },
+    move(x,y){ const p=W2S(x,y); ctx.moveTo(p[0],p[1]); },
+    line(x,y){ const p=W2S(x,y); ctx.lineTo(p[0],p[1]); },
+    close(){ ctx.closePath(); },
+    stroke(){ ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha=1; },
+    text(x,y,hW,rot,str,mono,col,alpha){ const hp=hW*view.s; if(hp<3||!str) return; const p=W2S(x,y); ctx.save(); ctx.globalAlpha=alpha==null?1:alpha; ctx.translate(p[0],p[1]); ctx.rotate(-(rot||0)); ctx.fillStyle=col; ctx.font=hp.toFixed(1)+"px "+(mono?FONT_MONO:FONT_SANS); ctx.textAlign="left"; ctx.textBaseline="alphabetic"; ctx.fillText(str,0,0); ctx.restore(); },
+    fillRectW(x0,y0,x1,y1,col){ const a=W2S(x0,y1), c=W2S(x1,y0); ctx.save(); ctx.fillStyle=col; ctx.fillRect(Math.min(a[0],c[0]),Math.min(a[1],c[1]),Math.abs(c[0]-a[0]),Math.abs(c[1]-a[1])); ctx.restore(); }
+  };
+}
+function drawPrintTervpecsetOnScreen(){ if(!tervpecsetForPrint||!pdfPrint) return; paintTervpecset(screenPrintPainter(), pdfRectWorld()); }
 function paintPrintEnt(P,e,octx){
   if(e.type==="insert"){
     for(const c of flattenInsert(e)){ if(octx.xref||entVisible(c)) paintPrintEnt(P,c,octx); }
@@ -15570,7 +15632,14 @@ applyNumKb(document);
   if(el("stDel")) el("stDel").onclick=doDel;
   if(el("stClose")) el("stClose").onclick=()=>{ const d=el("dlgStamp"); if(d&&d.open) d.close(); };
   if(el("stAddRow")) el("stAddRow").onclick=()=>{ stamp.rows.push(newRow()); render(); };
-  window.TervPecset={ open:openDlg };
+  if(el("stToPrint")) el("stToPrint").onclick=()=>{
+    tervpecsetForPrint=JSON.parse(JSON.stringify(stamp));
+    const d=el("dlgStamp"); if(d&&d.open) d.close();
+    try{ if(typeof openPdfPrint==="function" && !pdfPrint) openPdfPrint(); }catch(_){}
+    try{ if(typeof render==="function") render(); }catch(_){}
+    if(typeof setHint==="function") setHint("Tervpecsét a nyomtatási képre helyezve – a PDF sávban nyisd meg az Előnézetet vagy mentsd PDF-be.");
+  };
+  window.TervPecset={ open:openDlg, setForPrint:m=>{ tervpecsetForPrint=m?JSON.parse(JSON.stringify(m)):null; } };
 })();
 uc128Wrap(document);
 patchDialogsForNumKb();
