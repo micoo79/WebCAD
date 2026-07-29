@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v2.8** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v2.9** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -593,6 +593,24 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   (`cimSep`, alap **TAB**; `;` `,` szóköz). `cimDoSave()` → `koordinatajegyzek.txt`
   (`downloadBlob`), oszlopsorrend: **pontszám · kelet(Y) · észak(X) · [pontkód]**,
   3 tizedes, CRLF sorvég. UI címke v2.8.
+- **v2.9**: **Címkoordináta – teli kör jelkulcs + felirat, blokként exportálva.** A
+  letett pont ezentúl NEM COGO pont, hanem a **`Cimkoordinata`** rétegre (amber
+  `#ffd75e`, `ensureLayer`) kerülő **blokk-beillesztés + szöveg**. A jelkulcs egy
+  közös blokk-definíció, **`CIMKOORD_PONTJEL`** (`doc.blocks`), **egység-sugarú kör +
+  ~22 vízszintes kitöltővonal** = „teli kör" SŰRŰ vonalakból (nem solid fill, hanem
+  vektor-vonalak). A blokk egységben (r=1) van, a beillesztés `sx=sy=jel sugár`-ral
+  skáláz → a méret dialógusból állítható a blokk újradefiniálása nélkül. A `dlgCim`
+  két új mezőt kapott: **Jel sugár (m)** (`cimSymR`, alap 0.5) és **Felirat magasság
+  (m)** (`cimTxtH`, alap 1.0). `createCimMarker(x,y,num,code)`: `snapshot()` →
+  `ensureLayer` → `ensureCimBlock()` → `insert` {name:CIMKOORD_PONTJEL, sx/sy:R} +
+  `text` {a pontszám, a jeltől jobbra-fel, `x+R*1.4, y+R*0.3`, magasság H}. A
+  `placeCogoAt` cim-ága `createCogoPoint` helyett `createCimMarker`-t hív; a
+  koordinátajegyzék továbbra is a `cimPts[]`-ből épül. **DXF/DWG export: automatikus**
+  – a meglévő blokk/INSERT/TEXT gépezet írja ki (a `buildDxfText` BLOCKS-szekciója és
+  a `buildDwgBytes` `BlockRecord`+`Insert`-je); a blokk ents `layer:"0"` → beillesztés
+  rétegét öröklik (`flattenInsertWith`). Tesztelt: 2 insert + 2 text a helyes rétegen,
+  egész rácspontokon, DXF-ben blokk-def + 2 INSERT + 2 TEXT, DWG 27 entitás hibátlanul.
+  UI címke v2.9.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
