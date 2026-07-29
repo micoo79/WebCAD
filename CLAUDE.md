@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v2.9** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v3.0** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -611,6 +611,19 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   rétegét öröklik (`flattenInsertWith`). Tesztelt: 2 insert + 2 text a helyes rétegen,
   egész rácspontokon, DXF-ben blokk-def + 2 INSERT + 2 TEXT, DWG 27 entitás hibátlanul.
   UI címke v2.9.
+- **v3.0**: **EOV-tudatos tengelynevek és koordináta-kiírás.** Új `computeEovCtx()` +
+  gyorsítótárazott `_eovCtx` (a `renderScene` frissíti, NEM képkockánként): a rajz
+  tartalmi közepe (üres rajznál a képernyő közepe) EOV-tartományban van-e
+  (`eovInRange(világX, világY)`). `eovContext()` olvasó, `eovAxis("X"/"Y")` a CAD-tengely
+  EOV-nevét adja (EOV-ban **világ-X = „Y" = kelet**, **világ-Y = „X" = észak**). Hatások
+  EOV-tartományban: (a) a **bal-alsó origó-ikonon** a vízszintes (kelet) tengely neve
+  **Y**, a függőleges (észak) **X**, és kis kék **„eov"** felirat (drawUcsIcon). (b) A
+  **kurzor-koordináta kiírás** (`#coords`) EOV-ban `Y <kelet>  X <észak>  Z` alakú
+  (nem-EOV: a régi `x, y, z`). (c) A **tulajdonságpanel** tengelycímkéi EOV-ban
+  átnevezve (X↔Y): „X"/„Y", „Közép X/Y", „Kezdő/Vég X/Y", „Pozíció X/Y", „Beill. X/Y",
+  valamint a „Mind (X,Y,Z)” → „Mind (Y,X,Z)” másoló gomb. **A koordináták SORRENDJE
+  mindig kelet, észak (világ X, majd Y) marad** – csak a MEGNEVEZÉS változik; a
+  COGO-export és a koordinátajegyzék eleve kelet(Y)/észak(X) sorrendű. UI címke v3.0.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 

@@ -938,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v2.9</span>
+      <span class="ver" id="wcVer">v3.0</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -955,7 +955,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v2.9</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v3.0</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -2315,6 +2315,22 @@ function docBounds(){
   return b;
 }
 
+/* ---------------- EOV-kontextus érzékelés ----------------
+   Ha a rajz tartalma (vagy üres rajznál a képernyő közepe) EOV-tartományba esik,
+   akkor a tengelyeket EOV-konvenció szerint jelöljük: CAD-X = EOV Y (kelet),
+   CAD-Y = EOV X (észak). A koordináták sorrendje MINDIG kelet, észak (CAD X, Y),
+   csak a MEGNEVEZÉS változik. Az értéket a renderScene frissíti (nem képkockánként). */
+let _eovCtx=false;
+function computeEovCtx(){
+  const b=docBounds();                                  // eovInRange(Y=kelet, X=észak) = eovInRange(világX, világY)
+  if(b) return eovInRange((b.minx+b.maxx)/2,(b.miny+b.maxy)/2);
+  const [wx,wy]=S2W(cw/2,ch/2);                          // üres rajz: a látott terület közepe
+  return eovInRange(wx,wy);
+}
+function eovContext(){ return _eovCtx; }
+/* CAD-tengely EOV-neve: EOV-ban a világ-X (kelet) = "Y", a világ-Y (észak) = "X". */
+function eovAxis(cadAxis){ if(!_eovCtx) return cadAxis; return cadAxis==="X"?"Y":"X"; }
+
 /* ---------------- Geometria segédek ---------------- */
 function arcPts(cx,cy,r,a1,sweep,segs){
   const pts=[]; segs=Math.max(2,segs|0);
@@ -2708,6 +2724,7 @@ function drawCogosFast(list){
 }
 function renderScene(){
   ctx=sceneCtx;
+  _eovCtx = computeEovCtx();                    // EOV-kontextus frissítése (nem képkockánként, csak scene-újrarajzoláskor)
   const paperView = !!(pdfPrint && pdfPrint.paperMode);
   pdfPaperView = paperView;
   try{
@@ -3194,9 +3211,17 @@ function drawUcsIcon(){
   ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x0,y0-L); ctx.stroke();          // Y tengely
   ctx.beginPath(); ctx.moveTo(x0,y0-L); ctx.lineTo(x0-3.4,y0-L+6); ctx.lineTo(x0+3.4,y0-L+6); ctx.closePath(); ctx.fill();
   ctx.strokeRect(x0+0.5,y0-9.5,9,9);                                              // sarok-négyzet
-  ctx.font="10px Segoe UI, Arial"; 
-  ctx.fillText("X", x0+L-2, y0+12);
-  ctx.fillText("Y", x0-11, y0-L+8);
+  ctx.textAlign="left"; ctx.textBaseline="alphabetic";
+  ctx.font="10px Segoe UI, Arial";
+  // EOV-tartományban a tengelynevek a földmérő konvenció szerint: kelet=Y, észak=X
+  const hName = _eovCtx? "Y" : "X";     // vízszintes tengely (világ-X, kelet)
+  const vName = _eovCtx? "X" : "Y";     // függőleges tengely (világ-Y, észak)
+  ctx.fillText(hName, x0+L-2, y0+12);
+  ctx.fillText(vName, x0-11, y0-L+8);
+  if(_eovCtx){                                                                   // kis "eov" felirat az origó alatt (szabad terület)
+    ctx.font="8px Segoe UI, Arial"; ctx.fillStyle="#8fb3dd";
+    ctx.fillText("eov", x0-8, y0+13);
+  }
 }
 /* Kurzor-szemantika (AutoCAD): PONT megadásakor csak szálkereszt,
    OBJEKTUM kiválasztásakor csak a kis négyzet; semleges állapotban mindkettő. */
@@ -4787,7 +4812,10 @@ function updateMouse(sx,sy,skipSnap){
   }
   const [px,py] = curSnap? [curSnap.x,curSnap.y]:[mouse.wx,mouse.wy];
   const dec = view.s>200?4:3;
-  $("coords").textContent=`${px.toFixed(dec)}, ${py.toFixed(dec)}, 0.000`;
+  // Sorrend MINDIG kelet, észak (világ X, Y); EOV-ban a nevek Y (kelet) és X (észak).
+  $("coords").textContent = _eovCtx
+    ? `Y ${px.toFixed(dec)}   X ${py.toFixed(dec)}   Z 0.000`
+    : `${px.toFixed(dec)}, ${py.toFixed(dec)}, 0.000`;
   if(!curSnap) $("snapInfo").textContent="";
 }
 function finishLine(){ drawPts=[]; setHint("Vonal befejezve."); render(); }
@@ -5039,7 +5067,8 @@ function coordRow(label, val){
 }
 function copyAllRow(vals){
   const s=vals.join(",");
-  return `<label></label><span class="pvrow"><button class="cpy cpyAll" data-copy="${s}" title="Összes koordináta másolása vesszővel elválasztva">${CPY_SVG} Mind (X,Y,Z)</button></span>`;
+  const lbl=_eovCtx? "Mind (Y,X,Z)" : "Mind (X,Y,Z)";
+  return `<label></label><span class="pvrow"><button class="cpy cpyAll" data-copy="${s}" title="Összes koordináta másolása vesszővel elválasztva">${CPY_SVG} ${lbl}</button></span>`;
 }
 function copyText(t, btn){
   const done=()=>{ if(btn){ const o=btn.innerHTML; btn.innerHTML="✓"; btn.classList.add("ok"); setTimeout(()=>{btn.innerHTML=o; btn.classList.remove("ok");},900); } };
@@ -5522,38 +5551,38 @@ function refreshProps(){
   rows.push(`<label>Réteg</label><span><select id="pLayer"></select></span>`);
   if(e.type==="line"){
     const z1=e.z1||0, z2=e.z2||0;
-    rows.push(`<label>Kezdő X</label><span class="pv">${fmt(e.x1)}</span>`);
-    rows.push(`<label>Kezdő Y</label><span class="pv">${fmt(e.y1)}</span>`);
+    rows.push(`<label>Kezdő ${eovAxis("X")}</label><span class="pv">${fmt(e.x1)}</span>`);
+    rows.push(`<label>Kezdő ${eovAxis("Y")}</label><span class="pv">${fmt(e.y1)}</span>`);
     rows.push(`<label>Kezdő Z</label><span class="pvrow"><input id="pZ1" class="numin" style="width:78px" value="${fmt(z1)}"><button class="cpy" data-copy="${fmt(z1)}" title="Z másolása">${CPY_SVG}</button></span>`);
-    rows.push(`<label>Vég X</label><span class="pv">${fmt(e.x2)}</span>`);
-    rows.push(`<label>Vég Y</label><span class="pv">${fmt(e.y2)}</span>`);
+    rows.push(`<label>Vég ${eovAxis("X")}</label><span class="pv">${fmt(e.x2)}</span>`);
+    rows.push(`<label>Vég ${eovAxis("Y")}</label><span class="pv">${fmt(e.y2)}</span>`);
     rows.push(`<label>Vég Z</label><span class="pvrow"><input id="pZ2" class="numin" style="width:78px" value="${fmt(z2)}"><button class="cpy" data-copy="${fmt(z2)}" title="Z másolása">${CPY_SVG}</button></span>`);
     rows.push(`<label>Hossz (2D)</label><span class="pv">${fmt(Math.hypot(e.x2-e.x1,e.y2-e.y1))}</span>`);
     rows.push(`<label>Hossz (3D)</label><span class="pv">${fmt(Math.hypot(e.x2-e.x1,e.y2-e.y1,z2-z1))}</span>`);
   }else if(e.type==="point"){
     const pz=e.z||0;
-    rows.push(coordRow("X", fmt(e.x)));
-    rows.push(coordRow("Y", fmt(e.y)));
+    rows.push(coordRow(eovAxis("X"), fmt(e.x)));
+    rows.push(coordRow(eovAxis("Y"), fmt(e.y)));
     rows.push(`<label>Z</label><span class="pvrow"><input id="pZ" class="numin" style="width:78px" value="${fmt(pz)}"><button class="cpy" data-copy="${fmt(pz)}" title="Z másolása">${CPY_SVG}</button></span>`);
     rows.push(copyAllRow([fmt(e.x),fmt(e.y),fmt(pz)]));
   }else if(e.type==="cogo"){
     rows.push(`<label>Pontszám</label><span><input id="pNum" style="width:90px" value="${escAttr(e.num??"")}"></span>`);
-    rows.push(coordRow("X", fmt(e.x)));
-    rows.push(coordRow("Y", fmt(e.y)));
+    rows.push(coordRow(eovAxis("X"), fmt(e.x)));
+    rows.push(coordRow(eovAxis("Y"), fmt(e.y)));
     rows.push(`<label>Z</label><span class="pvrow"><input id="pZ" class="numin" style="width:78px" value="${fmt(e.z==null?0:e.z)}"><button class="cpy" data-copy="${fmt(e.z==null?0:e.z)}" title="Z másolása">${CPY_SVG}</button></span>`);
     rows.push(copyAllRow([fmt(e.x),fmt(e.y),fmt(e.z==null?0:e.z)]));
     rows.push(`<label>Pontkód</label><span><input id="pCode" style="width:90px" value="${escAttr(e.code??"")}"></span>`);
   }else if(e.type==="circle"){
-    rows.push(coordRow("Közép X", fmt(e.cx)));
-    rows.push(coordRow("Közép Y", fmt(e.cy)));
+    rows.push(coordRow("Közép "+eovAxis("X"), fmt(e.cx)));
+    rows.push(coordRow("Közép "+eovAxis("Y"), fmt(e.cy)));
     rows.push(`<label>Z (magasság)</label><span class="pvrow"><input id="pZ" class="numin" style="width:78px" value="${fmt(e.z||0)}"><button class="cpy" data-copy="${fmt(e.z||0)}" title="Z másolása">${CPY_SVG}</button></span>`);
     rows.push(copyAllRow([fmt(e.cx),fmt(e.cy),fmt(e.z||0)]));
     rows.push(`<label>Sugár</label><span class="pvrow"><input id="pRadius" class="numin" style="width:78px" value="${fmt(e.r)}"><button class="cpy" data-copy="${fmt(e.r)}" title="Sugár másolása">${CPY_SVG}</button></span>`);
     rows.push(`<label>Kerület</label><span class="pv">${fmt(2*Math.PI*e.r)}</span>`);
     rows.push(`<label>Terület</label><span class="pv">${fmt(Math.PI*e.r*e.r)}</span>`);
   }else if(e.type==="arc"){
-    rows.push(coordRow("Közép X", fmt(e.cx)));
-    rows.push(coordRow("Közép Y", fmt(e.cy)));
+    rows.push(coordRow("Közép "+eovAxis("X"), fmt(e.cx)));
+    rows.push(coordRow("Közép "+eovAxis("Y"), fmt(e.cy)));
     rows.push(`<label>Z (magasság)</label><span class="pvrow"><input id="pZ" class="numin" style="width:78px" value="${fmt(e.z||0)}"><button class="cpy" data-copy="${fmt(e.z||0)}" title="Z másolása">${CPY_SVG}</button></span>`);
     rows.push(copyAllRow([fmt(e.cx),fmt(e.cy),fmt(e.z||0)]));
     rows.push(`<label>Sugár</label><span class="pvrow"><input id="pRadius" class="numin" style="width:78px" value="${fmt(e.r)}"><button class="cpy" data-copy="${fmt(e.r)}" title="Sugár másolása">${CPY_SVG}</button></span>`);
@@ -5571,14 +5600,14 @@ function refreshProps(){
     rows.push(`<label>Hossz (3D)</label><span class="pv">${fmt(L3)}</span>`);
   }else if(e.type==="text"){
     rows.push(`<label>Szöveg</label><span class="pv" style="white-space:normal">${escHtml(e.text)}</span>`);
-    rows.push(`<label>Pozíció X</label><span class="pv">${fmt(e.x)}</span>`);
-    rows.push(`<label>Pozíció Y</label><span class="pv">${fmt(e.y)}</span>`);
+    rows.push(`<label>Pozíció ${eovAxis("X")}</label><span class="pv">${fmt(e.x)}</span>`);
+    rows.push(`<label>Pozíció ${eovAxis("Y")}</label><span class="pv">${fmt(e.y)}</span>`);
     rows.push(`<label>Z</label><span class="pvrow"><input id="pZ" class="numin" style="width:78px" value="${fmt(e.z||0)}"><button class="cpy" data-copy="${fmt(e.z||0)}" title="Z másolása">${CPY_SVG}</button></span>`);
     rows.push(`<label>Magasság</label><span class="pv">${fmt(e.h)}</span>`);
   }else if(e.type==="insert"){
     rows.push(`<label>Blokk neve</label><span class="pv">${escHtml(e.name||"?")}</span>`);
-    rows.push(coordRow("Beill. X", fmt(e.x)));
-    rows.push(coordRow("Beill. Y", fmt(e.y)));
+    rows.push(coordRow("Beill. "+eovAxis("X"), fmt(e.x)));
+    rows.push(coordRow("Beill. "+eovAxis("Y"), fmt(e.y)));
     rows.push(`<label>Beill. Z</label><span class="pvrow"><input id="pZ" class="numin" style="width:78px" value="${fmt(entZnum(e.z))}"><button class="cpy" data-copy="${fmt(entZnum(e.z))}" title="Z másolása">${CPY_SVG}</button></span>`);
     rows.push(copyAllRow([fmt(e.x),fmt(e.y),fmt(entZnum(e.z))]));
     rows.push(`<label>Lépték X</label><span><input id="pInsSx" class="numin" style="width:80px" value="${e.sx==null?1:e.sx}"></span>`);
