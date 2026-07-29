@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v3.0** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v3.1** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -118,7 +118,7 @@ Fülváltáskor teljes állapot-csere (undo-stackekkel együtt).
 | `circle` | `cx,cy,r` | |
 | `arc` | `cx,cy,r,a1,sweep` | radián; képernyőn Y-tükrözve rajzolva |
 | `point` | `x,y(,z)` | kereszt-marker |
-| `text` | `x,y,text,h,rot` | rot radián |
+| `text` | `x,y,text,h,rot` | rot radián; opc. `italic`,`underline`,`grp`,`gseg` (Auto táv) |
 | `cogo` | `x,y,z,num,code` | COGO pont; megjelenés a `cogoCfg` szerint |
 | `insert` | `name,x,y,rot,scale` | blokk-beillesztés (`flattenInsert`) |
 | `zaszlo` | `x,y,z,ex,ey,rot,useY/X/Z,…` | koordináta-felirat mutatóval; `flattenZaszlo` |
@@ -624,6 +624,29 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   valamint a „Mind (X,Y,Z)” → „Mind (Y,X,Z)” másoló gomb. **A koordináták SORRENDJE
   mindig kelet, észak (világ X, majd Y) marad** – csak a MEGNEVEZÉS változik; a
   COGO-export és a koordinátajegyzék eleve kelet(Y)/észak(X) sorrendű. UI címke v3.0.
+- **v3.1**: **Auto táv – automatikus szakasz-hossz feliratozás feliratcsoporttal.**
+  Új „Auto táv” gomb a FELIRAT panelen (`btnAutoLen`). Nem-modális, jobb-felső sarokba
+  dokkolt beállító ablak (`dlgAutoLen`, `.show()`, átlátszó `::backdrop`, `transform:none`
+  a globális `dialog[open]` középre-húzás felülírására) → **élő előnézet a vásznon**
+  (`drawAutoLenPreview` a composite-ban). Lépések: (1) **forrás réteg** listából vagy
+  **elemre mutatással** (`alPickBtn` → `pickMode`, a `primaryAction` legelső ága kezeli,
+  `lenHitSegment`); (2) **cél réteg** listából vagy új név, alapból **`hossz-<forrás>`**
+  (előtag!); (3) betűméret (±0.1 léptető gombok), tizedes, **vonal fölött/alatt/on**,
+  eltolás, **álló/dőlt**, **aláhúzott**. A forrás réteg összes `line`/`polyline`
+  (2D és 3D) szakaszának hosszát feliratozza. **A feliratok MINDIG talpon** (sosem
+  fejjel lefelé): `lenUprightAngle`, az „olvasó felfelé” irány `(-sin rot, cos rot)`
+  adja a fölött/alatt eltolást. „Megírás” csak akkor aktív, ha van forrás- és cél
+  réteg és **van méretezhető vonal** (különben piros üzenet). Kulcs-fv-ek:
+  `autoLenCollect`, `autoLenPlace` (szakasz→felirat), `autoLenWrite`, `autoLenEditGroup`.
+  **Feliratcsoport:** minden megírás egy `grp` id-t kap; minden felirat-entitáson
+  `grp` + `gseg:{a,b,is3d}` (a szakasz geometriája az újraszámításhoz), a csoport
+  beállításai `doc.labelGroups[grp]`-ban. A tulajdonságpanelen egy csoportbeli felirat
+  kijelölésekor „Csoport szerkesztése…” gomb (`btnGrpEdit`→`autoLenEditGroup`): ugyanaz
+  az ablak „Alkalmaz” gombbal, ami a csoport MINDEN feliratát egyszerre újraszámolja
+  (méret/tizedes/oldal/eltolás/stílus/réteg). **Perzisztencia:** `grp`/`gseg`/`labelGroups`
+  nem `_`-mezők → a **WCD megőrzi** őket; DXF/DWG-be csak a geometria megy → **sima
+  önálló feliratok** (a dőlt = 51-es oblique 15°, az aláhúzás `%%u` előtag; a `text`
+  render `case` kezeli az `italic`/`underline`/`oblique` megjelenítést). UI címke v3.1.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
