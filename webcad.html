@@ -938,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v3.1</span>
+      <span class="ver" id="wcVer">v3.2</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -955,7 +955,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v3.1</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v3.2</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -986,7 +986,8 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
             <svg viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13" stroke="#e8ecf2" stroke-width="1.7"/><circle cx="12" cy="12" r="1.4" fill="#e8ecf2" stroke="none"/></svg>Pont</button>
           <button class="rbig" id="btnSraff" title="Sraff – zárt poligon kijelölése pontonként; párhuzamos sraffvonalak a Sraffozás rétegen. Szín, méretarány és szög élőben állítható, élő előnézettel és területtel. Kijelölt sraff szerkeszthető.">
             <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z" fill="none" stroke="#7ee6b0" stroke-width="1.4"/><path d="M4 12L12 4M4 18L18 4M9 20L20 9M15 20L20 15M4 6L6 4" stroke="#12b886" stroke-width="1.2"/></svg>Sraff</button>
-          <button class="rbig" id="btnCimCoord" title="Címkoordináta – teli kör jelkulcs + pontszám EGÉSZ MÉTERES rácspontra a Cimkoordinata rétegen (DXF/DWG-be blokként); kód 5412, z=0, pontszám +1; a végén koordinátajegyzék menthető">
+          <button class="rbig" id="btnOrtho" title="Ortogonális – mérési vonal (kezdő+végpont), majd abszcissza/ordináta értékekkel derékszögű vonallánc; opcionálisan COGO pontok és távolság-feliratok">
+            <svg viewBox="0 0 24 24"><path d="M3 21h9" stroke="#e0392b" stroke-width="1.6" stroke-dasharray="3 2.4"/><path d="M12 21V9h6" stroke="#2fbf4c" stroke-width="2.1" fill="none"/><rect x="10.6" y="19.6" width="2.8" height="2.8" fill="#59c1e8" stroke="none"/><rect x="10.6" y="7.6" width="2.8" height="2.8" fill="#59c1e8" stroke="none"/><rect x="16.6" y="7.6" width="2.8" height="2.8" fill="#59c1e8" stroke="none"/><path d="M12 12h2.2v2.2" stroke="#9dff8a" stroke-width="1" fill="none"/></svg>Ortogon.</button>
             <svg viewBox="0 0 24 24"><circle cx="4.5" cy="4.5" r="1" fill="#7f8b98"/><circle cx="10" cy="4.5" r="1" fill="#7f8b98"/><circle cx="15.5" cy="4.5" r="1" fill="#7f8b98"/><circle cx="4.5" cy="10" r="1" fill="#7f8b98"/><circle cx="15.5" cy="10" r="1" fill="#7f8b98"/><circle cx="4.5" cy="15.5" r="1" fill="#7f8b98"/><circle cx="10" cy="15.5" r="1" fill="#7f8b98"/><circle cx="15.5" cy="15.5" r="1" fill="#7f8b98"/><circle cx="10" cy="10" r="2.7" fill="#e0392b"/><path d="M19 13.5v6M16 16.5h6" stroke="#ffd75e" stroke-width="1.3"/></svg>Címkoord.</button>
         </div>
         <div class="ribCap">RAJZOLÁS</div>
@@ -1673,6 +1674,45 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
   <div class="mpBtns"><button class="btn" id="apCancel">Mégse</button><button class="btn primary" id="apOk">OK</button></div>
 </div>
 
+<style>
+#orthoBar{position:fixed; top:64px; left:12px; z-index:167; width:238px; background:#232a33; color:#e6ebf2; border:1px solid #3a4653; border-radius:8px; box-shadow:0 8px 28px rgba(0,0,0,.5); padding:11px 13px; font-size:12px;}
+#orthoBar .obTitle{font-weight:700; font-size:13px; margin-bottom:6px;}
+#orthoBar .obHint{font-size:11px; color:#9fb3c8; margin-bottom:9px; min-height:28px;}
+#orthoBar label.obChk{display:flex; align-items:center; gap:7px; cursor:pointer; margin:7px 0 3px; font-weight:600;}
+#orthoBar .obSub{padding:4px 0 4px 22px;}
+#orthoBar .obRow{display:flex; align-items:center; gap:8px; margin:5px 0;}
+#orthoBar .obRow>label{flex:0 0 92px; color:#c2cbd7; font-weight:400;}
+#orthoBar input[type=text],#orthoBar input[type=number]{padding:4px 5px; background:#12181e; color:#fff; border:1px solid #3a4653; border-radius:4px; width:74px;}
+#orthoBar .obBtns{display:flex; gap:8px; justify-content:flex-end; margin-top:11px;}
+#orthoBar .obBtns button{padding:6px 14px; border-radius:5px; cursor:pointer; border:none; font-weight:600;}
+#orthoBar .obDone{background:#2fbf4c; color:#0d2413;}
+#orthoBar .obCancel{background:#2b333c; border:1px solid #46525f; color:#dfe6ef; font-weight:500;}
+#orthoNum .numin{width:100%; padding:5px 6px; background:#12181e; color:#fff; border:1px solid #3a4653; border-radius:4px;}
+</style>
+<div id="orthoBar" style="display:none">
+  <div class="obTitle">Ortogonális szerkesztés</div>
+  <div class="obHint" id="orthoHint">Kattints a mérési vonal kezdőpontjára.</div>
+  <label class="obChk"><input type="checkbox" id="orthoCogo"> Töréspontokba COGO pont</label>
+  <div class="obSub" id="orthoCogoOpts" style="display:none">
+    <div class="obRow"><label>Kezdő pontszám</label><input type="number" id="orthoCogoNum" step="1"></div>
+    <div class="obRow"><label>Növekmény</label><input type="number" id="orthoCogoInc" value="1" step="1"></div>
+    <div class="obRow"><label>Pontkód</label><input type="text" id="orthoCogoCode" value=""></div>
+  </div>
+  <label class="obChk"><input type="checkbox" id="orthoLab"> Távolságok megírása</label>
+  <div class="obSub" id="orthoLabOpts" style="display:none">
+    <div class="obRow"><label>Betűméret (m)</label><input type="number" id="orthoLabSize" value="2" step="0.1" min="0.01"></div>
+    <div class="obRow"><label>Tizedesek</label><input type="number" id="orthoLabDec" value="2" step="1" min="0"></div>
+    <div class="obRow"><label>Eltolás (m)</label><input type="number" id="orthoLabOff" value="0.8" step="0.1" min="0"></div>
+    <div style="font-size:10px;color:#7f8a97;padding-top:2px">A feliratok középre, a szakasz fölé kerülnek.</div>
+  </div>
+  <div class="obBtns"><button class="obCancel" id="orthoCancelBtn">Mégse</button><button class="obDone" id="orthoDoneBtn">Kész</button></div>
+</div>
+<div id="orthoNum" class="miniPop" style="display:none">
+  <div class="mpTitle" id="orthoNumTitle">Abszcissza (m)</div>
+  <input type="text" id="orthoNumIn" class="numin" inputmode="decimal">
+  <div id="orthoNumHint" style="font-size:10.5px;opacity:.7;margin-top:4px"></div>
+  <div class="mpBtns"><button class="btn" id="orthoNumCancel">Mégse</button><button class="btn primary" id="orthoNumOk">OK</button></div>
+</div>
 <div id="arc2prPop" class="miniPop" style="display:none">
   <div class="mpTitle">Ív: 2 pont + sugár</div>
   <div class="mpRow"><label>Sugár:&nbsp;</label><input id="a2rR" class="numin" style="width:88px"></div>
@@ -2850,6 +2890,7 @@ function composite(){
   drawPdfPrintOverlay();
   drawLenLabelOverlay();
   if(typeof drawAutoLenPreview==="function") drawAutoLenPreview();
+  if(typeof drawOrthoOverlay==="function") drawOrthoOverlay();
   if(typeof drawMeasureOverlay==="function") drawMeasureOverlay();
   if(typeof drawSraffOverlay==="function") drawSraffOverlay();
   drawCoordLabGhost();
@@ -3286,6 +3327,7 @@ function drawUcsIcon(){
 /* Kurzor-szemantika (AutoCAD): PONT megadásakor csak szálkereszt,
    OBJEKTUM kiválasztásakor csak a kis négyzet; semleges állapotban mindkettő. */
 function cursorKind(){
+  if(typeof ortho!=="undefined" && ortho){ return (ortho.phase==="s"||ortho.phase==="e")? "point":"object"; }
   if(typeof sraffState!=="undefined" && sraffState) return "point";
   if(typeof measState!=="undefined" && measState) return "point";
   if(typeof areaRep!=="undefined" && areaRep && areaRep.pick) return "object";
@@ -3761,6 +3803,7 @@ function setTool(t){
   if(typeof txtEdit!=="undefined" && txtEdit) txtEditClose(true);
   if(typeof coordLab!=="undefined" && coordLab && !modGuard){ coordLab=null; }
   if(typeof lenLabel!=="undefined" && lenLabel && !modGuard){ lenLabel=null; $("lenBar").style.display="none"; optModalClose("len"); }
+  if(typeof ortho!=="undefined" && ortho && !modGuard){ ortho=null; if($("orthoBar")) $("orthoBar").style.display="none"; if($("orthoNum")) $("orthoNum").style.display="none"; }
   if(typeof measState!=="undefined" && measState && !modGuard){ measState=null; measHidePops(); }
   if(typeof sraffState!=="undefined" && sraffState && !modGuard){ sraffState=null; sraffBarHide(); }
   clearShift();
@@ -3857,6 +3900,7 @@ const _optModals=new Set();
 function optModalOpen(id){ _optModals.add(id); document.body.classList.add("optModal"); }
 function optModalClose(id){ _optModals.delete(id); if(!_optModals.size) document.body.classList.remove("optModal"); }
 function cancelTool(){
+  if(ortho){ if($("orthoNum").style.display!=="none") orthoNumCancel(); else orthoCancel(); return; }
   if(autoLen){ if(autoLen.pickMode){ autoLen.pickMode=false; $("dlgAutoLen").show(); setHint(""); render(); return; } autoLenClose(); return; }
   const _cimSave=(cogoPlace && cogoPlace.cim && cimPts.length); clearShift(); drawPts=[]; marquee=null; pendingBlock=null; pendingInsert=null; cogoPlace=null; cptPending=null; if(xrefMove) xmFinish(); imgPlace=null; arcPoly=null; arc2pr=null; if(typeof hideMiniPops==="function") hideMiniPops(); render(); if(_cimSave) setTimeout(openCimSave,0); }
 
@@ -4238,6 +4282,11 @@ function repeatLastCmd(){
 /* Jobb klikk / hosszú érintés: művelet lezárása, vissza a Kijelöl eszközhöz */
 function secondaryAction(){
   if(tpActive){ return; }                     // pontpár-módban a jobb klikk semleges
+  if(ortho){
+    if($("orthoNum").style.display!=="none"){ orthoNumCancel(); return; }
+    if(ortho.phase==="choose"){ orthoFinish(); return; }
+    orthoCancel(); return;
+  }
   if(lenLabel){
     if(lenLabel.stage==="place"){ lenLabel.stage="pick"; lenLabel.seg=null; lenLabel.cur=null; $("lenZWrap").style.display="none"; render(); return; }
     lenLabelClose(); return;
@@ -4290,6 +4339,7 @@ function placingAction(){
   return ["point","line","pline","poly3d","circle","arc","arcpoly","arc2pr"].includes(tool);
 }
 function primaryAction(sx, sy, shiftKey, isTouch){
+  if(ortho){ if(ortho.phase!=="num") orthoClick(sx,sy); return; }            // Ortogonális: pont/ikon kattintás
   if(autoLen){ if(autoLen.pickMode) autoLenPickElement(sx,sy); return; }   // Auto táv: elemre mutatás vagy tétlen
   if(tpActive){
     if(sgActive){ if(sgPhase==="pair" && tpTurn==="cad") sgPickCadPair(); return; }
@@ -8539,6 +8589,231 @@ function drawAutoLenPreview(){
   }
   ctx.restore();
 }
+
+/* ==================================================================
+   ORTOGONÁLIS – mérési vonal (kezdő+vég), majd abszcissza (a vonal
+   mentén) és ordináták (merőlegesen jobbra/balra) értékekkel derékszögű
+   vonallánc; opcionálisan COGO pont minden töréspontban és távolság-feliratok.
+   ================================================================== */
+let ortho=null;   // {phase:"s"|"e"|"num"|"choose", S,E,dir, pts:[[x,y]], seg:[[dx,dy]],
+                  //  pendingDir, numKind:"absz"|"ord", cogo,cogoNum,cogoInc,cogoCode,
+                  //  labels,labSize,labDec,labOff, _preview, _icons}
+function orthoPerp(h, side){ return side==="right"? [h[1],-h[0]] : [-h[1],h[0]]; }  // világ-merőleges (jobb=óramutató)
+function orthoLastHeading(){ return ortho.seg[ortho.seg.length-1]; }
+function orthoStart(){
+  if(tpActive||imgPlace) return;
+  if(typeof modOp!=="undefined" && modOp) modCancel(true);
+  modGuard=true; setTool("none"); modGuard=false;
+  if(typeof lenLabel!=="undefined" && lenLabel) lenLabelClose();
+  if(typeof autoLen!=="undefined" && autoLen) autoLenClose();
+  cogoPlace=null; selection.clear(); refreshProps();
+  ortho={ phase:"s", S:null,E:null,dir:null, pts:[], seg:[], pendingDir:null, numKind:null,
+          cogo:false, cogoNum:nextFreeCogoNum(), cogoInc:1, cogoCode:"",
+          labels:false, labSize:2, labDec:2, labOff:0.8, _preview:null, _icons:{} };
+  $("orthoCogo").checked=false; $("orthoCogoOpts").style.display="none";
+  $("orthoLab").checked=false; $("orthoLabOpts").style.display="none";
+  $("orthoCogoNum").value=ortho.cogoNum; $("orthoCogoInc").value=1; $("orthoCogoCode").value="";
+  $("orthoLabSize").value=2; $("orthoLabDec").value=2; $("orthoLabOff").value=0.8;
+  $("orthoBar").style.display="block";
+  orthoSetHint("Kattints a mérési vonal KEZDŐPONTJÁRA.");
+  render();
+}
+function orthoSetHint(t){ if($("orthoHint")) $("orthoHint").textContent=t; setHint("Ortogonális – "+t); }
+function orthoReadOpts(){
+  ortho.cogo=$("orthoCogo").checked;
+  ortho.cogoNum=$("orthoCogoNum").value;
+  ortho.cogoInc=parseInt($("orthoCogoInc").value,10)||1;
+  ortho.cogoCode=($("orthoCogoCode").value||"").trim();
+  ortho.labels=$("orthoLab").checked;
+  ortho.labSize=Math.max(0.01,parseFloat(String($("orthoLabSize").value).replace(",","."))||2);
+  ortho.labDec=Math.max(0,parseInt($("orthoLabDec").value,10)||0);
+  ortho.labOff=Math.max(0,parseFloat(String($("orthoLabOff").value).replace(",","."))||0);
+}
+function orthoClick(sx,sy){
+  if(ortho.phase==="s"){ const p=pickPoint(); ortho.S=[p[0],p[1]]; ortho.phase="e"; orthoSetHint("Kattints a mérési vonal VÉGPONTJÁRA."); render(); return; }
+  if(ortho.phase==="e"){
+    const p=pickPoint(); const dx=p[0]-ortho.S[0], dy=p[1]-ortho.S[1]; const L=Math.hypot(dx,dy);
+    if(L<1e-7){ orthoSetHint("A végpont egybeesik a kezdőponttal – kattints máshová."); return; }
+    ortho.E=[p[0],p[1]]; ortho.dir=[dx/L,dy/L]; ortho.pts=[ortho.S.slice()]; ortho.seg=[];
+    ortho.numKind="absz"; ortho.pendingDir=ortho.dir.slice(); ortho.phase="num";
+    orthoOpenNum(); render(); return;
+  }
+  if(ortho.phase==="choose"){
+    const ic=ortho._icons; const near=p=> p && Math.hypot(sx-p[0],sy-p[1])<=17;
+    if(near(ic.check)){ orthoFinish(); return; }
+    if(near(ic.del)){ orthoDeleteLast(); return; }
+    if(near(ic.right)){ ortho.pendingDir=orthoPerp(orthoLastHeading(),"right"); ortho.numKind="ord"; ortho.phase="num"; orthoOpenNum(); render(); return; }
+    if(near(ic.left)){ ortho.pendingDir=orthoPerp(orthoLastHeading(),"left"); ortho.numKind="ord"; ortho.phase="num"; orthoOpenNum(); render(); return; }
+  }
+}
+function orthoOpenNum(){
+  const anchor=ortho.pts[ortho.pts.length-1]||ortho.S;
+  const [ax,ay]=W2S(anchor[0],anchor[1]);
+  const rect=cv.getBoundingClientRect();
+  $("orthoNumTitle").textContent = ortho.numKind==="absz"? "Abszcissza (m)":"Ordináta (m)";
+  $("orthoNumHint").textContent = ortho.numKind==="absz"
+    ? "a kezdőponttól a végpont felé; lehet negatív"
+    : "merőleges távolság a nyíl irányában; lehet negatív";
+  $("orthoNumIn").value=""; ortho._preview=null;
+  const el=$("orthoNum"); el.style.display="block";
+  let px=rect.left+ax+20, py=rect.top+ay-14;
+  px=Math.max(6,Math.min(px, window.innerWidth-232)); py=Math.max(58,Math.min(py, window.innerHeight-130));
+  el.style.left=px+"px"; el.style.top=py+"px";
+  setTimeout(()=>{ const i=$("orthoNumIn"); i.focus(); i.select(); },0);
+}
+function orthoNumOk(){
+  const v=parseFloat(String($("orthoNumIn").value).replace(",","."));
+  if(!isFinite(v)||v===0){ $("orthoNumIn").style.borderColor="#e0392b"; return; }
+  $("orthoNumIn").style.borderColor="";
+  const last=ortho.pts[ortho.pts.length-1], d=ortho.pendingDir;
+  const np=[last[0]+d[0]*v, last[1]+d[1]*v];
+  ortho.pts.push(np);
+  const sdx=np[0]-last[0], sdy=np[1]-last[1], sl=Math.hypot(sdx,sdy)||1;
+  ortho.seg.push([sdx/sl,sdy/sl]);
+  ortho.pendingDir=null; ortho.numKind=null; ortho._preview=null;
+  $("orthoNum").style.display="none"; ortho.phase="choose";
+  orthoSetHint("Jobb/bal nyíl: következő merőleges szakasz · zöld pipa: befejezés · piros X: utolsó szakasz visszavonása.");
+  render();
+}
+function orthoNumCancel(){
+  $("orthoNum").style.display="none"; ortho._preview=null;
+  if(ortho.numKind==="absz"){ ortho.phase="e"; ortho.pts=[]; ortho.seg=[]; orthoSetHint("Kattints a mérési vonal VÉGPONTJÁRA."); }
+  else { ortho.phase="choose"; }
+  ortho.pendingDir=null; ortho.numKind=null; render();
+}
+function orthoDeleteLast(){
+  if(ortho.pts.length<=1) return;
+  ortho.pts.pop(); ortho.seg.pop();
+  if(ortho.pts.length===1){ ortho.numKind="absz"; ortho.pendingDir=ortho.dir.slice(); ortho.phase="num"; orthoOpenNum(); }
+  else { ortho.phase="choose"; }
+  render();
+}
+function orthoIconPositions(){
+  ortho._icons={};
+  if(ortho.pts.length<2) return;
+  const last=ortho.pts[ortho.pts.length-1];
+  const [lx,ly]=W2S(last[0],last[1]);
+  const h=orthoLastHeading();
+  const sc=v=>[v[0],-v[1]];                        // világ→képernyő irány (Y tükrözve)
+  const sh=sc(h), rp=sc(orthoPerp(h,"right")), lp=sc(orthoPerp(h,"left"));
+  const Rr=42;
+  ortho._icons.right=[lx+rp[0]*Rr, ly+rp[1]*Rr];
+  ortho._icons.left =[lx+lp[0]*Rr, ly+lp[1]*Rr];
+  ortho._icons.check=[lx+sh[0]*Rr, ly+sh[1]*Rr];
+  const a=ortho.pts[ortho.pts.length-2];
+  const mid=[(a[0]+last[0])/2,(a[1]+last[1])/2]; const [mx,my]=W2S(mid[0],mid[1]);
+  ortho._icons.del=[mx,my];
+  ortho._icons._dirs={right:rp,left:lp,head:sh};
+}
+function orthoDrawArrow(pos,dir,col){
+  if(!pos) return; const [x,y]=pos; const ang=Math.atan2(dir[1],dir[0]);
+  ctx.save(); ctx.translate(x,y);
+  ctx.fillStyle="#12303f"; ctx.strokeStyle=col; ctx.lineWidth=1.7;
+  ctx.beginPath(); ctx.arc(0,0,13,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.rotate(ang); ctx.fillStyle="#bfe6fb";
+  ctx.beginPath(); ctx.moveTo(7.5,0); ctx.lineTo(-4,-5.6); ctx.lineTo(-4,5.6); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+function orthoDrawCheck(pos){
+  if(!pos) return; const [x,y]=pos; ctx.save(); ctx.translate(x,y);
+  ctx.fillStyle="#123219"; ctx.strokeStyle="#3fbf5a"; ctx.lineWidth=1.7;
+  ctx.beginPath(); ctx.arc(0,0,14,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle="#8befa6"; ctx.lineWidth=2.6; ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(-5.5,0.4); ctx.lineTo(-1.5,4.6); ctx.lineTo(6.4,-5.4); ctx.stroke();
+  ctx.restore();
+}
+function orthoDrawDel(pos){
+  if(!pos) return; const [x,y]=pos; ctx.save(); ctx.translate(x,y);
+  ctx.fillStyle="#3a1414"; ctx.strokeStyle="#e0392b"; ctx.lineWidth=1.7;
+  ctx.beginPath(); ctx.arc(0,0,11,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle="#ff8b7d"; ctx.lineWidth=2.3; ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(-4,-4); ctx.lineTo(4,4); ctx.moveTo(4,-4); ctx.lineTo(-4,4); ctx.stroke();
+  ctx.restore();
+}
+function drawOrthoOverlay(){
+  if(!ortho) return;
+  ctx.save(); ctx.setLineDash([]);
+  if(ortho.S && ortho.E){
+    const [ax,ay]=W2S(ortho.S[0],ortho.S[1]), [bx,by]=W2S(ortho.E[0],ortho.E[1]);
+    ctx.strokeStyle="#e0392b"; ctx.setLineDash([9,6]);
+    ctx.lineWidth = (ortho.pts.length<=1)? 3.2 : 1.4;      // abszcissza előtt vastag, utána vékony
+    ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle="#e0392b"; ctx.beginPath(); ctx.arc(ax,ay,3.5,0,Math.PI*2); ctx.fill();
+  }
+  if(ortho.pts.length>=2){
+    ctx.strokeStyle="#2fbf4c"; ctx.lineWidth=3.6; ctx.lineJoin="round";
+    ctx.beginPath(); ortho.pts.forEach((p,i)=>{ const [x,y]=W2S(p[0],p[1]); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke();
+    for(const p of ortho.pts){ const [x,y]=W2S(p[0],p[1]); ctx.fillStyle="#1e7d33"; ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill(); }
+  }
+  if(ortho.phase==="num" && ortho.pendingDir && ortho.pts.length>=1){
+    const last=ortho.pts[ortho.pts.length-1], d=ortho.pendingDir;
+    const [lx,ly]=W2S(last[0],last[1]); const ds=[d[0],-d[1]];
+    ctx.strokeStyle="rgba(47,191,76,.45)"; ctx.setLineDash([6,5]); ctx.lineWidth=1.3;
+    ctx.beginPath(); ctx.moveTo(lx-ds[0]*1400,ly-ds[1]*1400); ctx.lineTo(lx+ds[0]*1400,ly+ds[1]*1400); ctx.stroke(); ctx.setLineDash([]);
+    const v=ortho._preview;
+    if(isFinite(v)&&v!==0){
+      const np=[last[0]+d[0]*v,last[1]+d[1]*v]; const [nx,ny]=W2S(np[0],np[1]);
+      ctx.strokeStyle="#2fbf4c"; ctx.lineWidth=3.6; ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(nx,ny); ctx.stroke();
+      ctx.fillStyle="#2fbf4c"; ctx.beginPath(); ctx.arc(nx,ny,4,0,Math.PI*2); ctx.fill();
+    }
+  }
+  if(ortho.phase==="choose"){
+    orthoIconPositions();
+    const dr=ortho._icons._dirs||{};
+    orthoDrawArrow(ortho._icons.right, dr.right||[1,0], "#59c1e8");
+    orthoDrawArrow(ortho._icons.left,  dr.left ||[-1,0], "#59c1e8");
+    orthoDrawCheck(ortho._icons.check);
+    orthoDrawDel(ortho._icons.del);
+  }
+  ctx.restore();
+}
+function orthoFinish(){
+  if(!ortho || ortho.pts.length<2){ orthoCancel(); return; }
+  orthoReadOpts();
+  snapshot();
+  const pts=ortho.pts.map(p=>[p[0],p[1],0]);
+  doc.entities.push({id:newId(), type:"polyline", layer:doc.current, closed:false, pts});
+  if(ortho.cogo){
+    let num=parseInt(ortho.cogoNum,10); if(!isFinite(num)) num=nextFreeCogoNum();
+    const inc=isFinite(ortho.cogoInc)&&ortho.cogoInc!==0? ortho.cogoInc : 1;
+    for(const p of ortho.pts){
+      doc.entities.push({id:newId(), type:"cogo", layer:doc.current, x:p[0], y:p[1], z:null, num:String(num), code:ortho.cogoCode||""});
+      num+=inc;
+    }
+  }
+  if(ortho.labels){
+    const dstLayer="hossz-"+(doc.current||"0");
+    ensureLayer(dstLayer, "#d7dde5");
+    doc.labelGroups=doc.labelGroups||{};
+    const grp="G"+Date.now().toString(36)+"-"+(++_grpSeq);
+    const cfg={size:ortho.labSize, dec:ortho.labDec, side:"above", off:ortho.labOff, style:"upright", underline:false, zMode:"2d", dstLayer, color:null};
+    doc.labelGroups[grp]={...cfg, srcLayer:doc.current};
+    for(let i=0;i<ortho.pts.length-1;i++){
+      const seg={a:[ortho.pts[i][0],ortho.pts[i][1],0], b:[ortho.pts[i+1][0],ortho.pts[i+1][1],0], is3d:false};
+      const L=autoLenPlace(seg,cfg);
+      doc.entities.push({id:newId(), type:"text", layer:dstLayer, x:L.x, y:L.y, z:0, h:L.h, rot:L.rot, text:L.text, grp, gseg:L.gseg});
+    }
+  }
+  const n=ortho.pts.length-1;
+  orthoCancel(); refreshLayerPanel(); render();
+  setHint(`Ortogonális kész: ${n} szakaszos vonallánc létrehozva.`);
+}
+function orthoCancel(){
+  ortho=null;
+  if($("orthoBar")) $("orthoBar").style.display="none";
+  if($("orthoNum")) $("orthoNum").style.display="none";
+  render(); setHint("");
+}
+/* --- Ortogonális események --- */
+$("btnOrtho").onclick=orthoStart;
+$("orthoCancelBtn").onclick=orthoCancel;
+$("orthoDoneBtn").onclick=()=>{ if(ortho) orthoFinish(); };
+$("orthoCogo").addEventListener("change",()=>{ if(ortho) ortho.cogo=$("orthoCogo").checked; $("orthoCogoOpts").style.display=$("orthoCogo").checked?"block":"none"; });
+$("orthoLab").addEventListener("change",()=>{ if(ortho) ortho.labels=$("orthoLab").checked; $("orthoLabOpts").style.display=$("orthoLab").checked?"block":"none"; });
+$("orthoNumOk").onclick=orthoNumOk;
+$("orthoNumCancel").onclick=orthoNumCancel;
+$("orthoNumIn").addEventListener("input",()=>{ if(!ortho) return; const v=parseFloat(String($("orthoNumIn").value).replace(",",".")); ortho._preview=isFinite(v)?v:null; render(); });
+$("orthoNumIn").addEventListener("keydown",ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); orthoNumOk(); } else if(ev.key==="Escape"){ ev.preventDefault(); orthoNumCancel(); } });
 
 /* --- mentés dialógus --- */
 

@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v3.1** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v3.2** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -647,6 +647,25 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   nem `_`-mezők → a **WCD megőrzi** őket; DXF/DWG-be csak a geometria megy → **sima
   önálló feliratok** (a dőlt = 51-es oblique 15°, az aláhúzás `%%u` előtag; a `text`
   render `case` kezeli az `italic`/`underline`/`oblique` megjelenítést). UI címke v3.1.
+- **v3.2**: **Ortogonális – derékszögű vonallánc mérési vonal + abszcissza/ordináta
+  módszerrel.** Új „Ortogon." gomb a RAJZOLÁS panelen (`btnOrtho`). Állapotgép (`ortho`
+  globális): `phase` = `"s"`(kezdőpont)→`"e"`(végpont)→`"num"`(számbevitel)→`"choose"`
+  (nyilak/pipa/X). A mérési vonal **piros szaggatott** (abszcissza előtt VASTAG, utána
+  vékony); a kész szakaszok **vastag zöldek** (`drawOrthoOverlay` a composite-ban).
+  Számbevitel: **`#orthoNum` mini-modal** a ponthoz pozicionálva – először **Abszcissza**
+  (a vonal mentén, lehet negatív), utána **Ordináta** (merőlegesen). Élő zöld előnézet
+  gépelés közben (`_preview`). Az utolsó pontban 3 kattintható képernyő-ikon
+  (`orthoIconPositions`, hit-teszt a `primaryAction` ortho-ágában): **jobb/bal nyíl**
+  (a szakasz jobb/bal oldalán, merőleges irány `orthoPerp`), **zöld pipa** (befejezés),
+  és az utolsó szakasz közepén **piros X** (utolsó szakasz visszavonása → előző pont).
+  Nyílra kattintva `pendingDir` = a merőleges irány, majd újra `#orthoNum`. A `heading`
+  mindig az utolsó szakasz iránya → derékszögű, **folyamatos** vonallánc. Befejezéskor
+  (`orthoFinish`) egy `polyline` entitás jön létre a `doc.current` rétegen.
+  **Beállítópanel (`#orthoBar`) végig látszik**, opciók pipával nyílnak: (1) **COGO pont
+  minden töréspontban** – kezdő pontszám / növekmény / kód (Z nélkül, ahogy kérted);
+  (2) **Távolságok megírása** – betűméret/tizedes/eltolás, KÖZÉPRE a szakasz fölé
+  (`autoLenPlace`, feliratcsoportba `grp`-vel). `cancelTool`/`setTool`/`secondaryAction`
+  integrálva (jobb klikk: choose→befejezés, num→mégse). UI címke v3.2.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
