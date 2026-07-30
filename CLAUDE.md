@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v3.2** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v3.3** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -666,6 +666,15 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   (2) **Távolságok megírása** – betűméret/tizedes/eltolás, KÖZÉPRE a szakasz fölé
   (`autoLenPlace`, feliratcsoportba `grp`-vel). `cancelTool`/`setTool`/`secondaryAction`
   integrálva (jobb klikk: choose→befejezés, num→mégse). UI címke v3.2.
+- **v3.3**: **Ortogonális érintő-támogatás + finomítás.** (a) A pont-célzás (`s`/`e`
+  fázis) érintésen a take-off célkereszttel megy: `aimTools()` igazat ad ortho pick
+  fázisban, és a pick fázis kizárva az egyujjas panból (`touchPan` feltétel) → az
+  ujj-húzás célkeresztet ad, felengedésre a kereszt helyére kerül a pont. A choose
+  fázisban a nyilak/pipa/X **közvetlen koppintással** kezelhetők (touchPan-tap →
+  `orthoClick` ikon hit-teszt, `isTouchMode()`-nál 26 px tűrés). (b) **A nyilak
+  közelebb a vonalhoz**: `Rr` 42→26 (érintésen 30), a pipa 30/34. Érintésen az ikonok
+  1.28×-osra nagyítva (`orthoTouchK`). (c) Új **gumivonal** a végpont-célzáshoz
+  (`e` fázis: kezdőponttól a kurzorig piros szaggatott). UI címke v3.3.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 

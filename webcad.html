@@ -938,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v3.2</span>
+      <span class="ver" id="wcVer">v3.3</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -955,7 +955,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v3.2</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v3.3</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -3990,6 +3990,7 @@ function aimTools(){
   return ["point","line","pline","poly3d","circle","arc","arc2pr","arcpoly"].includes(tool) || !!pendingInsert || !!cogoPlace || blkDefPicking==="base" || !!imgPlace || (tpActive&&tpTurn==="cad")
       || !!(modOp && modOp.stage && modOp.stage!=="sel" && modOp.stage!=="dist")
       || !!(coordLab && coordLab.stage==="pick")
+      || !!(typeof ortho!=="undefined" && ortho && (ortho.phase==="s"||ortho.phase==="e"))   // Ortogonális pont-célzás érintésen
       || !!lenLabel;
 }
 cv.addEventListener("pointercancel", ev=>{
@@ -4184,6 +4185,7 @@ cv.addEventListener("pointerdown", ev=>{
     if(tool==="none" && !cogoPlace && !pendingInsert && !blkDefPicking
        && !xrefMove && !imgPlace && !(tpActive&&tpTurn==="cad")
        && !(modOp && modOp.stage!=="sel" && modOp.stage!=="dist")
+       && !(ortho && (ortho.phase==="s"||ortho.phase==="e"))     // Ortogonális pont-célzáskor az aim célkereszt kell, ne pan
        && !(coordLab && coordLab.stage==="pick") && !lenLabel && !drawPts.length && touchPts.size===1){
       touchPan={id:ev.pointerId, sx, sy, tx:view.tx, ty:view.ty, moved:0, t0:Date.now()};
       return;
@@ -8640,7 +8642,8 @@ function orthoClick(sx,sy){
     orthoOpenNum(); render(); return;
   }
   if(ortho.phase==="choose"){
-    const ic=ortho._icons; const near=p=> p && Math.hypot(sx-p[0],sy-p[1])<=17;
+    const ic=ortho._icons; const tol=(typeof isTouchMode==="function" && isTouchMode())?26:17;
+    const near=p=> p && Math.hypot(sx-p[0],sy-p[1])<=tol;
     if(near(ic.check)){ orthoFinish(); return; }
     if(near(ic.del)){ orthoDeleteLast(); return; }
     if(near(ic.right)){ ortho.pendingDir=orthoPerp(orthoLastHeading(),"right"); ortho.numKind="ord"; ortho.phase="num"; orthoOpenNum(); render(); return; }
@@ -8697,43 +8700,54 @@ function orthoIconPositions(){
   const h=orthoLastHeading();
   const sc=v=>[v[0],-v[1]];                        // világ→képernyő irány (Y tükrözve)
   const sh=sc(h), rp=sc(orthoPerp(h,"right")), lp=sc(orthoPerp(h,"left"));
-  const Rr=42;
+  const touch=(typeof isTouchMode==="function" && isTouchMode());
+  const Rr=touch?30:26;                            // nyilak közelebb a vonalhoz (érintésen kicsit több hely)
+  const Rc=touch?34:30;
   ortho._icons.right=[lx+rp[0]*Rr, ly+rp[1]*Rr];
   ortho._icons.left =[lx+lp[0]*Rr, ly+lp[1]*Rr];
-  ortho._icons.check=[lx+sh[0]*Rr, ly+sh[1]*Rr];
+  ortho._icons.check=[lx+sh[0]*Rc, ly+sh[1]*Rc];
   const a=ortho.pts[ortho.pts.length-2];
   const mid=[(a[0]+last[0])/2,(a[1]+last[1])/2]; const [mx,my]=W2S(mid[0],mid[1]);
   ortho._icons.del=[mx,my];
   ortho._icons._dirs={right:rp,left:lp,head:sh};
 }
+function orthoTouchK(){ return (typeof isTouchMode==="function" && isTouchMode())?1.28:1; }
 function orthoDrawArrow(pos,dir,col){
-  if(!pos) return; const [x,y]=pos; const ang=Math.atan2(dir[1],dir[0]);
+  if(!pos) return; const [x,y]=pos; const ang=Math.atan2(dir[1],dir[0]); const k=orthoTouchK();
   ctx.save(); ctx.translate(x,y);
   ctx.fillStyle="#12303f"; ctx.strokeStyle=col; ctx.lineWidth=1.7;
-  ctx.beginPath(); ctx.arc(0,0,13,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(0,0,13*k,0,Math.PI*2); ctx.fill(); ctx.stroke();
   ctx.rotate(ang); ctx.fillStyle="#bfe6fb";
-  ctx.beginPath(); ctx.moveTo(7.5,0); ctx.lineTo(-4,-5.6); ctx.lineTo(-4,5.6); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(7.5*k,0); ctx.lineTo(-4*k,-5.6*k); ctx.lineTo(-4*k,5.6*k); ctx.closePath(); ctx.fill();
   ctx.restore();
 }
 function orthoDrawCheck(pos){
-  if(!pos) return; const [x,y]=pos; ctx.save(); ctx.translate(x,y);
+  if(!pos) return; const [x,y]=pos; const k=orthoTouchK(); ctx.save(); ctx.translate(x,y);
   ctx.fillStyle="#123219"; ctx.strokeStyle="#3fbf5a"; ctx.lineWidth=1.7;
-  ctx.beginPath(); ctx.arc(0,0,14,0,Math.PI*2); ctx.fill(); ctx.stroke();
-  ctx.strokeStyle="#8befa6"; ctx.lineWidth=2.6; ctx.lineCap="round";
-  ctx.beginPath(); ctx.moveTo(-5.5,0.4); ctx.lineTo(-1.5,4.6); ctx.lineTo(6.4,-5.4); ctx.stroke();
+  ctx.beginPath(); ctx.arc(0,0,14*k,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle="#8befa6"; ctx.lineWidth=2.6*k; ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(-5.5*k,0.4*k); ctx.lineTo(-1.5*k,4.6*k); ctx.lineTo(6.4*k,-5.4*k); ctx.stroke();
   ctx.restore();
 }
 function orthoDrawDel(pos){
-  if(!pos) return; const [x,y]=pos; ctx.save(); ctx.translate(x,y);
+  if(!pos) return; const [x,y]=pos; const k=orthoTouchK(); ctx.save(); ctx.translate(x,y);
   ctx.fillStyle="#3a1414"; ctx.strokeStyle="#e0392b"; ctx.lineWidth=1.7;
-  ctx.beginPath(); ctx.arc(0,0,11,0,Math.PI*2); ctx.fill(); ctx.stroke();
-  ctx.strokeStyle="#ff8b7d"; ctx.lineWidth=2.3; ctx.lineCap="round";
-  ctx.beginPath(); ctx.moveTo(-4,-4); ctx.lineTo(4,4); ctx.moveTo(4,-4); ctx.lineTo(-4,4); ctx.stroke();
+  ctx.beginPath(); ctx.arc(0,0,11*k,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle="#ff8b7d"; ctx.lineWidth=2.3*k; ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(-4*k,-4*k); ctx.lineTo(4*k,4*k); ctx.moveTo(4*k,-4*k); ctx.lineTo(-4*k,4*k); ctx.stroke();
   ctx.restore();
 }
 function drawOrthoOverlay(){
   if(!ortho) return;
   ctx.save(); ctx.setLineDash([]);
+  if(ortho.phase==="e" && ortho.S && mouse.in){                 // gumivonal a végpont-célzáshoz
+    const [ax,ay]=W2S(ortho.S[0],ortho.S[1]);
+    const tw = curSnap? [curSnap.x,curSnap.y] : [mouse.wx,mouse.wy];
+    const [bx,by]=W2S(tw[0],tw[1]);
+    ctx.strokeStyle="#e0392b"; ctx.setLineDash([9,6]); ctx.lineWidth=3.2;
+    ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle="#e0392b"; ctx.beginPath(); ctx.arc(ax,ay,3.5,0,Math.PI*2); ctx.fill();
+  }
   if(ortho.S && ortho.E){
     const [ax,ay]=W2S(ortho.S[0],ortho.S[1]), [bx,by]=W2S(ortho.E[0],ortho.E[1]);
     ctx.strokeStyle="#e0392b"; ctx.setLineDash([9,6]);
