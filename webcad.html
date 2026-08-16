@@ -159,8 +159,8 @@ input[type=range]{accent-color:var(--accent);}
   background:transparent; min-height:100%;}
 #sideGrip:hover, body.sideResizing #sideGrip{background:linear-gradient(90deg, rgba(143,178,217,.55), transparent);}
 @media (pointer:coarse){ #sideGrip{width:14px;} }
-#side details{border-bottom:1px solid #2a323e;}
-#side summary{
+.sideLike details{border-bottom:1px solid #2a323e;}
+.sideLike summary{
   list-style:none; cursor:pointer; padding:7px 12px; font-size:10.5px; font-weight:700;
   letter-spacing:1.4px; text-transform:uppercase; color:#d3dae4; background:var(--c3d-head);
   display:flex; align-items:center; gap:7px; user-select:none;
@@ -169,9 +169,9 @@ input[type=range]{accent-color:var(--accent);}
   justify-content:center; background:none; border:1px solid transparent; border-radius:3px;
   color:#9fb4d2; cursor:pointer;}
 #btnQSel:hover{background:var(--c3d-hover); border-color:#7f8ea6; color:#fff;}
-#side summary::before{content:"▸"; font-size:9px; color:var(--faint); transition:transform .12s;}
-#side details[open] summary::before{transform:rotate(90deg);}
-#side summary:hover{color:var(--txt);}
+.sideLike summary::before{content:"▸"; font-size:9px; color:var(--faint); transition:transform .12s;}
+.sideLike details[open] summary::before{transform:rotate(90deg);}
+.sideLike summary:hover{color:var(--txt);}
 .secbody{padding:2px 12px 12px 10px; min-width:0; overflow-x:hidden;}
 
 /* Rétegek – Civil 3D Layer Properties Manager stílus */
@@ -938,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v4.0</span>
+      <span class="ver" id="wcVer">v4.1</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -955,7 +955,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v4.0</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v4.1</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -1162,6 +1162,17 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       </div>
       <div class="ribPanel">
         <div class="ribBtns">
+          <button class="rbig" id="btnPcGeoref">
+            <svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="5.5" fill="none" stroke="#e8ecf2" stroke-width="1.4"/><path d="M9 3.5v11M3.5 9h11" stroke="#e8ecf2" stroke-width="1.1"/><circle cx="9" cy="9" r="1.3" fill="#ffd75e" stroke="none"/><path d="M14.5 14.5L21 21" stroke="#5fd06a" stroke-width="1.7"/><rect x="18.6" y="18.6" width="3.6" height="3.6" fill="#59c1e8" stroke="none" transform="rotate(45 20.4 20.4)"/></svg>Georef</button>
+          <button class="rbig" id="btnPcGeorefReset" style="display:none">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="none" stroke="#8b97a5" stroke-width="1.4" stroke-dasharray="3 2"/><path d="M9 20h8a3.2 3.2 0 000-6.4h-2" fill="none" stroke="#e0724c" stroke-width="1.6"/><path d="M17 11l-2.6 2.6L17 16.2" fill="none" stroke="#e0724c" stroke-width="1.6" transform="translate(-2 0)"/></svg>Georef reset</button>
+          <button class="rbig" id="btnPcSendCad">
+            <svg viewBox="0 0 24 24"><circle cx="5" cy="19" r="1.3" fill="#5fd06a"/><circle cx="9" cy="14" r="1.1" fill="#5fd06a"/><path d="M5 19l4-5 5 3 4-9" stroke="#5fd06a" stroke-width="1.4" fill="none"/><path d="M13 4h7v7" fill="none" stroke="#e8ecf2" stroke-width="1.6"/><path d="M20 4L11 13" stroke="#e8ecf2" stroke-width="1.6"/></svg>Küldés CAD-be</button>
+        </div>
+        <div class="ribCap">GEOREFERÁLÁS</div>
+      </div>
+      <div class="ribPanel">
+        <div class="ribBtns">
           <div class="rcol" id="pcInfo" style="font-size:11px;color:var(--dim);max-width:340px;line-height:1.45;justify-content:center">Nincs pontfelhő betöltve. A LAS, E57 és PLY formátum támogatott; a felhő új rajzfülben nyílik meg (a projektbe nem mentődik).</div>
         </div>
         <div class="ribCap">INFÓ</div>
@@ -1238,7 +1249,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
 </div>
 
 <!-- ======================= OLDALPANEL ======================= -->
-<div id="side">
+<div id="side" class="sideLike">
 <div id="sideGrip" title="Húzással átméretezhető a paletta (dupla kattintás: alapméret)"></div>
   <details open id="secProps">
     <summary>Tulajdonságok
@@ -1345,6 +1356,69 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     </div>
   </div>
   <input type="file" id="pcFile" accept=".las,.laz,.e57,.ply" style="display:none">
+  <style>
+  #geoBar{position:fixed; top:64px; right:14px; z-index:167; width:302px; background:#232a33; color:#e6ebf2; border:1px solid #3a4653; border-radius:8px; box-shadow:0 8px 28px rgba(0,0,0,.5); padding:12px 14px; font-size:12px; display:none;}
+  #geoBar .gbTitle{font-weight:700; font-size:13.5px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;}
+  #geoBar .gbTitle button{background:none; border:none; color:var(--dim); font-size:16px; cursor:pointer; line-height:1;}
+  #geoBar .gbHint{font-size:11px; color:#9fb3c8; margin-bottom:9px; min-height:15px;}
+  #geoPairs{max-height:150px; overflow:auto; margin-bottom:8px; border:1px solid #303945; border-radius:5px;}
+  #geoPairs .gpRow{display:flex; align-items:center; gap:6px; padding:4px 7px; font-family:var(--mono); font-size:10.5px; border-bottom:1px solid #262d37;}
+  #geoPairs .gpRow:last-child{border-bottom:none;}
+  #geoPairs .gpRow b{color:#ffd75e; font-family:var(--sans); font-weight:700;}
+  #geoPairs .gpDel{margin-left:auto; cursor:pointer; color:#e0724c; font-family:var(--sans); font-weight:700;}
+  #geoBar .gbRow{display:flex; align-items:center; gap:8px; margin:7px 0;}
+  #geoBar label.gbRadio{display:flex; align-items:center; gap:6px; cursor:pointer; font-size:11.5px;}
+  #geoBar .gbBtns{display:flex; gap:8px; margin-top:10px; justify-content:flex-end;}
+  #geoBar .gbBtns button{padding:6px 13px; border-radius:5px; cursor:pointer; border:none; font-weight:600; font-size:11.5px;}
+  #geoBar .gbGo{background:#2f7fff; color:#fff;}
+  #geoBar .gbGo:disabled{background:#39424e; color:#7c8794; cursor:not-allowed;}
+  #geoBar .gbApply{background:#2fbf4c; color:#0d2413;}
+  #geoBar .gbSoft{background:#2b333c; border:1px solid #46525f; color:#dfe6ef; font-weight:500;}
+  #geoResult{background:#1b222b; border-radius:6px; padding:9px 10px; margin:8px 0; font-family:var(--mono); font-size:11px; line-height:1.6; display:none;}
+  #geoResult b{color:#7ee6b0; font-family:var(--sans);}
+  #dlgGeoPick{position:fixed; width:50vw; height:50vh; min-width:560px; min-height:420px; max-width:none; max-height:none; padding:0; display:flex; flex-direction:column; background:#181d24; border:1px solid #3a4653; border-radius:9px; overflow:hidden;}
+  #dlgGeoPick .gpHead{display:flex; align-items:center; gap:10px; padding:9px 13px; background:var(--c3d-title); border-bottom:1px solid #1a2027; font-size:13px; font-weight:650; flex:0 0 auto;}
+  #dlgGeoPick .gpHead button{margin-left:auto; background:none; border:none; color:var(--dim); font-size:18px; cursor:pointer; width:26px; height:26px; border-radius:5px;}
+  #dlgGeoPick .gpHead button:hover{background:var(--hovfill); color:#fff;}
+  #dlgGeoPick .gpBody{flex:1; min-height:0; display:flex;}
+  #geoCvHost{flex:1; position:relative; min-width:0; background:#212830;}
+  #geoSideHost{width:250px; flex:0 0 auto; overflow-y:auto; border-left:1px solid #1a2027;}
+  #dlgGeoPick .gpFoot{flex:0 0 auto; display:flex; align-items:center; gap:10px; padding:9px 13px; background:#1e252d; border-top:1px solid #1a2027;}
+  #dlgGeoPick .gpFoot .gpInfo{flex:1; font-size:11.5px; color:#c2cbd7; font-family:var(--mono);}
+  #dlgGeoPick .gpFoot button{padding:7px 15px; border-radius:5px; cursor:pointer; border:none; font-weight:600; font-size:12px;}
+  #dlgGeoPick::backdrop{background:rgba(8,10,13,.62);}
+  </style>
+  <div id="geoBar">
+    <div class="gbTitle"><span>Georeferálás</span><button id="geoBarClose" title="Bezárás (a pontpárok megmaradnak)">✕</button></div>
+    <div class="gbHint" id="geoHint">Adj meg legalább 2 (javasolt 3+) pontpárt: pontfelhő-pont ↔ CAD-pont.</div>
+    <div id="geoPairs"></div>
+    <div class="gbRow"><button class="gbGo gbSoft" id="geoAddPair" style="width:100%">+ Új pontpár</button></div>
+    <div class="gbRow" style="flex-direction:column;align-items:flex-start;gap:5px">
+      <label class="gbRadio"><input type="radio" name="geoScale" id="geoScaleCompute" checked> Méretarány számítása a pontokból</label>
+      <label class="gbRadio"><input type="radio" name="geoScale" id="geoScaleKeep"> Méretarány megtartása (1:1)</label>
+    </div>
+    <div id="geoResult"></div>
+    <div class="gbBtns">
+      <button class="gbSoft" id="geoClearPairs">Pontpárok törlése</button>
+      <button class="gbGo" id="geoCompute" disabled>Transzformáció számítása</button>
+    </div>
+    <div class="gbBtns" id="geoApplyRow" style="display:none">
+      <button class="gbSoft" id="geoBack">Vissza</button>
+      <button class="gbApply" id="geoApply">Alkalmazás – pontfelhő georeferálása</button>
+    </div>
+  </div>
+  <dialog id="dlgGeoPick">
+    <div class="gpHead"><span>Georeferálás – jelöld ki a CAD-rajzon a megfelelő pontot</span><button id="geoPickX">✕</button></div>
+    <div class="gpBody">
+      <div id="geoCvHost"></div>
+      <div id="geoSideHost" class="sideLike"></div>
+    </div>
+    <div class="gpFoot">
+      <span class="gpInfo" id="geoPickInfo">Kattints a rajzon a pontfelhő-pontnak megfelelő helyre (snap aktív).</span>
+      <button class="gbSoft" id="geoPickCancel">Mégse</button>
+      <button class="gbGo" id="geoPickOk" disabled>Elfogad</button>
+    </div>
+  </dialog>
   <div id="tpPane" style="display:none">
     <canvas id="tpCv"></canvas>
     <div id="tpImgDim" style="display:none"></div>
@@ -2460,6 +2534,7 @@ const S2W = (sx,sy)=>[(sx-view.tx)/view.s, (view.ty-sy)/view.s];
 let cw=100, ch=100, dpr=1;
 
 function resize(){
+  if(geoModalOpen) return;   // a #cv ideiglenesen a georeferálás-modalban van, más méretezés vonatkozik rá
   dpr = window.devicePixelRatio||1;
   const fullW = wrap.clientWidth;
   const leftW = tpActive? Math.round(fullW*tpFrac) : 0;
@@ -3436,6 +3511,7 @@ function drawUcsIcon(){
 /* Kurzor-szemantika (AutoCAD): PONT megadásakor csak szálkereszt,
    OBJEKTUM kiválasztásakor csak a kis négyzet; semleges állapotban mindkettő. */
 function cursorKind(){
+  if(typeof geoPickCapture!=="undefined" && geoPickCapture) return "point";
   if(typeof ortho!=="undefined" && ortho){ return (ortho.phase==="s"||ortho.phase==="e")? "point":"object"; }
   if(typeof sraffState!=="undefined" && sraffState) return "point";
   if(typeof measState!=="undefined" && measState) return "point";
@@ -4450,6 +4526,7 @@ function placingAction(){
   return ["point","line","pline","poly3d","circle","arc","arcpoly","arc2pr"].includes(tool);
 }
 function primaryAction(sx, sy, shiftKey, isTouch){
+  if(geoPickCapture){ geoPickCapture(pickPointZ()); return; }               // Georeferálás: CAD-pont kijelölése a modalban
   if(ortho){ if(ortho.phase!=="num") orthoClick(sx,sy); return; }            // Ortogonális: pont/ikon kattintás
   if(autoLen){ if(autoLen.pickMode) autoLenPickElement(sx,sy); return; }   // Auto táv: elemre mutatás vagy tétlen
   if(tpActive){
@@ -6050,16 +6127,34 @@ function pcToolScrV(p,key,eff){
   return [q.x0+q.w/2+u/hw*(q.w/2), q.y0+q.h/2-w/hh*(q.h/2)];
 }
 /* ---- CAD-digitalizálás (pont/vonal/vonallánc) két nézetből ---- */
-const PC_VKINDS={vpt:1,vline:1,vpline:1};
+const PC_VKINDS={vpt:1,vline:1,vpline:1,geopt:1};
 const PC_VAX={top:["x","y"],front:["x","z"],right:["y","z"]};   // nézet → munka-tengelyek (a,b)
 function pcWorkOf(p){ const M=pcActive.frame; if(!M) return p.slice();
   return [M[0]*p[0]+M[3]*p[1]+M[6]*p[2], M[1]*p[0]+M[4]*p[1]+M[7]*p[2], M[2]*p[0]+M[5]*p[1]+M[8]*p[2]]; }  // M^T·p
 function pcWorldOfWork(w){ const M=pcActive.frame; return M? m3v(M,w) : w.slice(); }
 function pcViewAB(view,w){ return view==="top"? [w[0],w[1]] : view==="front"? [w[0],w[2]] : [w[1],w[2]]; }
+/* Általános képernyő-vetítés a pcMVP mátrixon át – MINDEN nézetre (top/front/right/iso,
+   orto ÉS perspektíva egyaránt) helyesen működik, mert ugyanazt a mátrixot használja,
+   amit a WebGL vertex shader is kap. p: [x,y,z] WORLD (frame-mel már elforgatott) pont. */
+function pcProjScreen(st,key,p){
+  const q=pcQuadRectCss(key);
+  const M=pcMVP(st,key,q.w/q.h);
+  const x=p[0],y=p[1],z=p[2];
+  const cx=M[0]*x+M[4]*y+M[8]*z+M[12];
+  const cy=M[1]*x+M[5]*y+M[9]*z+M[13];
+  const cw=M[3]*x+M[7]*y+M[11]*z+M[15];
+  if(cw<=1e-6) return null;                              // a kamera mögött – nem vetíthető
+  const ndcX=cx/cw, ndcY=cy/cw;
+  return [q.x0+(ndcX*0.5+0.5)*q.w, q.y0+(1-(ndcY*0.5+0.5))*q.h];
+}
 function pcVexMissing(){ const P=pcTool.pend; return P.x==null?"x":P.y==null?"y":"z"; }
 function pcVexOtherViews(){ return ["top","front","right"].filter(k=>k!==pcTool.pend.src); }
 function pcVexTargetDoc(){
-  let rec=drawings.find(r=>!r.pc);
+  /* a "CAD nézetben aktív rajz": az utoljára aktivált nem-pontfelhő fül; ha nincs
+     ilyen (a felhasználó még sosem járt CAD fülön), az első nem-pontfelhő fül,
+     vagy ha egy sincs, egy új rajz jön létre. */
+  let rec=(lastCadDwg!=null && drawings[lastCadDwg] && !drawings[lastCadDwg].pc)? drawings[lastCadDwg] : null;
+  if(!rec) rec=drawings.find(r=>!r.pc);
   if(!rec){
     dwgCounter++;
     rec={name:"Rajz"+dwgCounter, doc:freshDoc(), view:{s:1,tx:0,ty:0}, sel:[], undo:[], redo:[]};
@@ -6086,30 +6181,55 @@ function pcVexFmt(world){
 function pcVexAddVertex(world){
   const T=pcTool;
   T.verts.push(world);
-  if(T.kind==="vpt"){ pcVexCommit(); return; }
+  if(T.kind==="vpt"||T.kind==="geopt"){ pcVexCommit(); return; }
   if(T.kind==="vline"&&T.verts.length===2){ pcVexCommit(); return; }
   setHint(`${T.verts.length}. csúcs kész (${pcVexFmt(world)}). Következő csúcs: két koordináta egy nézetben, majd a hiányzó a másikban.`+(T.kind==="vpline"?" Jobb klikk: vonallánc lezárása.":""));
   pcOverlayDraw();
 }
+/* A megrajzolt Pont/Vonal/Vonallánc CSAK a pontfelhő-nézegetőben (st.vec) tárolódik –
+   a "Küldés CAD-be" gomb viszi át ténylegesen a CAD rajzba (pcSendToCad). */
 function pcVexCommit(){
-  const T=pcTool, st=pcActive, off=st.cloud.offset;
-  const rec=pcVexTargetDoc(), D=rec.doc;
-  const W=T.verts.map(p=>[p[0]+off[0], p[1]+off[1], p[2]+off[2]]);
-  if(T.kind==="vpt"){
-    D.entities.push({id:newId(), type:"point", layer:"PF_vektor", x:W[0][0], y:W[0][1], z:W[0][2]});
-    setHint(`Pont elhelyezve a(z) „${rec.name}” rajzba: ${pcVexFmt(T.verts[0])}`);
-  } else if(T.kind==="vline"){
-    D.entities.push({id:newId(), type:"line", layer:"PF_vektor",
-      x1:W[0][0], y1:W[0][1], z1:W[0][2], x2:W[1][0], y2:W[1][1], z2:W[1][2]});
-    setHint(`Vonal elhelyezve a(z) „${rec.name}” rajzba (${(Math.hypot(W[1][0]-W[0][0],W[1][1]-W[0][1],W[1][2]-W[0][2])).toFixed(3)} m).`);
-  } else {
-    D.entities.push({id:newId(), type:"polyline", layer:"PF_vektor", is3d:true, closed:false, pts:W.map(p=>p.slice())});
-    setHint(`Vonallánc elhelyezve a(z) „${rec.name}” rajzba (${W.length} csúcs).`);
+  const T=pcTool, st=pcActive;
+  if(T.kind==="geopt"){
+    const v0=T.verts[0];
+    pcTool=null; pcSyncCropUi();     // a "geopt" egylövetű – idle állapotba tér, hogy az "Új pontpár" tisztán induljon
+    pcGeoPointAcquired(v0);
+    pcOverlayDraw();
+    return;
   }
   st.vec=st.vec||[];
   st.vec.push({kind:T.kind, pts:T.verts.map(p=>p.slice())});
-  T.verts=[]; T.pend=null; T.hover=null;
+  const nEl=st.vec.length;
+  const name=T.kind==="vpt"?"Pont":T.kind==="vline"?"Vonal":"Vonallánc";
+  setHint(`${name} rögzítve a pontfelhőben (${T.verts.length} csúcs). Összesen ${nEl} elem vár – „Küldés CAD-be” gombbal vihetők át a rajzba.`);
+  pcTool=null; pcSyncCropUi();       // egy elem = egy művelet; a gomb újra tiszta kattintással indítható
   pcOverlayDraw();
+}
+/* A pontfelhőben megrajzolt elemek (st.vec) átvitele a CAD nézet aktív rajzába, VALÓDI
+   3D CAD-entitásként (EOV koordinátákkal – ha van georeferálás, azon át transzformálva). */
+function pcSendToCad(){
+  const st=pcActive;
+  if(!st||!st.vec||!st.vec.length){ setHint("Nincs átvihető elem a pontfelhőben – rajzolj előbb Pontot / Vonalat / Vonalláncot."); return; }
+  const rec=pcVexTargetDoc(), D=rec.doc;
+  const abs=p=>[p[0]+st.cloud.offset[0], p[1]+st.cloud.offset[1], p[2]+st.cloud.offset[2]];
+  let n=0;
+  for(const e of st.vec){
+    const W=e.pts.map(abs);
+    if(e.kind==="vpt"){
+      D.entities.push({id:newId(), type:"point", layer:"PF_vektor", x:W[0][0], y:W[0][1], z:W[0][2]});
+    } else if(e.kind==="vline"){
+      D.entities.push({id:newId(), type:"line", layer:"PF_vektor",
+        x1:W[0][0], y1:W[0][1], z1:W[0][2], x2:W[1][0], y2:W[1][1], z2:W[1][2]});
+    } else {
+      D.entities.push({id:newId(), type:"polyline", layer:"PF_vektor", is3d:true, closed:false, pts:W.map(p=>p.slice())});
+    }
+    n++;
+  }
+  st.vec=[];
+  pcOverlayDraw();
+  refreshLayerPanel();
+  if(rec.doc===doc) render();
+  setHint(`${n} elem átküldve a(z) „${rec.name}” rajzba (PF_vektor réteg, 3D).`);
 }
 function pcVexClick(view,mx,my){
   const eff=pcEffBasis(pcActive,view);
@@ -6137,6 +6257,343 @@ function pcVexClick(view,mx,my){
   T.pend=null;
   pcVexAddVertex(world);
 }
+/* ==================================================================
+   GEOREFERÁLÁS – pontpárok (pontfelhő ↔ CAD-rajz) alapján számított
+   térbeli hasonlósági transzformáció (forgatás + eltolás + opc. méretarány),
+   Horn kvaterniós módszerrel (N≥3) vagy 2 pontos vízszintes Helmert+Z (N=2).
+   ================================================================== */
+/* --- általános kis szimmetrikus mátrix Jacobi-sajátérték felbontás (n≤4) --- */
+function pcJacobiEigSym(Aflat,n){
+  const A=Aflat.slice();
+  const V=new Array(n*n).fill(0); for(let i=0;i<n;i++) V[i*n+i]=1;
+  const idx=(r,c)=>r*n+c;
+  for(let sweep=0; sweep<100; sweep++){
+    let off=0;
+    for(let p=0;p<n;p++) for(let q=p+1;q<n;q++) off+=A[idx(p,q)]*A[idx(p,q)];
+    if(off<1e-24) break;
+    for(let p=0;p<n-1;p++){
+      for(let q=p+1;q<n;q++){
+        const apq=A[idx(p,q)];
+        if(Math.abs(apq)<1e-20) continue;
+        const app=A[idx(p,p)], aqq=A[idx(q,q)];
+        const theta=(aqq-app)/(2*apq);
+        const t=(theta>=0?1:-1)/(Math.abs(theta)+Math.sqrt(theta*theta+1));
+        const c=1/Math.sqrt(t*t+1), s=t*c;
+        A[idx(p,p)]=app-t*apq; A[idx(q,q)]=aqq+t*apq;
+        A[idx(p,q)]=0; A[idx(q,p)]=0;
+        for(let k=0;k<n;k++){
+          if(k===p||k===q) continue;
+          const akp=A[idx(k,p)], akq=A[idx(k,q)];
+          A[idx(k,p)]=c*akp-s*akq; A[idx(p,k)]=A[idx(k,p)];
+          A[idx(k,q)]=s*akp+c*akq; A[idx(q,k)]=A[idx(k,q)];
+        }
+        for(let k=0;k<n;k++){
+          const vkp=V[idx(k,p)], vkq=V[idx(k,q)];
+          V[idx(k,p)]=c*vkp-s*vkq;
+          V[idx(k,q)]=s*vkp+c*vkq;
+        }
+      }
+    }
+  }
+  const vals=[]; for(let i=0;i<n;i++) vals.push(A[idx(i,i)]);
+  return {vals,V,idx};
+}
+function pcQuatToR(q){
+  const w=q[0],x=q[1],y=q[2],z=q[3];
+  return [1-2*(y*y+z*z), 2*(x*y-w*z),   2*(x*z+w*y),
+          2*(x*y+w*z),   1-2*(x*x+z*z), 2*(y*z-w*x),
+          2*(x*z-w*y),   2*(y*z+w*x),   1-2*(x*x+y*y)];
+}
+/* Horn (1987) kvaterniós legkisebb négyzetek illesztés N≥3 pontpárra.
+   src[],dst[]: [x,y,z] tömbök. keepScale: méretarány rögzítve 1-re.
+   Visszatér: {R (3x3, sor-major), t:[3], scale, rms:{x,y,z,tot}, res:[{d,dx,dy,dz}]} */
+function pcHornFit(src,dst,keepScale){
+  const n=src.length;
+  const mean=arr=>{ const m=[0,0,0]; for(const p of arr){ m[0]+=p[0];m[1]+=p[1];m[2]+=p[2]; } return [m[0]/arr.length,m[1]/arr.length,m[2]/arr.length]; };
+  const cs=mean(src), cd=mean(dst);
+  let Sxx=0,Sxy=0,Sxz=0,Syx=0,Syy=0,Syz=0,Szx=0,Szy=0,Szz=0;
+  for(let i=0;i<n;i++){
+    const a=[src[i][0]-cs[0],src[i][1]-cs[1],src[i][2]-cs[2]];
+    const b=[dst[i][0]-cd[0],dst[i][1]-cd[1],dst[i][2]-cd[2]];
+    Sxx+=a[0]*b[0]; Sxy+=a[0]*b[1]; Sxz+=a[0]*b[2];
+    Syx+=a[1]*b[0]; Syy+=a[1]*b[1]; Syz+=a[1]*b[2];
+    Szx+=a[2]*b[0]; Szy+=a[2]*b[1]; Szz+=a[2]*b[2];
+  }
+  const N=[
+    Sxx+Syy+Szz, Syz-Szy,     Szx-Sxz,     Sxy-Syx,
+    Syz-Szy,     Sxx-Syy-Szz, Sxy+Syx,     Szx+Sxz,
+    Szx-Sxz,     Sxy+Syx,    -Sxx+Syy-Szz, Syz+Szy,
+    Sxy-Syx,     Szx+Sxz,     Syz+Szy,    -Sxx-Syy+Szz
+  ];
+  const {vals,V,idx}=pcJacobiEigSym(N,4);
+  let best=0; for(let i=1;i<4;i++) if(vals[i]>vals[best]) best=i;
+  const q=[V[idx(0,best)],V[idx(1,best)],V[idx(2,best)],V[idx(3,best)]];
+  const qn=Math.hypot(q[0],q[1],q[2],q[3])||1;
+  const R=pcQuatToR([q[0]/qn,q[1]/qn,q[2]/qn,q[3]/qn]);
+  let num=0, den=0;
+  for(let i=0;i<n;i++){
+    const a=[src[i][0]-cs[0],src[i][1]-cs[1],src[i][2]-cs[2]];
+    const b=[dst[i][0]-cd[0],dst[i][1]-cd[1],dst[i][2]-cd[2]];
+    const ra=m3v(R,a);
+    num+=b[0]*ra[0]+b[1]*ra[1]+b[2]*ra[2];
+    den+=a[0]*a[0]+a[1]*a[1]+a[2]*a[2];
+  }
+  const scale=keepScale? 1 : (den>1e-12? num/den : 1);
+  const Rs=R.map(v=>v*scale);
+  const t=[cd[0]-Rs[0]*cs[0]-Rs[1]*cs[1]-Rs[2]*cs[2],
+           cd[1]-Rs[3]*cs[0]-Rs[4]*cs[1]-Rs[5]*cs[2],
+           cd[2]-Rs[6]*cs[0]-Rs[7]*cs[1]-Rs[8]*cs[2]];
+  return pcGeoBuildResult(Rs,scale,t,src,dst);
+}
+/* 2 pontpár: vízszintes (0,1 tengely) 2D Helmert + függőleges (2. tengely) 1D affin.
+   Egzakt illesztés (0 maradék); a forgatás a "harmadik" tengely körül marad meghatározatlan
+   3D-ben, ezért ez a speciális, gyakorlatban jól bevált megoldás. */
+function pcTwoPointFit(src,dst,keepScale){
+  const a0=src[0], a1=src[1], b0=dst[0], b1=dst[1];
+  const dSrc=[a1[0]-a0[0], a1[1]-a0[1]], dDst=[b1[0]-b0[0], b1[1]-b0[1]];
+  const angS=Math.atan2(dSrc[1],dSrc[0]), angD=Math.atan2(dDst[1],dDst[0]);
+  const lenS=Math.hypot(dSrc[0],dSrc[1])||1e-9, lenD=Math.hypot(dDst[0],dDst[1]);
+  const scale=keepScale? 1 : lenD/lenS;
+  const ang=angD-angS, c=Math.cos(ang)*scale, s=Math.sin(ang)*scale;
+  const R=[c,-s,0, s,c,0, 0,0,1];
+  const t=[b0[0]-(c*a0[0]-s*a0[1]), b0[1]-(s*a0[0]+c*a0[1]), 0];
+  const dzS=a1[2]-a0[2], dzD=b1[2]-b0[2];
+  const zScale=keepScale? 1 : (Math.abs(dzS)>1e-9? dzD/dzS : 1);
+  R[8]=zScale; t[2]=b0[2]-zScale*a0[2];
+  return pcGeoBuildResult(R,scale,t,src,dst,zScale);
+}
+function pcGeoBuildResult(R,scale,t,src,dst,zScale){
+  const n=src.length;
+  let sx=0,sy=0,sz=0;
+  const res=src.map((p,i)=>{
+    const q=m3v(R,p); const pr=[q[0]+t[0],q[1]+t[1],q[2]+t[2]];
+    const dx=dst[i][0]-pr[0], dy=dst[i][1]-pr[1], dz=dst[i][2]-pr[2];
+    sx+=dx*dx; sy+=dy*dy; sz+=dz*dz;
+    return {dx,dy,dz,d:Math.hypot(dx,dy,dz)};
+  });
+  const rms=v=>Math.sqrt(v/n);
+  return {R,t,scale,zScale:zScale!=null?zScale:scale,n,res,
+          rms:{x:rms(sx),y:rms(sy),z:rms(sz),tot:rms(sx+sy+sz)}};
+}
+function pcGeoFit(pairs,keepScale){
+  const src=pairs.map(p=>p.cloud), dst=pairs.map(p=>p.cad);
+  return pairs.length===2? pcTwoPointFit(src,dst,keepScale) : pcHornFit(src,dst,keepScale);
+}
+
+/* --- Georeferálás session-állapot és UI --- */
+let geoPickCapture=null;   // ha be van állítva, a primaryAction ezt hívja kattintáskor placement helyett
+let geoModalOpen=false;
+let _geoSave=null;         // {doc,view:{s,tx,ty},secLayersNext,snapBarNext,cvHostOrig}
+let _geoPending=null;      // a folyamatban lévő pontpár pontfelhő-oldali (abszolút) koordinátája
+let _geoPickPt=null;       // a modalban kijelölt CAD-pont (világ)
+function pcGeoEnsure(st){ st.geo=st.geo||{pairs:[],scaleMode:"compute"}; return st.geo; }
+function pcGeoOpen(){
+  if(!pcActive){ setHint("Előbb tölts be (vagy aktiválj) egy pontfelhő fület."); return; }
+  const geo=pcGeoEnsure(pcActive);
+  if(pcActive.georef){ setHint("A pontfelhő már georeferálva van – új pontpárokkal tovább finomítható, vagy a „Georef reset” gombbal visszaállítható az eredeti."); }
+  $("geoScaleCompute").checked=(geo.scaleMode!=="keep");
+  $("geoScaleKeep").checked=(geo.scaleMode==="keep");
+  $("geoResult").style.display="none"; $("geoApplyRow").style.display="none";
+  document.querySelector("#geoBar .gbBtns").style.display="flex";
+  pcGeoBuildPairsUi();
+  $("geoBar").style.display="block";
+}
+function pcGeoBuildPairsUi(){
+  const geo=pcGeoEnsure(pcActive);
+  const box=$("geoPairs");
+  box.innerHTML = geo.pairs.length? geo.pairs.map((p,i)=>
+    `<div class="gpRow"><b>#${i+1}</b><span>d=${(i>0?"":"–")}</span><span class="gpDel" data-i="${i}" title="Pontpár törlése">✕</span></div>`
+  ).join("") : `<div class="gpRow" style="color:#7f8a97">Még nincs pontpár.</div>`;
+  box.querySelectorAll(".gpDel").forEach(el=>{
+    el.onclick=()=>{ geo.pairs.splice(+el.dataset.i,1); pcGeoBuildPairsUi(); };
+  });
+  const n=geo.pairs.length;
+  $("geoHint").textContent = n<2
+    ? `${n} pontpár megadva – legalább 2 kell (javasolt 3+).`
+    : `${n} pontpár megadva – „Transzformáció számítása” aktív.`;
+  $("geoCompute").disabled = n<2;
+}
+function pcGeoAddPairStart(){
+  pcToolStart("geopt");
+}
+function pcGeoPointAcquired(worldRaw){
+  const st=pcActive;
+  _geoPending = [worldRaw[0]+st.cloud.offset[0], worldRaw[1]+st.cloud.offset[1], worldRaw[2]+st.cloud.offset[2]];
+  pcGeoOpenPickModal();
+}
+/* --- CAD-választó modal: a #cv / réteg-panel / snap-sáv ideiglenes átköltöztetése --- */
+function pcGeoResizeCv(){
+  const host=$("geoCvHost"); if(!host) return;
+  dpr = window.devicePixelRatio||1;
+  cw = host.clientWidth; ch = host.clientHeight;
+  cv.width = Math.round(cw*dpr); cv.height = Math.round(ch*dpr);
+  cv.style.width = cw+"px"; cv.style.height = ch+"px";
+  cv.style.left = "0"; cv.style.right = "auto";
+  sceneCv.width = cv.width; sceneCv.height = cv.height;
+  render();
+}
+function pcGeoOpenPickModal(){
+  let rec=(lastCadDwg!=null && drawings[lastCadDwg] && !drawings[lastCadDwg].pc)? drawings[lastCadDwg] : drawings.find(r=>!r.pc);
+  if(!rec){
+    uiAlert("Nincs elérhető CAD-rajz a georeferáláshoz. Nyiss meg / hozz létre egy rajzfület, majd próbáld újra.","Georeferálás");
+    _geoPending=null; return;
+  }
+  _geoSave={ doc, viewS:view.s, viewTx:view.tx, viewTy:view.ty,
+             secLayersNext:$("secLayers").nextSibling, secLayersParent:$("secLayers").parentNode,
+             snapBarNext:$("snapBar").nextSibling, snapBarParent:$("snapBar").parentNode,
+             cvNext:cv.nextSibling, cvParent:cv.parentNode };
+  _geoSave.rec=rec;
+  doc=rec.doc; view.s=rec.view.s; view.tx=rec.view.tx; view.ty=rec.view.ty;
+  selection.clear();
+  $("geoCvHost").appendChild(cv);
+  $("geoSideHost").appendChild($("snapBar"));
+  $("geoSideHost").appendChild($("secLayers"));
+  refreshLayerPanel(); refreshProps();
+  geoModalOpen=true;
+  pcGeoResizeCv();
+  if(!rec._geoViewed){ rec._geoViewed=true; zoomExtents(); }   // első megnyitáskor ráillesztünk a rajz tartalmára
+  _geoPickPt=null;
+  $("geoPickOk").disabled=true;
+  $("geoPickInfo").textContent="Kattints a rajzon a pontfelhő-pontnak megfelelő helyre (snap aktív).";
+  geoPickCapture=(p)=>{
+    _geoPickPt=p;
+    $("geoPickOk").disabled=false;
+    $("geoPickInfo").textContent=`Kijelölve: Y ${p[0].toFixed(3)}  X ${p[1].toFixed(3)}  Z ${p[2].toFixed(3)}`;
+  };
+  $("dlgGeoPick").showModal();
+}
+function pcGeoClosePickModal(){
+  geoPickCapture=null; geoModalOpen=false;
+  const d=$("dlgGeoPick"); if(d.open) d.close();
+  if(_geoSave){
+    if(_geoSave.rec) _geoSave.rec.view={s:view.s, tx:view.tx, ty:view.ty};   // a nézet megőrzése a köv. pontpárhoz
+    _geoSave.cvParent.insertBefore(cv,_geoSave.cvNext);
+    _geoSave.snapBarParent.insertBefore($("snapBar"),_geoSave.snapBarNext);
+    _geoSave.secLayersParent.insertBefore($("secLayers"),_geoSave.secLayersNext);
+    doc=_geoSave.doc; view.s=_geoSave.viewS; view.tx=_geoSave.viewTx; view.ty=_geoSave.viewTy;
+    _geoSave=null;
+  }
+  selection.clear();
+  refreshLayerPanel(); refreshProps();
+  resize();   // visszaméretezi + render()-eli a #cv-t a normál helyén
+}
+function pcGeoPickAccept(){
+  if(!_geoPickPt||!_geoPending) return;
+  const geo=pcGeoEnsure(pcActive);
+  geo.pairs.push({cloud:_geoPending.slice(), cad:_geoPickPt.slice()});
+  _geoPending=null; _geoPickPt=null;
+  pcGeoClosePickModal();
+  pcGeoBuildPairsUi();
+  $("geoBar").style.display="block";
+  setHint(`Pontpár rögzítve (${geo.pairs.length}. db). „Új pontpár” a folytatáshoz, vagy „Transzformáció számítása”, ha legalább 2 megvan.`);
+}
+function pcGeoPickCancel(){
+  _geoPending=null; _geoPickPt=null;
+  pcGeoClosePickModal();
+  setHint("Pontpár megadása megszakítva.");
+}
+function pcGeoCompute(){
+  const geo=pcGeoEnsure(pcActive);
+  if(geo.pairs.length<2) return;
+  geo.scaleMode=$("geoScaleKeep").checked? "keep":"compute";
+  const fit=pcGeoFit(geo.pairs, geo.scaleMode==="keep");
+  geo.result=fit;
+  const rotDeg=(Math.atan2(fit.R[3],fit.R[0])*180/Math.PI).toFixed(3);
+  const relTxt = geo.pairs.length<3
+    ? "Egzakt illesztés (2 pontpár) – 0 maradék. Legalább 3 pontpár javasolt a valódi megbízhatósághoz."
+    : `Megbízhatóság (RMS): ΔY ${fit.rms.x.toFixed(3)} m · ΔX ${fit.rms.y.toFixed(3)} m · ΔZ ${fit.rms.z.toFixed(3)} m · összesen ${fit.rms.tot.toFixed(3)} m`;
+  $("geoResult").innerHTML =
+    `<div><b>Méretarány:</b> ${fit.scale.toFixed(6)}</div>`+
+    `<div><b>Forgatás (kb.):</b> ${rotDeg}°</div>`+
+    `<div style="margin-top:5px">${relTxt}</div>`+
+    (geo.pairs.length>=3? `<div style="margin-top:4px;opacity:.75">Legnagyobb eltérés: ${Math.max(...fit.res.map(r=>r.d)).toFixed(3)} m</div>`:"");
+  $("geoResult").style.display="block";
+  $("geoApplyRow").style.display="flex";
+  document.querySelector("#geoBar .gbBtns").style.display="none";
+}
+function pcGeoApply(){
+  const st=pcActive, geo=st.geo;
+  if(!geo||!geo.result) return;
+  const {R,t}=geo.result;
+  const oldOff=st.cloud.offset.slice();
+  const first=!st.georef;
+  if(first){
+    st._geoPristine={pos:st.cloud.pos.slice(), offset:st.cloud.offset.slice(),
+                      vec: st.vec? JSON.parse(JSON.stringify(st.vec)) : []};
+  }
+  const n=st.cloud.n, pos=st.cloud.pos;
+  let mx=0,my=0,mz=0;
+  const abs=new Float64Array(3*n);
+  for(let i=0;i<n;i++){
+    const x=pos[3*i]+oldOff[0], y=pos[3*i+1]+oldOff[1], z=pos[3*i+2]+oldOff[2];
+    const nx=R[0]*x+R[1]*y+R[2]*z+t[0], ny=R[3]*x+R[4]*y+R[5]*z+t[1], nz=R[6]*x+R[7]*y+R[8]*z+t[2];
+    abs[3*i]=nx; abs[3*i+1]=ny; abs[3*i+2]=nz;
+    mx+=nx; my+=ny; mz+=nz;
+  }
+  mx/=n; my/=n; mz/=n;
+  const newOff=(Math.abs(mx)>5000||Math.abs(my)>5000)? [Math.round(mx),Math.round(my),Math.round(mz)] : [0,0,0];
+  let x0=1/0,y0=1/0,z0=1/0,x1=-1/0,y1=-1/0,z1=-1/0;
+  for(let i=0;i<n;i++){
+    const x=abs[3*i]-newOff[0], y=abs[3*i+1]-newOff[1], z=abs[3*i+2]-newOff[2];
+    pos[3*i]=x; pos[3*i+1]=y; pos[3*i+2]=z;
+    if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; if(z<z0)z0=z; if(z>z1)z1=z;
+  }
+  st.cloud.offset=newOff;
+  st.cloud.bbox={x0,y0,z0,x1,y1,z1};
+  st.cloud.diag=Math.hypot(x1-x0,y1-y0,z1-z0)||1;
+  if(st.vec&&st.vec.length){
+    for(const e of st.vec) e.pts=e.pts.map(p=>{
+      const x=p[0]+oldOff[0], y=p[1]+oldOff[1], z=p[2]+oldOff[2];
+      const nx=R[0]*x+R[1]*y+R[2]*z+t[0], ny=R[3]*x+R[4]*y+R[5]*z+t[1], nz=R[6]*x+R[7]*y+R[8]*z+t[2];
+      return [nx-newOff[0], ny-newOff[1], nz-newOff[2]];
+    });
+  }
+  st.crop=null; st.frame=null;
+  if(pcGL){ if(st.posBuf){ pcGL.gl.deleteBuffer(st.posBuf); st.posBuf=null; } if(st.colBuf){ pcGL.gl.deleteBuffer(st.colBuf); st.colBuf=null; } }
+  st.cloud.colBuf=null; st.colDirty=true;
+  st.georef={scale:geo.result.scale, n:geo.pairs.length};
+  geo.result=null; geo.pairs=[];
+  pcFitViews(st);
+  $("geoBar").style.display="none";
+  pcSyncCropUi();
+  pcRender();
+  setHint(`Georeferálás alkalmazva (${st.georef.n} pontpár, méretarány ${st.georef.scale.toFixed(5)}).`);
+}
+function pcGeoReset(){
+  const st=pcActive;
+  if(!st||!st.georef||!st._geoPristine) return;
+  st.cloud.pos=st._geoPristine.pos.slice();
+  st.cloud.offset=st._geoPristine.offset.slice();
+  st.vec=JSON.parse(JSON.stringify(st._geoPristine.vec||[]));
+  const n=st.cloud.n, pos=st.cloud.pos;
+  let x0=1/0,y0=1/0,z0=1/0,x1=-1/0,y1=-1/0,z1=-1/0;
+  for(let i=0;i<n;i++){ const x=pos[3*i],y=pos[3*i+1],z=pos[3*i+2];
+    if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; if(z<z0)z0=z; if(z>z1)z1=z; }
+  st.cloud.bbox={x0,y0,z0,x1,y1,z1};
+  st.cloud.diag=Math.hypot(x1-x0,y1-y0,z1-z0)||1;
+  st.crop=null; st.frame=null;
+  if(pcGL){ if(st.posBuf){ pcGL.gl.deleteBuffer(st.posBuf); st.posBuf=null; } if(st.colBuf){ pcGL.gl.deleteBuffer(st.colBuf); st.colBuf=null; } }
+  st.cloud.colBuf=null; st.colDirty=true;
+  st.georef=null; st._geoPristine=null;
+  pcFitViews(st);
+  pcSyncCropUi();
+  pcRender();
+  setHint("Georeferálás visszaállítva az eredeti állapotra.");
+}
+$("btnPcGeoref").onclick=pcGeoOpen;
+$("geoBarClose").onclick=()=>{ $("geoBar").style.display="none"; };
+$("geoAddPair").onclick=pcGeoAddPairStart;
+$("geoClearPairs").onclick=()=>{ const geo=pcGeoEnsure(pcActive); geo.pairs=[]; pcGeoBuildPairsUi(); };
+$("geoCompute").onclick=pcGeoCompute;
+$("geoBack").onclick=()=>{ $("geoResult").style.display="none"; $("geoApplyRow").style.display="none"; document.querySelector("#geoBar .gbBtns").style.display="flex"; };
+$("geoApply").onclick=pcGeoApply;
+$("btnPcGeorefReset").onclick=()=>{ if(pcActive) pcGeoReset(); };
+$("btnPcSendCad").onclick=pcSendToCad;
+$("geoPickOk").onclick=pcGeoPickAccept;
+$("geoPickCancel").onclick=pcGeoPickCancel;
+$("geoPickX").onclick=pcGeoPickCancel;
+$("dlgGeoPick").addEventListener("cancel",ev=>{ ev.preventDefault(); pcGeoPickCancel(); });   // Esc a modalban
+
 function pcToolScr(p){ return pcToolScrV(p,pcTool.view,pcTool.eff); }
 /* mérés: tengelynevek nézetenként (EOV-konvenció: kelet=Y, észak=X) */
 function pcMeasAxes(view){ return view==="top"? ["ΔY","ΔX"] : view==="front"? ["ΔY","ΔZ"] : ["ΔX","ΔZ"]; }
@@ -6156,11 +6613,20 @@ function pcOverlayDraw(){
   const _effOf={}; _views.forEach(k=>_effOf[k]=pcEffBasis(pcActive,k));
   const _scr=(view,w)=>{ const [A,B]=pcViewAB(view,w); return pcToolScrV({a:A,b:B},view,_effOf[view]); };
   const _inView=(view,fn)=>{ const q=pcQuadRectCss(view); g.save(); g.beginPath(); g.rect(q.x0,q.y0,q.w,q.h); g.clip(); fn(q); g.restore(); };
-  /* elhelyezett vektorok mindig látszanak */
+  /* elhelyezett vektorok mindig látszanak – MIND A 4 nézetben (ISO-ban is), a valódi
+     MVP-vetítéssel (pcProjScreen), ami perspektívával is helyesen igazodik. */
   if(pcActive.vec&&pcActive.vec.length){
     for(const e of pcActive.vec){
       for(const view of _views) _inView(view,()=>{
         const ps=e.pts.map(p=>_scr(view,pcWorkOf(p)));
+        g.strokeStyle="#7ee6b0"; g.setLineDash([]); g.lineWidth=1.5;
+        if(ps.length>1){ g.beginPath(); ps.forEach((s,i)=>i?g.lineTo(s[0],s[1]):g.moveTo(s[0],s[1])); g.stroke(); }
+        g.fillStyle="#7ee6b0";
+        for(const s of ps) g.fillRect(s[0]-2.5,s[1]-2.5,5,5);
+      });
+      _inView("iso",()=>{
+        const ps=e.pts.map(p=>pcProjScreen(pcActive,"iso",p)).filter(Boolean);
+        if(ps.length!==e.pts.length) return;               // valamelyik pont a kamera mögött – kihagyjuk
         g.strokeStyle="#7ee6b0"; g.setLineDash([]); g.lineWidth=1.5;
         if(ps.length>1){ g.beginPath(); ps.forEach((s,i)=>i?g.lineTo(s[0],s[1]):g.moveTo(s[0],s[1])); g.stroke(); }
         g.fillStyle="#7ee6b0";
@@ -6285,6 +6751,7 @@ function pcSyncCropUi(){
   if($("btnPcVPt")) $("btnPcVPt").classList.toggle("on",!!(pcTool&&pcTool.kind==="vpt"));
   if($("btnPcVLine")) $("btnPcVLine").classList.toggle("on",!!(pcTool&&pcTool.kind==="vline"));
   if($("btnPcVPline")) $("btnPcVPline").classList.toggle("on",!!(pcTool&&pcTool.kind==="vpline"));
+  if($("btnPcGeorefReset")) $("btnPcGeorefReset").style.display=(st&&st.georef)?"":"none";
 }
 function pcToolCancel(){
   pcTool=null; pcSyncCropUi(); pcOverlayDraw();
@@ -6300,6 +6767,8 @@ function pcToolStart(kind){
     ? "Szabad vágás: húzd meg az alapvonalat a TOP / RIGHT / FRONT nézetben (Esc / jobb klikk: mégse)."
     : kind==="meas"
     ? "Mérés: kattints/húzz az első ponttól a másodikig a TOP / RIGHT / FRONT nézetben (Esc / jobb klikk: befejezés)."
+    : kind==="geopt"
+    ? "Georeferálás – pontfelhő pontja: kattints egy nézetben (2 koordináta), majd a hiányzó koordinátát egy MÁSIK nézetben add meg."
     : (kind==="vpt"?"Pont":kind==="vline"?"Vonal":"Vonallánc")+" elhelyezés: kattints egy nézetben (2 koordináta), majd a hiányzó koordinátát egy MÁSIK nézetben add meg. Esc: megkezdett elvetése / kilépés.");
   pcSyncCropUi();
 }
@@ -11316,6 +11785,7 @@ function clearTransient(){
   cogoPlace=null; cptPending=null; blkDefPicking=null; blkDef=null;
   aim=null; gesture=null;
 }
+let lastCadDwg=null;   // az utoljára aktivált NEM pontfelhő rajzfül indexe (georeferálás / CAD-küldés célja)
 function activateDwg(i){
   if(i===curDwg&&drawings[i].doc===doc) { refreshDocTabs(); return; }
   saveCurDwg();
@@ -11323,6 +11793,7 @@ function activateDwg(i){
   curDwg=i;
   const r=drawings[i];
   if(!r.doc) r.doc=freshDoc();
+  if(!r.pc) lastCadDwg=i;
   doc=r.doc;
   view.s=r.view.s; view.tx=r.view.tx; view.ty=r.view.ty;
   selection.clear(); for(const id of r.sel) if(doc.entities.some(e=>e.id===id)) selection.add(id);

@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v4.0** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v4.1** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -780,6 +780,41 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   `pcDrawInteractive`/`pcProgStep` végén). Vonal: 2 csúcs után kész; vonallánc:
   jobb klikk zárja (≥2 csúcs); Esc: megkezdett elem elvetése, második Esc: kilépés.
   UI címke v4.0.
+- **v4.1**: **ISO-nézet javítás + Georeferálás + Küldés CAD-be.** (a) A pontfelhőben
+  megrajzolt Pont/Vonal/Vonallánc mostantól **az izometrikus nézetben is látszik**:
+  új `pcProjScreen(st,key,p)` a valódi `pcMVP`-mátrixon át vetít (RAW, frame-el nem
+  előre forgatott pont, ugyanúgy ahogy a GPU vertex shader kapja), ortho ÉS
+  perspektíva iso esetén is helyesen – a kamera mögötti pontoknál `null`-t ad, azok
+  a szegmensek kimaradnak. (b) **Elhalasztott küldés:** a Pont/Vonal/Vonallánc többé
+  NEM kerül azonnal CAD-entitásként a rajzba – csak a pontfelhő-nézegetőben tárolódik
+  (`pcActive.vec`, zölden mindig látszik). Új **„Küldés CAD-be”** gomb (`pcSendToCad`)
+  viszi át ténylegesen, VALÓDI 3D entitásként (point/line/3D-polyline, `PF_vektor`
+  réteg) „a CAD nézetben aktív rajzba” – ehhez új `lastCadDwg` globális (az utoljára
+  aktivált NEM pontfelhő fül indexe, `activateDwg`-ben frissül); `pcVexTargetDoc()`
+  ezt preferálja. (c) **Georeferálás** – új „Georef” / „Georef reset” / „Küldés CAD-be”
+  gombcsoport. Session-állapot `pcActive.geo={pairs,scaleMode}`, **túléli** a
+  vágás/szabad vágás/vágás-reset eszközváltásokat (külön tárolva a `pcTool`-tól).
+  Munkafolyamat: „Új pontpár” → a pontfelhő-oldali pont a megismert 2-nézetes
+  mechanikával (`geopt` fajta) → ELFOGADÁS UTÁN **modal ablak nyílik 50vw×50vh
+  méretben**, benne a CAD nézetben aktív rajz TARTALMA (a `#cv` canvas, a snap-sáv és
+  a réteg-tulajdonságkezelő ideiglenes DOM-átköltöztetéssel – `insertBefore`
+  visszaállítással –, ribbon/menü NÉLKÜL), snap-pel kattintható; „Elfogad” rögzíti a
+  pontpárt. A `#cv` átméretezését modal alatt `pcGeoResizeCv()` végzi (a globális
+  `resize()` a `geoModalOpen` flag alatt kilép); első megnyitáskor `zoomExtents()`,
+  utána a nézet fülönként megőrződik. A tényleges kattintást `geoPickCapture` fogja el
+  a `primaryAction()` tetején (nem hoz létre entitást, csak `pickPointZ()`-t olvas ki).
+  **Minimum 2, javasolt 3+ pontpár** (a gomb 2 alatt tiltott). **Transzformáció:**
+  N≥3-nál Horn (1987) kvaterniós legkisebb négyzetek illesztés (`pcHornFit`, saját
+  4×4 szimmetrikus Jacobi-sajátérték-megoldó, `pcJacobiEigSym`) – forgatás + eltolás +
+  opcionális méretarány (Umeyama-formula); N=2-nél egzakt 2D vízszintes Helmert +
+  Z-affin (`pcTwoPointFit`, mert 2 ponttal a 3D forgatás nem egyértelmű). **Opció:**
+  méretarány megtartása (1:1) vagy számítása a pontokból. Elfogadás után a
+  megbízhatóság (RMS tengelyenként + összesen, legnagyobb eltérés) megjelenik.
+  **Alkalmazás** (`pcGeoApply`): a TELJES pontfelhő pozícióit (abszolút = pos+offset)
+  transzformálja, új Float32-barát offsetet számol, újraépíti a GPU puffereket, a
+  `st.vec` elemeket is konzisztensen áthelyezi, törli a `crop`/`frame`-et (más
+  koordinátarendszer). Első alkalmazáskor `st._geoPristine` pillanatkép (pos+offset+vec)
+  → **„Georef reset”** ebből állít vissza. UI címke v4.1.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
