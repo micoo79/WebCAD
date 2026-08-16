@@ -938,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v3.9</span>
+      <span class="ver" id="wcVer">v4.0</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -955,7 +955,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v3.9</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v4.0</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -1147,6 +1147,12 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
             <svg viewBox="0 0 24 24"><circle cx="4.5" cy="5" r="1" fill="#5c6774"/><circle cx="19.5" cy="4.5" r="1" fill="#5c6774"/><circle cx="4" cy="19.5" r="1" fill="#5c6774"/><circle cx="20" cy="19" r="1" fill="#5c6774"/><rect x="7.8" y="7.8" width="8.4" height="8.4" fill="none" stroke="#ffd75e" stroke-width="1.5" stroke-dasharray="3 2" transform="rotate(45 12 12)"/><circle cx="12" cy="12" r="1.1" fill="#5fd06a"/></svg>Szabad vágás</button>
           <button class="rbig" id="btnPcMeasure">
             <svg viewBox="0 0 24 24"><path d="M3 16.5L16.5 3" stroke="#ffd75e" stroke-width="1.7"/><rect x="1.6" y="15.1" width="2.8" height="2.8" fill="#59c1e8" stroke="none"/><rect x="15.1" y="1.6" width="2.8" height="2.8" fill="#59c1e8" stroke="none"/><path d="M6.5 13l1.8 1.8M9.5 10l1.8 1.8M12.5 7l1.8 1.8" stroke="#e8ecf2" stroke-width="1.2"/><path d="M13 20.5h8M13 18v5M21 18v5" stroke="#5fd06a" stroke-width="1.3"/></svg>Mérés</button>
+          <button class="rbig" id="btnPcVPt">
+            <svg viewBox="0 0 24 24"><circle cx="5" cy="6" r="0.9" fill="#3d4a58"/><circle cx="18" cy="5" r="0.9" fill="#3d4a58"/><circle cx="6" cy="18" r="0.9" fill="#3d4a58"/><circle cx="19" cy="17" r="0.9" fill="#3d4a58"/><path d="M12 6.5v11M6.5 12h11" stroke="#e8ecf2" stroke-width="1.6"/><circle cx="12" cy="12" r="1.4" fill="#5fd06a" stroke="none"/></svg>Pont</button>
+          <button class="rbig" id="btnPcVLine">
+            <svg viewBox="0 0 24 24"><circle cx="5" cy="6" r="0.9" fill="#3d4a58"/><circle cx="18" cy="5" r="0.9" fill="#3d4a58"/><circle cx="7" cy="19" r="0.9" fill="#3d4a58"/><circle cx="19" cy="16" r="0.9" fill="#3d4a58"/><path d="M4.5 19.5L19.5 4.5" stroke="#5fd06a" stroke-width="1.6"/><rect x="3" y="18" width="3" height="3" fill="#59c1e8" stroke="none"/><rect x="18" y="3" width="3" height="3" fill="#59c1e8" stroke="none"/></svg>Vonal</button>
+          <button class="rbig" id="btnPcVPline">
+            <svg viewBox="0 0 24 24"><circle cx="5" cy="5" r="0.9" fill="#3d4a58"/><circle cx="19" cy="6" r="0.9" fill="#3d4a58"/><circle cx="6" cy="12" r="0.9" fill="#3d4a58"/><path d="M3.5 19l5-9 5.5 6 6.5-10" stroke="#5fd06a" stroke-width="1.6" fill="none"/><rect x="2.2" y="17.7" width="2.7" height="2.7" fill="#59c1e8" stroke="none"/><rect x="7.2" y="8.7" width="2.7" height="2.7" fill="#59c1e8" stroke="none"/><rect x="12.7" y="14.7" width="2.7" height="2.7" fill="#59c1e8" stroke="none"/><rect x="19.2" y="4.7" width="2.7" height="2.7" fill="#59c1e8" stroke="none"/></svg>Vonallánc</button>
           <button class="rbig" id="btnPcCropReset" style="display:none">
             <svg viewBox="0 0 24 24"><rect x="6" y="7" width="12" height="9" fill="none" stroke="#8b97a5" stroke-width="1.4" stroke-dasharray="3 2"/><path d="M9 20h8a3.2 3.2 0 000-6.4h-2" fill="none" stroke="#e0724c" stroke-width="1.6"/><path d="M17 11l-2.6 2.6L17 16.2" fill="none" stroke="#e0724c" stroke-width="1.6" transform="translate(-2 0)"/></svg>Vágás reset</button>
           <button class="rbig" id="btnPcRotReset" style="display:none">
@@ -5854,6 +5860,7 @@ function pcDrawInteractive(quadSet){
   }
   gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,_pcPx);   // kényszerített szinkron a méréshez
   gl.disable(gl.SCISSOR_TEST);
+  if(typeof pcOverlayDraw==="function") pcOverlayDraw();   // vektorok/segédvonalak követik a nézetet
   const dt=performance.now()-t0;
   if(dt>36) st.lodN=Math.max(20000,(cnt*0.55)|0);          // lassú → kevesebb pont
   else if(dt<12 && cnt<st.cloud.n) st.lodN=Math.min(st.cloud.n,(cnt*1.35)|0);
@@ -5885,6 +5892,7 @@ function pcProgStep(){
     gl.drawArrays(gl.POINTS,first,count);
   }
   gl.disable(gl.SCISSOR_TEST);
+  if(P.i===0 && typeof pcOverlayDraw==="function") pcOverlayDraw();
   P.i++;
   P.raf=requestAnimationFrame(pcProgStep);
 }
@@ -5992,7 +6000,16 @@ function pcPtrEnd(ev){
 }
 $("pcCanvas").addEventListener("pointerup",pcPtrEnd);
 $("pcCanvas").addEventListener("pointercancel",pcPtrEnd);
-$("pcCanvas").addEventListener("contextmenu",ev=>{ ev.preventDefault(); if(pcTool) pcToolCancel(); });
+$("pcCanvas").addEventListener("contextmenu",ev=>{
+  ev.preventDefault();
+  if(!pcTool) return;
+  if(pcTool.kind==="vpline"&&pcTool.verts.length>=2){ pcVexCommit(); return; }   // jobb klikk: vonallánc lezárása
+  if(PC_VKINDS[pcTool.kind]&&(pcTool.pend||pcTool.verts.length)){
+    pcTool.pend=null; pcTool.verts=[]; pcTool.hover=null;
+    setHint("Megkezdett elem elvetve."); pcOverlayDraw(); return;
+  }
+  pcToolCancel();
+});
 function pcStatusUpdate(q,mx,my){
   if(!pcActive) return;
   const st=pcActive, off=st.cloud.offset;
@@ -6017,19 +6034,108 @@ function pcQuadRectCss(key){
        : key==="front"? {x0:0,y0:h2,w:w2,h:r.height-h2}
        :                {x0:w2,y0:h2,w:r.width-w2,h:r.height-h2};
 }
-function pcToolPt(mx,my){
-  const key=pcTool.view, v=pcActive.views[key], q=pcQuadRectCss(key);
-  const {R,U}=pcTool.eff;
+function pcPtInView(key,eff,mx,my){
+  const v=pcActive.views[key], q=pcQuadRectCss(key);
+  const {R,U}=eff;
   const hw=v.half*(q.w/q.h), hh=v.half;
   const u=((mx-q.x0)-q.w/2)/(q.w/2)*hw, w=-((my-q.y0)-q.h/2)/(q.h/2)*hh;
   return {a:_pcDot(v.c,R)+u, b:_pcDot(v.c,U)+w};
 }
+function pcToolPt(mx,my){ return pcPtInView(pcTool.view,pcTool.eff,mx,my); }
 function pcToolScrV(p,key,eff){
   const v=pcActive.views[key], q=pcQuadRectCss(key);
   const {R,U}=eff;
   const hw=v.half*(q.w/q.h), hh=v.half;
   const u=p.a-_pcDot(v.c,R), w=p.b-_pcDot(v.c,U);
   return [q.x0+q.w/2+u/hw*(q.w/2), q.y0+q.h/2-w/hh*(q.h/2)];
+}
+/* ---- CAD-digitalizálás (pont/vonal/vonallánc) két nézetből ---- */
+const PC_VKINDS={vpt:1,vline:1,vpline:1};
+const PC_VAX={top:["x","y"],front:["x","z"],right:["y","z"]};   // nézet → munka-tengelyek (a,b)
+function pcWorkOf(p){ const M=pcActive.frame; if(!M) return p.slice();
+  return [M[0]*p[0]+M[3]*p[1]+M[6]*p[2], M[1]*p[0]+M[4]*p[1]+M[7]*p[2], M[2]*p[0]+M[5]*p[1]+M[8]*p[2]]; }  // M^T·p
+function pcWorldOfWork(w){ const M=pcActive.frame; return M? m3v(M,w) : w.slice(); }
+function pcViewAB(view,w){ return view==="top"? [w[0],w[1]] : view==="front"? [w[0],w[2]] : [w[1],w[2]]; }
+function pcVexMissing(){ const P=pcTool.pend; return P.x==null?"x":P.y==null?"y":"z"; }
+function pcVexOtherViews(){ return ["top","front","right"].filter(k=>k!==pcTool.pend.src); }
+function pcVexTargetDoc(){
+  let rec=drawings.find(r=>!r.pc);
+  if(!rec){
+    dwgCounter++;
+    rec={name:"Rajz"+dwgCounter, doc:freshDoc(), view:{s:1,tx:0,ty:0}, sel:[], undo:[], redo:[]};
+    drawings.push(rec); refreshDocTabs();
+  }
+  const D=rec.doc;
+  if(!D.layers.some(l=>l.name==="PF_vektor")) D.layers.push({name:"PF_vektor",color:"#59c1e8",ltype:"cont",visible:true});
+  return rec;
+}
+function pcVexAlign(){
+  const P=pcTool.pend;
+  for(const v2 of pcVexOtherViews()){
+    const eff2=pcEffBasis(pcActive,v2), vv=pcActive.views[v2];
+    const [ka2,kb2]=PC_VAX[v2];
+    if(P[ka2]!=null){ const d=P[ka2]-_pcDot(vv.c,eff2.R); vv.c[0]+=eff2.R[0]*d; vv.c[1]+=eff2.R[1]*d; vv.c[2]+=eff2.R[2]*d; }
+    if(P[kb2]!=null){ const d=P[kb2]-_pcDot(vv.c,eff2.U); vv.c[0]+=eff2.U[0]*d; vv.c[1]+=eff2.U[1]*d; vv.c[2]+=eff2.U[2]*d; }
+  }
+  pcRender();
+}
+function pcVexFmt(world){
+  const off=pcActive.cloud.offset;
+  return `Y ${(world[0]+off[0]).toFixed(3)}  X ${(world[1]+off[1]).toFixed(3)}  Z ${(world[2]+off[2]).toFixed(3)}`;
+}
+function pcVexAddVertex(world){
+  const T=pcTool;
+  T.verts.push(world);
+  if(T.kind==="vpt"){ pcVexCommit(); return; }
+  if(T.kind==="vline"&&T.verts.length===2){ pcVexCommit(); return; }
+  setHint(`${T.verts.length}. csúcs kész (${pcVexFmt(world)}). Következő csúcs: két koordináta egy nézetben, majd a hiányzó a másikban.`+(T.kind==="vpline"?" Jobb klikk: vonallánc lezárása.":""));
+  pcOverlayDraw();
+}
+function pcVexCommit(){
+  const T=pcTool, st=pcActive, off=st.cloud.offset;
+  const rec=pcVexTargetDoc(), D=rec.doc;
+  const W=T.verts.map(p=>[p[0]+off[0], p[1]+off[1], p[2]+off[2]]);
+  if(T.kind==="vpt"){
+    D.entities.push({id:newId(), type:"point", layer:"PF_vektor", x:W[0][0], y:W[0][1], z:W[0][2]});
+    setHint(`Pont elhelyezve a(z) „${rec.name}” rajzba: ${pcVexFmt(T.verts[0])}`);
+  } else if(T.kind==="vline"){
+    D.entities.push({id:newId(), type:"line", layer:"PF_vektor",
+      x1:W[0][0], y1:W[0][1], z1:W[0][2], x2:W[1][0], y2:W[1][1], z2:W[1][2]});
+    setHint(`Vonal elhelyezve a(z) „${rec.name}” rajzba (${(Math.hypot(W[1][0]-W[0][0],W[1][1]-W[0][1],W[1][2]-W[0][2])).toFixed(3)} m).`);
+  } else {
+    D.entities.push({id:newId(), type:"polyline", layer:"PF_vektor", is3d:true, closed:false, pts:W.map(p=>p.slice())});
+    setHint(`Vonallánc elhelyezve a(z) „${rec.name}” rajzba (${W.length} csúcs).`);
+  }
+  st.vec=st.vec||[];
+  st.vec.push({kind:T.kind, pts:T.verts.map(p=>p.slice())});
+  T.verts=[]; T.pend=null; T.hover=null;
+  pcOverlayDraw();
+}
+function pcVexClick(view,mx,my){
+  const eff=pcEffBasis(pcActive,view);
+  const {a,b}=pcPtInView(view,eff,mx,my);
+  const [ka,kb]=PC_VAX[view];
+  const T=pcTool;
+  if(!T.pend){
+    T.pend={x:null,y:null,z:null,src:view};
+    T.pend[ka]=a; T.pend[kb]=b;
+    pcVexAlign();
+    const miss=pcVexMissing();
+    setHint(`${view.toUpperCase()}: két koordináta megvan. A hiányzó „${miss.toUpperCase()}” koordinátát a(z) ${pcVexOtherViews().map(s=>s.toUpperCase()).join(" vagy ")} nézetben add meg – a segédvonal mutatja a helyet.`);
+    pcOverlayDraw();
+    return;
+  }
+  const miss=pcVexMissing();
+  if(!PC_VAX[view].includes(miss)){
+    T.pend={x:null,y:null,z:null,src:view};
+    T.pend[ka]=a; T.pend[kb]=b;
+    pcVexAlign(); pcOverlayDraw();
+    return;
+  }
+  T.pend[miss]=(ka===miss)? a : b;
+  const world=pcWorldOfWork([T.pend.x,T.pend.y,T.pend.z]);
+  T.pend=null;
+  pcVexAddVertex(world);
 }
 function pcToolScr(p){ return pcToolScrV(p,pcTool.view,pcTool.eff); }
 /* mérés: tengelynevek nézetenként (EOV-konvenció: kelet=Y, észak=X) */
@@ -6044,9 +6150,84 @@ function pcOverlayDraw(){
   const g=ov.getContext("2d");
   const d=window.devicePixelRatio||1;
   g.setTransform(1,0,0,1,0,0); g.clearRect(0,0,ov.width,ov.height);
-  if(!pcActive||!pcTool) return;
+  if(!pcActive) return;
   g.setTransform(d,0,0,d,0,0);
+  const _views=["top","front","right"];
+  const _effOf={}; _views.forEach(k=>_effOf[k]=pcEffBasis(pcActive,k));
+  const _scr=(view,w)=>{ const [A,B]=pcViewAB(view,w); return pcToolScrV({a:A,b:B},view,_effOf[view]); };
+  const _inView=(view,fn)=>{ const q=pcQuadRectCss(view); g.save(); g.beginPath(); g.rect(q.x0,q.y0,q.w,q.h); g.clip(); fn(q); g.restore(); };
+  /* elhelyezett vektorok mindig látszanak */
+  if(pcActive.vec&&pcActive.vec.length){
+    for(const e of pcActive.vec){
+      for(const view of _views) _inView(view,()=>{
+        const ps=e.pts.map(p=>_scr(view,pcWorkOf(p)));
+        g.strokeStyle="#7ee6b0"; g.setLineDash([]); g.lineWidth=1.5;
+        if(ps.length>1){ g.beginPath(); ps.forEach((s,i)=>i?g.lineTo(s[0],s[1]):g.moveTo(s[0],s[1])); g.stroke(); }
+        g.fillStyle="#7ee6b0";
+        for(const s of ps) g.fillRect(s[0]-2.5,s[1]-2.5,5,5);
+      });
+    }
+  }
+  if(!pcTool) return;
   g.lineWidth=1.6;
+  if(PC_VKINDS[pcTool.kind]){
+    const views=_views, effOf=_effOf, scr=_scr, inView=_inView;
+    /* folyamatban lévő csúcsok */
+    const T=pcTool;
+    if(T.verts.length){
+      for(const view of views) inView(view,()=>{
+        const ps=T.verts.map(p=>scr(view,pcWorkOf(p)));
+        g.strokeStyle="#ffd75e"; g.setLineDash([]); g.lineWidth=1.6;
+        if(ps.length>1){ g.beginPath(); ps.forEach((s,i)=>i?g.lineTo(s[0],s[1]):g.moveTo(s[0],s[1])); g.stroke(); }
+        g.fillStyle="#ffd75e";
+        for(const s of ps) g.fillRect(s[0]-3,s[1]-3,6,6);
+        /* gumivonal az utolsó csúcstól a kurzorig (ha nincs függő koordináta) */
+        if(!T.pend && T.hover && T.hover.view===view && (T.kind!=="vpt")){
+          const L=ps[ps.length-1];
+          g.strokeStyle="rgba(255,215,94,.6)"; g.setLineDash([5,4]);
+          g.beginPath(); g.moveTo(L[0],L[1]); g.lineTo(...pcToolScrV({a:T.hover.a,b:T.hover.b},view,effOf[view])); g.stroke();
+          g.setLineDash([]);
+        }
+      });
+    }
+    /* függő csúcs: kereszt a forrás-nézetben + segédvonal a többiben */
+    if(T.pend){
+      const P=T.pend;
+      for(const view of views) inView(view,q=>{
+        const [ka,kb]=PC_VAX[view];
+        const eff=effOf[view], vv=pcActive.views[view];
+        if(view===P.src){
+          const s=pcToolScrV({a:P[ka],b:P[kb]},view,eff);
+          g.strokeStyle="#59c1e8"; g.setLineDash([]); g.lineWidth=1.6;
+          g.beginPath();
+          g.moveTo(s[0]-8,s[1]); g.lineTo(s[0]+8,s[1]);
+          g.moveTo(s[0],s[1]-8); g.lineTo(s[0],s[1]+8);
+          g.stroke();
+          return;
+        }
+        g.strokeStyle="rgba(89,193,232,.75)"; g.setLineDash([7,5]); g.lineWidth=1.3;
+        if(P[ka]!=null){
+          const s=pcToolScrV({a:P[ka],b:_pcDot(vv.c,eff.U)},view,eff);
+          g.beginPath(); g.moveTo(s[0],q.y0); g.lineTo(s[0],q.y0+q.h); g.stroke();
+        }
+        if(P[kb]!=null){
+          const s=pcToolScrV({a:_pcDot(vv.c,eff.R),b:P[kb]},view,eff);
+          g.beginPath(); g.moveTo(q.x0,s[1]); g.lineTo(q.x0+q.w,s[1]); g.stroke();
+        }
+        g.setLineDash([]);
+        /* jelölt a segédvonalon a kurzor magasságában */
+        const miss=P.x==null?"x":P.y==null?"y":"z";
+        if(T.hover && T.hover.view===view && PC_VAX[view].includes(miss)){
+          const aa=(ka===miss)? T.hover.a : P[ka];
+          const bb=(kb===miss)? T.hover.b : P[kb];
+          const s=pcToolScrV({a:aa,b:bb},view,eff);
+          g.strokeStyle="#5fd06a"; g.lineWidth=1.8;
+          g.beginPath(); g.arc(s[0],s[1],6,0,Math.PI*2); g.stroke();
+        }
+      });
+    }
+    return;
+  }
   if(pcTool.kind==="meas"){
     const drawM=(view,eff,P1,P2)=>{
       const A=pcToolScrV(P1,view,eff), B=pcToolScrV(P2,view,eff);
@@ -6101,6 +6282,9 @@ function pcSyncCropUi(){
   if($("btnPcCropRect")) $("btnPcCropRect").classList.toggle("on",!!(pcTool&&pcTool.kind==="rect"));
   if($("btnPcCropFree")) $("btnPcCropFree").classList.toggle("on",!!(pcTool&&pcTool.kind==="free"));
   if($("btnPcMeasure")) $("btnPcMeasure").classList.toggle("on",!!(pcTool&&pcTool.kind==="meas"));
+  if($("btnPcVPt")) $("btnPcVPt").classList.toggle("on",!!(pcTool&&pcTool.kind==="vpt"));
+  if($("btnPcVLine")) $("btnPcVLine").classList.toggle("on",!!(pcTool&&pcTool.kind==="vline"));
+  if($("btnPcVPline")) $("btnPcVPline").classList.toggle("on",!!(pcTool&&pcTool.kind==="vpline"));
 }
 function pcToolCancel(){
   pcTool=null; pcSyncCropUi(); pcOverlayDraw();
@@ -6109,12 +6293,14 @@ function pcToolCancel(){
 function pcToolStart(kind){
   if(!pcActive){ setHint("Előbb tölts be (vagy aktiválj) egy pontfelhő fület."); return; }
   if(pcTool&&pcTool.kind===kind){ pcToolCancel(); return; }
-  pcTool={kind,stage:0,view:null,eff:null,p0:null,p1:null,p2:null,cur:null,last:null,pressed:false,downAt:null};
+  pcTool={kind,stage:0,view:null,eff:null,p0:null,p1:null,p2:null,cur:null,last:null,verts:[],pend:null,hover:null,pressed:false,downAt:null};
   setHint(kind==="rect"
     ? "Téglalap vágás: húzz egy téglalapot a TOP / RIGHT / FRONT nézetben (Esc / jobb klikk: mégse)."
     : kind==="free"
     ? "Szabad vágás: húzd meg az alapvonalat a TOP / RIGHT / FRONT nézetben (Esc / jobb klikk: mégse)."
-    : "Mérés: kattints/húzz az első ponttól a másodikig a TOP / RIGHT / FRONT nézetben (Esc / jobb klikk: befejezés).");
+    : kind==="meas"
+    ? "Mérés: kattints/húzz az első ponttól a másodikig a TOP / RIGHT / FRONT nézetben (Esc / jobb klikk: befejezés)."
+    : (kind==="vpt"?"Pont":kind==="vline"?"Vonal":"Vonallánc")+" elhelyezés: kattints egy nézetben (2 koordináta), majd a hiányzó koordinátát egy MÁSIK nézetben add meg. Esc: megkezdett elvetése / kilépés.");
   pcSyncCropUi();
 }
 function pcMeasFinish(pt){
@@ -6146,6 +6332,11 @@ function pcApplyFreeCrop(P1,P2,P3){
 }
 function pcToolDown(mx,my){
   const q=pcQuadAt(mx,my);
+  if(PC_VKINDS[pcTool.kind]){
+    if(q.key==="iso"){ setHint("Az izometrikus nézetben az elhelyezés nem használható – használd a TOP / RIGHT / FRONT nézetet."); return; }
+    pcVexClick(q.key,mx,my);
+    return;
+  }
   if(pcTool.stage===0){
     if(q.key==="iso"){ setHint("Az izometrikus nézetben a vágás nem használható – használd a TOP / RIGHT / FRONT nézetet."); return; }
     pcTool.view=q.key;
@@ -6167,6 +6358,14 @@ function pcToolDown(mx,my){
   if(pcTool.stage===2){ pcApplyFreeCrop(pcTool.p1,pcTool.p2,pt); }
 }
 function pcToolMove(mx,my){
+  if(PC_VKINDS[pcTool.kind]){
+    const q=pcQuadAt(mx,my);
+    if(q.key==="iso"){ pcTool.hover=null; pcOverlayDraw(); return; }
+    const eff=pcEffBasis(pcActive,q.key);
+    pcTool.hover={view:q.key, ...pcPtInView(q.key,eff,mx,my)};
+    pcOverlayDraw();
+    return;
+  }
   if(!pcTool.view||pcTool.stage<1) return;
   const q=pcQuadAt(mx,my);
   if(q.key!==pcTool.view) return;
@@ -6195,10 +6394,20 @@ function pcToolUp(mx,my){
 $("btnPcCropRect").onclick=()=>pcToolStart("rect");
 $("btnPcCropFree").onclick=()=>pcToolStart("free");
 $("btnPcMeasure").onclick=()=>pcToolStart("meas");
+$("btnPcVPt").onclick=()=>pcToolStart("vpt");
+$("btnPcVLine").onclick=()=>pcToolStart("vline");
+$("btnPcVPline").onclick=()=>pcToolStart("vpline");
 $("btnPcCropReset").onclick=()=>{ if(pcActive){ pcActive.crop=null; pcSyncCropUi(); pcRender(); setHint("Vágás visszaállítva."); } };
 $("btnPcRotReset").onclick=()=>{ if(pcActive){ pcActive.frame=null; pcSyncCropUi(); pcRender(); setHint("Nézet-forgatás visszaállítva."); } };
 document.addEventListener("keydown",ev=>{
-  if(ev.key==="Escape"&&pcActive&&pcTool){ pcToolCancel(); ev.stopPropagation(); ev.preventDefault(); }
+  if(ev.key==="Escape"&&pcActive&&pcTool){
+    if(PC_VKINDS[pcTool.kind]&&(pcTool.pend||pcTool.verts.length)){
+      pcTool.pend=null; pcTool.verts=[]; pcTool.hover=null;
+      setHint("Megkezdett elem elvetve – kezdhetsz újat, vagy Esc a kilépéshez.");
+      pcOverlayDraw();
+    } else pcToolCancel();
+    ev.stopPropagation(); ev.preventDefault();
+  }
 },true);
 
 $("pcColor").addEventListener("change",()=>{ if(!pcActive)return; pcActive.colorMode=$("pcColor").value; pcApplyColors(pcActive); pcRender(); });

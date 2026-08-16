@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v3.9** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v4.0** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -760,6 +760,26 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   A távolság a nézetsík 2D távolsága (a,b skalárkoordináták különbsége – az
   EOV-offset a különbségben kiesik). Teszt: pixelből függetlenül számolt várt érték
   = mért érték (31.182 m). UI címke v3.9.
+- **v4.0**: **Pontfelhő-digitalizálás: Pont / Vonal / Vonallánc CAD-entitás két
+  nézetből.** Új gombok a Pontfelhő ribbonon (`btnPcVPt/VLine/VPline`), a `pcTool`
+  állapotgép `vpt/vline/vpline` fajtái (`PC_VKINDS`). **Mechanika:** minden csúcshoz
+  3 koordináta KÉT nézetből: az első kattintás egy ortho nézetben 2 munkakoordinátát
+  ad (`PC_VAX`: TOP→x,y; FRONT→x,z; RIGHT→y,z), a hiányzó harmadikat egy MÁSIK
+  nézetben kell megadni. Az első kattintás után: (a) a másik két nézet **hozzáigazodik**
+  az ismert koordinátákhoz (`pcVexAlign` – a nézetközéppont az ismert tengelyek mentén
+  eltolva), (b) bennük **szaggatott segédvonal** jelzi az ismert koordináta helyét, a
+  kurzort zöld kör-jelölt követi A SEGÉDVONALON (a kattintás rá van pattintva: az
+  ismert tengely értéke az első nézetből jön, csak a hiányzó jön a kattintásból).
+  Bármelyik nézetben kezdhető (TOP/FRONT/RIGHT szimmetrikus); ISO-ban tiltott.
+  Munkakoordináták a `frame`-forgatással kompatibilisek (`pcWorkOf`=Mᵀ·p /
+  `pcWorldOfWork`=M·w). **Kimenet:** a kész elem VALÓDI CAD-entitásként (EOV
+  koordináták = lokális + offset) az első nem-pontfelhő rajzba kerül (`pcVexTargetDoc`,
+  ha nincs, létrejön), a **PF_vektor** rétegre: point / line (z1,z2) / 3D polyline.
+  A nézegetőben az elhelyezett vektorok zölden mindig látszanak (`st.vec`, overlay,
+  negyedenkénti clip-peléssel), pan/zoom közben is frissülnek (overlay hívás a
+  `pcDrawInteractive`/`pcProgStep` végén). Vonal: 2 csúcs után kész; vonallánc:
+  jobb klikk zárja (≥2 csúcs); Esc: megkezdett elem elvetése, második Esc: kilépés.
+  UI címke v4.0.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
