@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v3.8** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v3.9** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -749,6 +749,17 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   `#pcOverlay` 2D vászon a WebGL fölött (`pcOverlayDraw`). Eszköz-állapotgép:
   `pcTool` (stage 0/1/2, húzás ÉS klikk-klikk mód), Esc/jobb klikk: mégse; a
   pointerdown/move/up kezelők elején fut. UI címke v3.8.
+- **v3.9**: **Pontfelhő-mérés gumivonallal.** Új „Mérés" gomb a Pontfelhő ribbonon
+  (`btnPcMeasure`), a `pcTool` állapotgép `kind:"meas"` ágaként. A 3 ortho nézetben
+  (ISO tiltva, mint a vágásnál) kattintás/húzás az első ponttól: sárga gumivonal, kék
+  végpont-négyzetek, a vonal közepén ÉLŐ távolság-címke (`pcOverlayDraw` meas-ága,
+  `pcToolScrV` nézet-független vetítővel), a hint-sávban élő `Táv / ΔY / ΔX(/ΔZ)`
+  komponensek (`pcMeasFmt`, EOV-nevekkel nézetenként: TOP ΔY/ΔX, FRONT ΔY/ΔZ,
+  RIGHT ΔX/ΔZ). Második pont → az eredmény a hintben marad + a vonal a rajzon
+  (`pcTool.last`), és azonnal új mérés kezdhető; Esc / jobb klikk: befejezés.
+  A távolság a nézetsík 2D távolsága (a,b skalárkoordináták különbsége – az
+  EOV-offset a különbségben kiesik). Teszt: pixelből függetlenül számolt várt érték
+  = mért érték (31.182 m). UI címke v3.9.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
