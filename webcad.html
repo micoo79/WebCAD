@@ -938,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v3.3</span>
+      <span class="ver" id="wcVer">v3.4</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -955,7 +955,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v3.3</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v3.4</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -1228,6 +1228,9 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
         <button class="lyTool" id="btnOnlyUsed" title="Rétegek szűrése: minden réteg / csak a használtak">
           <span class="lyStackIcon"></span>
           <span id="onlyUsedLabel">Minden réteg BE</span></button>
+        <button class="lyTool" id="btnPenColors" title="Tollszínek – színes nyomtatáshoz rétegenkénti tollszín beállítása (a fekete-fehér nyomtatás felülírja)">
+          <svg viewBox="0 0 24 24"><path d="M3 17.5l9.5-9.5 3 3L6 20.5 3 21z" fill="#c7d0da" stroke="#8b97a5" stroke-width="1"/><path d="M12.5 8l3 3 3.2-3.2a1.4 1.4 0 000-2l-1-1a1.4 1.4 0 00-2 0z" fill="#f4c534" stroke="#c99a1e" stroke-width=".8"/><rect x="3" y="21.4" width="18" height="2.2" rx="1" fill="#e05a4c"/><rect x="3" y="21.4" width="4.5" height="2.2" rx="1" fill="#59c1e8"/><rect x="9" y="21.4" width="4.5" height="2.2" rx="1" fill="#5fd06a"/></svg>
+          <span>Tollszínek</span></button>
         <button class="lyTool" id="btnPurge" title="Rétegek tisztítása – almenü">
           <svg viewBox="0 0 24 24"><rect x="10.6" y="2.5" width="2.8" height="9" rx="1" fill="#cfd6df"/><rect x="4.5" y="11" width="15" height="4.2" rx="1" fill="#cfd6df"/><path d="M6 15.2v4M9 15.2v3M12 15.2v4M15 15.2v3M18 15.2v4" stroke="#cfd6df" stroke-width="1.8" stroke-linecap="round"/></svg>
           <span>Tisztítás ▾</span></button>
@@ -1603,6 +1606,29 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
   <div class="dlgFoot">
     <button class="btn" data-close="dlgCogoStart">Mégse</button>
     <button class="btn primary" id="cgpGo">Elhelyezés indítása</button>
+  </div>
+</dialog>
+
+<dialog id="dlgPenColors">
+  <div class="dlgHead"><span>Tollszínek – színes nyomtatás</span><button data-close="dlgPenColors">✕</button></div>
+  <div class="dlgBody" style="min-width:430px">
+    <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="radio" name="penMode" id="penModeOrig" value="orig"> A rétegek <b>eredeti színével</b> nyomtat</label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="radio" name="penMode" id="penModeCustom" value="custom"> <b>Egyedi tollszínek</b> rétegenként</label>
+    </div>
+    <div id="penBulk" style="display:flex;align-items:center;gap:9px;margin-bottom:11px;padding:8px 10px;background:#1b222b;border-radius:6px">
+      <span style="flex:1">Minden réteghez egységesen:</span>
+      <input type="color" id="penBulkColor" value="#000000" style="width:40px;height:26px;padding:0;border:1px solid #3a4653;border-radius:4px;background:none;cursor:pointer">
+      <button class="btn" id="penBulkApply">Alkalmaz mindre</button>
+    </div>
+    <div style="display:grid;grid-template-columns:22px 1fr 78px;gap:10px;padding:0 4px 5px;font-size:11px;color:var(--dim);border-bottom:1px solid #2e3742">
+      <span title="eredeti szín">●</span><span>Réteg</span><span style="text-align:center">Tollszín</span></div>
+    <div id="penList" style="max-height:48vh;overflow:auto"></div>
+    <div id="penEmpty" style="display:none;color:var(--dim);font-size:12px;padding:14px 4px">Nincs olyan réteg, amelyen rajzi elem van.</div>
+    <div style="font-size:11px;color:var(--dim);margin-top:10px;line-height:1.5">A tollszínek csak a <b>színes</b> nyomtatásra hatnak. Ha a nyomtatásnál a <b>fekete-fehér</b> opciót választod, az felülírja ezeket (minden fekete lesz).</div>
+  </div>
+  <div class="dlgFoot">
+    <button class="btn primary" data-close="dlgPenColors">Kész</button>
   </div>
 </dialog>
 
@@ -2939,10 +2965,17 @@ function drawAxes(){
 }
 let xctx=null; /* ha xref rajzolása zajlik: {mono:szín|null} */
 let pdfPaperView=false; /* PDF „nyomtatási kép" mód: a képernyő a fehér papírt utánozza */
+/* Tollszín: színes nyomtatáskor a réteg beállított tollszíne (ha van), különben az eredeti szín.
+   A fekete-fehér nyomtatást a printColor() külön kezeli (mindig felülírja feketére). */
+function penColorFor(e){
+  if(!doc.penColors || doc.penUseOriginal!==false) return entColor(e);
+  const pc=doc.penColors[e.layer||"0"];
+  return (typeof pc==="string" && /^#[0-9a-fA-F]{6}$/.test(pc)) ? pc : entColor(e);
+}
 function entDrawColor(e, sel){
   if(pdfPaperView){
     if(sel) return "#3aa0ff";
-    return printColor(xctx? (xctx.mono || (e.c||"#333333")) : entColor(e));
+    return printColor(xctx? (xctx.mono || (e.c||"#333333")) : penColorFor(e));
   }
   if(xctx) return xctx.mono || displayColor(e.c||"#cccccc");
   return sel? "#3aa0ff" : displayColor(entColor(e));
@@ -5111,6 +5144,62 @@ function refreshLayerPanel(){
   }
 }
 $("btnOnlyUsed").addEventListener("click", ()=>{ layerOnlyUsed=!layerOnlyUsed; refreshLayerPanel(); });
+
+/* ---------------- Tollszínek (színes nyomtatás) ---------------- */
+let _penDirty=false;
+function penUsedLayers(){
+  const s=new Set(); for(const e of doc.entities) s.add(e.layer||"0");
+  return [...s].sort((a,b)=>a.localeCompare(b,"hu"));
+}
+function penMarkDirty(){ if(!_penDirty){ snapshot(); _penDirty=true; } }
+function penPreviewRefresh(){ render(); if(typeof pdfPreviewRefresh==="function" && pdfPrint) try{ pdfPreviewRefresh(); }catch(_){} }
+function openPenColors(){
+  doc.penColors=doc.penColors||{};
+  if(doc.penUseOriginal===undefined) doc.penUseOriginal=true;
+  _penDirty=false;
+  $("penModeOrig").checked=(doc.penUseOriginal!==false);
+  $("penModeCustom").checked=(doc.penUseOriginal===false);
+  buildPenList();
+  penSyncMode(false);
+  $("dlgPenColors").showModal();
+}
+function buildPenList(){
+  const layers=penUsedLayers();
+  const box=$("penList");
+  if(!layers.length){ box.innerHTML=""; $("penEmpty").style.display="block"; return; }
+  $("penEmpty").style.display="none";
+  box.innerHTML=layers.map(n=>{
+    const l=getLayer(n); const orig=(l&&/^#[0-9a-fA-F]{6}$/.test(l.color))? l.color : "#d7dde5";
+    const pc=doc.penColors[n];
+    const pen=(typeof pc==="string" && /^#[0-9a-fA-F]{6}$/.test(pc))? pc : orig;
+    return `<div class="penRow" style="display:grid;grid-template-columns:22px 1fr 78px;gap:10px;align-items:center;padding:5px 4px;border-bottom:1px solid #232a32">`+
+      `<span title="eredeti szín" style="width:16px;height:16px;border-radius:3px;border:1px solid #555;background:${orig}"></span>`+
+      `<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(n)}</span>`+
+      `<input type="color" class="penCol" data-layer="${escAttr(n)}" value="${pen}" style="width:44px;height:24px;padding:0;border:1px solid #3a4653;border-radius:4px;background:none;cursor:pointer;justify-self:center">`+
+      `</div>`;
+  }).join("");
+  box.querySelectorAll(".penCol").forEach(inp=>{
+    inp.addEventListener("input",()=>{ penMarkDirty(); doc.penColors=doc.penColors||{}; doc.penColors[inp.dataset.layer]=inp.value; penPreviewRefresh(); });
+  });
+}
+function penSyncMode(mark){
+  const custom=$("penModeCustom").checked;
+  if(mark!==false){ penMarkDirty(); }
+  doc.penUseOriginal=!custom;
+  $("penBulk").style.opacity=custom?"1":".45";
+  $("penBulkColor").disabled=!custom; $("penBulkApply").disabled=!custom;
+  $("penList").querySelectorAll(".penCol").forEach(i=>i.disabled=!custom);
+  penPreviewRefresh();
+}
+$("btnPenColors").onclick=openPenColors;
+$("penModeOrig").onchange=()=>penSyncMode(true);
+$("penModeCustom").onchange=()=>penSyncMode(true);
+$("penBulkApply").onclick=()=>{
+  const c=$("penBulkColor").value;
+  penMarkDirty(); doc.penColors=doc.penColors||{};
+  for(const n of penUsedLayers()) doc.penColors[n]=c;
+  buildPenList(); penSyncMode(false);
+};
 function updateOnlyUsedBtn(){
   const ic=document.querySelector("#btnOnlyUsed .lyStackIcon");
   const lb=$("onlyUsedLabel");
@@ -7604,7 +7693,7 @@ function printColor(hex){
   return hex;
 }
 function printEntStyle(e,octx){
-  const col=printColor(octx.mono || (octx.xref? (e.c||"#333333") : entColor(e)));
+  const col=printColor(octx.mono || (octx.xref? (e.c||"#333333") : penColorFor(e)));
   const lw = octx.xref? (e.lww!=null?e.lww:0.25) : entLw(e);
   const dash=ltypeDash(octx.xref? (e.lt||"cont") : entLtype(e)).map(v=>v*0.294);
   return {col, lw:Math.max(0.05,lw), dash, alpha:(octx.alpha==null?1:octx.alpha)};

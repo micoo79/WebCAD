@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v3.3** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v3.4** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -675,6 +675,20 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   közelebb a vonalhoz**: `Rr` 42→26 (érintésen 30), a pipa 30/34. Érintésen az ikonok
   1.28×-osra nagyítva (`orthoTouchK`). (c) Új **gumivonal** a végpont-célzáshoz
   (`e` fázis: kezdőponttól a kurzorig piros szaggatott). UI címke v3.3.
+- **v3.4**: **Tollszínek – rétegenkénti nyomtatási szín (színes nyomtatás).** Új
+  „Tollszínek” gomb a réteg-tulajdonságkezelő eszköztárában (`btnPenColors`), modal
+  `dlgPenColors`. Két mód: **eredeti színnel** (`doc.penUseOriginal=true`, alapértelmezett)
+  vagy **egyedi tollszínek** (`doc.penUseOriginal=false`, `doc.penColors={rétegnév:hex}`).
+  A modal **csak azokat a rétegeket listázza, amelyeken van rajzi elem** (`penUsedLayers()`
+  = a `doc.entities` rétegei). Rétegenként `<input type=color>`, és **tömeges** kitöltés
+  (`penBulkApply` → minden rétegre ugyanaz). Nyomtatáskor `penColorFor(e)` adja a forrás-
+  színt: egyedi módban a réteg tollszíne (ha nincs, az eredeti), különben az eredeti.
+  Beépítve a nyomtatási útvonalakba: `entDrawColor` (papír-előnézet) és `printEntStyle`
+  (vektoros PDF) – `printColor(penColorFor(e))`. A **fekete-fehér** (`pdfPrint.mono`)
+  nyomtatás a `printColor` első sorában MINDIG felülírja feketére (a tollszínt is).
+  Csak a nyomtatásra hat; a képernyőn és DXF/DWG-ben az eredeti színek maradnak; a
+  `penColors`/`penUseOriginal` a `doc`-on van → **WCD-be mentődik**. Undo: `penMarkDirty`
+  (egy snapshot editálási munkamenetenként). UI címke v3.4.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
