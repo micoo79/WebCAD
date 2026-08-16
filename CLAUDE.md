@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v3.7** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v3.8** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -731,6 +731,24 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   `powerPreference:"high-performance"`; a `preserveDrawingBuffer` kell a
   negyed-frissítéshez. Mérés (SwiftShader, 3M pont): húzás képkocka 4700 ms → ~30 ms.
   UI címke v3.7.
+- **v3.8**: **Pontfelhő-vágás (crop) + nézet-beforgatás.** A ribbonból a „Nézegető"
+  gomb és a tooltipek törölve; helyettük: **Tégl. vágás**, **Szabad vágás** (elforgatott
+  négyzet ikon), **Vágás reset** és **Forgatás reset** (utóbbi kettő csak élő
+  vágás/forgatás esetén látszik, `pcSyncCropUi`). **Megvalósítás:** a vágás a VERTEX
+  SHADERBEN történik (uCropOn/uCropA/uCropB/uCropLim uniformok; a kieső pont
+  `gl_Position=vec4(2,2,2,1)` → klippelve) – nincs CPU-szűrés, a reset azonnali.
+  `st.crop={A,B,lim}`: tartás, ha `aMin≤dot(p,A)≤aMax && bMin≤dot(p,B)≤bMax` (a
+  mélységi tengely mentén korlátlan sáv). **Téglalap vágás:** a 3 ortho nézet
+  egyikében (IZOMETRIKUSBAN TILTOTT) húzással/két kattintással; A/B = a nézet
+  eff. R/U tengelyei. **Szabad vágás:** (1) alapvonal gumivonallal, (2) harmadik
+  ponttal merőleges szélesség (gumitéglalap) → elforgatott téglalap-vágás, ÉS (3) a
+  nézetek beforgatása: `st.frame` 3×3 forgatómátrix (`m3rot` az adott nézet
+  mélységtengelye körül az alapvonal szögével, `m3mul`-lal komponálva) – az
+  `pcEffBasis(st,key)` minden nézet-bázist (MVP, pan, zoom, státusz) ezen át ad
+  vissza, így az alapvonal lesz az új vízszintes tengely mindenhol. Gumivonalak:
+  `#pcOverlay` 2D vászon a WebGL fölött (`pcOverlayDraw`). Eszköz-állapotgép:
+  `pcTool` (stage 0/1/2, húzás ÉS klikk-klikk mód), Esc/jobb klikk: mégse; a
+  pointerdown/move/up kezelők elején fut. UI címke v3.8.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 

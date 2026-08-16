@@ -938,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v3.7</span>
+      <span class="ver" id="wcVer">v3.8</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -955,7 +955,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v3.7</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v3.8</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -1139,10 +1139,16 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="ribPage" data-page="pcloud">
       <div class="ribPanel">
         <div class="ribBtns">
-          <button class="rbig" id="btnPcLoad" title="Pontfelhő betöltése (LAS / E57 / PLY) – új rajzablakban nyílik meg">
+          <button class="rbig" id="btnPcLoad">
             <svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="1.2" fill="#59c1e8"/><circle cx="9.5" cy="14.5" r="1.2" fill="#59c1e8"/><circle cx="13" cy="16" r="1.2" fill="#5fd06a"/><circle cx="16.5" cy="13" r="1.2" fill="#5fd06a"/><circle cx="12" cy="11.5" r="1.2" fill="#ffd75e"/><circle cx="8" cy="10.5" r="1.2" fill="#ffd75e"/><circle cx="15" cy="9" r="1.2" fill="#e0724c"/><circle cx="11" cy="7.5" r="1.2" fill="#e0724c"/><path d="M18.5 3.5v5M16 6h5" stroke="#e8ecf2" stroke-width="1.4"/></svg>Betöltés…</button>
-          <button class="rbig" id="btnPcView" title="A betöltött pontfelhő fülének aktiválása" disabled>
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="15" rx="1.5" fill="none" stroke="#8b97a5" stroke-width="1.3"/><path d="M12 4v15M3 11.5h18" stroke="#8b97a5" stroke-width="1"/><circle cx="7" cy="8" r="1" fill="#59c1e8"/><circle cx="17" cy="8" r="1" fill="#5fd06a"/><circle cx="7" cy="15.5" r="1" fill="#ffd75e"/><path d="M15 14l2.4 1.6-2.4 1.6" fill="none" stroke="#e0724c" stroke-width="1.2"/></svg>Nézegető</button>
+          <button class="rbig" id="btnPcCropRect">
+            <svg viewBox="0 0 24 24"><circle cx="4.5" cy="5" r="1" fill="#5c6774"/><circle cx="19.5" cy="4.5" r="1" fill="#5c6774"/><circle cx="4" cy="19.5" r="1" fill="#5c6774"/><circle cx="20" cy="19" r="1" fill="#5c6774"/><rect x="7" y="8" width="10" height="8" fill="none" stroke="#59c1e8" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="10" cy="11" r="1.1" fill="#5fd06a"/><circle cx="13.5" cy="13" r="1.1" fill="#5fd06a"/><circle cx="11.5" cy="14.3" r="1.1" fill="#ffd75e"/></svg>Tégl. vágás</button>
+          <button class="rbig" id="btnPcCropFree">
+            <svg viewBox="0 0 24 24"><circle cx="4.5" cy="5" r="1" fill="#5c6774"/><circle cx="19.5" cy="4.5" r="1" fill="#5c6774"/><circle cx="4" cy="19.5" r="1" fill="#5c6774"/><circle cx="20" cy="19" r="1" fill="#5c6774"/><rect x="7.8" y="7.8" width="8.4" height="8.4" fill="none" stroke="#ffd75e" stroke-width="1.5" stroke-dasharray="3 2" transform="rotate(45 12 12)"/><circle cx="12" cy="12" r="1.1" fill="#5fd06a"/></svg>Szabad vágás</button>
+          <button class="rbig" id="btnPcCropReset" style="display:none">
+            <svg viewBox="0 0 24 24"><rect x="6" y="7" width="12" height="9" fill="none" stroke="#8b97a5" stroke-width="1.4" stroke-dasharray="3 2"/><path d="M9 20h8a3.2 3.2 0 000-6.4h-2" fill="none" stroke="#e0724c" stroke-width="1.6"/><path d="M17 11l-2.6 2.6L17 16.2" fill="none" stroke="#e0724c" stroke-width="1.6" transform="translate(-2 0)"/></svg>Vágás reset</button>
+          <button class="rbig" id="btnPcRotReset" style="display:none">
+            <svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 11-2.4-5.3" fill="none" stroke="#59c1e8" stroke-width="1.7"/><path d="M17 2.8v4h-4" fill="none" stroke="#59c1e8" stroke-width="1.7"/><path d="M9.5 12l2.5 2.5L16.5 10" fill="none" stroke="#5fd06a" stroke-width="1.5"/></svg>Forgatás reset</button>
         </div>
         <div class="ribCap">PONTFELHŐ</div>
       </div>
@@ -1321,6 +1327,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     </div>
     <div id="pcWrap">
       <canvas id="pcCanvas"></canvas>
+      <canvas id="pcOverlay" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2"></canvas>
       <div id="pcDivH"></div><div id="pcDivV"></div>
       <div class="pcLbl" style="left:8px;top:6px">FELÜLNÉZET (TOP)</div>
       <div class="pcLbl" style="left:calc(50% + 8px);top:6px">JOBB NÉZET (RIGHT)</div>
@@ -5583,7 +5590,7 @@ function pcFinalize(name,res){
     }
   }
   const st={cloud, colorMode:cloud.rgb?"rgb":"height", ptSize:2, lodN:Math.min(n,400000),
-            views:null, posBuf:null, colBuf:null, colDirty:true};
+            views:null, posBuf:null, colBuf:null, colDirty:true, crop:null, frame:null};
   pcFitViews(st);
   saveCurDwg();
   const base=name.replace(/\.[^.]+$/,"");
@@ -5615,10 +5622,8 @@ async function pcHandleFile(f){
 }
 $("btnPcLoad").onclick=()=>$("pcFile").click();
 $("pcFile").addEventListener("change",ev=>{ const f=ev.target.files[0]; ev.target.value=""; if(f) pcHandleFile(f); });
-$("btnPcView").onclick=()=>{ const i=drawings.findIndex(d=>d.pc); if(i>=0) activateDwg(i); };
 function pcUpdateRibbon(){
   const tabs=drawings.filter(d=>d.pc);
-  $("btnPcView").disabled=!tabs.length;
   const st=(drawings[curDwg]&&drawings[curDwg].pc)||(tabs[0]&&tabs[0].pc);
   $("pcInfo").innerHTML = st?
     `<b style="color:var(--txt)">${escHtml(st.cloud.name)}</b><br>${st.cloud.n.toLocaleString("hu-HU")} pont`+
@@ -5645,12 +5650,30 @@ function pcIsoBasis(v){
   const U=[F[1]*R[2]-F[2]*R[1], F[2]*R[0]-F[0]*R[2], F[0]*R[1]-F[1]*R[0]];
   return {R,U,F};
 }
+/* 3×3 mátrix segédek (sorfolytonos) – a szabad vágás nézet-beforgatásához */
+function m3v(M,v){ return [M[0]*v[0]+M[1]*v[1]+M[2]*v[2], M[3]*v[0]+M[4]*v[1]+M[5]*v[2], M[6]*v[0]+M[7]*v[1]+M[8]*v[2]]; }
+function m3mul(A,B){ const C=new Array(9); for(let i=0;i<3;i++)for(let j=0;j<3;j++) C[3*i+j]=A[3*i]*B[j]+A[3*i+1]*B[3+j]+A[3*i+2]*B[6+j]; return C; }
+function m3rot(u,th){
+  const c=Math.cos(th), s=Math.sin(th), t=1-c, x=u[0],y=u[1],z=u[2];
+  return [c+x*x*t, x*y*t-z*s, x*z*t+y*s,
+          y*x*t+z*s, c+y*y*t, y*z*t-x*s,
+          z*x*t-y*s, z*y*t+x*s, c+z*z*t];
+}
+/* effektív nézet-bázis: kanonikus bázis × (opcionális) munkakoordináta-forgatás */
+function pcEffBasis(st,key){
+  const v=st.views[key];
+  let R,U,F;
+  if(key==="iso"){ const B=pcIsoBasis(v); R=B.R; U=B.U; F=B.F; }
+  else { R=v.R; U=v.U; F=[R[1]*U[2]-R[2]*U[1], R[2]*U[0]-R[0]*U[2], R[0]*U[1]-R[1]*U[0]]; }
+  const M=st.frame;
+  if(M){ R=m3v(M,R); U=m3v(M,U); F=m3v(M,F); }
+  return {R,U,F};
+}
 function pcMVP(st,key,aspect){
   const v=st.views[key], d=st.cloud.diag*4;
   const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
-  let R,U,F;
+  const EB=pcEffBasis(st,key); const R=EB.R, U=EB.U, F=EB.F;
   if(key==="iso"){
-    const B=pcIsoBasis(v); R=B.R; U=B.U; F=B.F;
     if($("pcPersp").checked){
       const FOV=50*Math.PI/180, tanH=Math.tan(FOV/2);
       const dist=Math.max(1e-3,v.half/tanH);
@@ -5666,7 +5689,7 @@ function pcMVP(st,key,aspect){
         a*te[0], b2*te[1], cz*te[2]+dz, -te[2]
       ]);
     }
-  } else { R=v.R; U=v.U; F=[R[1]*U[2]-R[2]*U[1], R[2]*U[0]-R[0]*U[2], R[0]*U[1]-R[1]*U[0]]; }
+  }
   const hh=v.half, hw=hh*aspect;
   return new Float32Array([
     R[0]/hw, U[0]/hh, -F[0]/d, 0,
@@ -5683,7 +5706,14 @@ function pcInitGL(){
   const gl=cvp.getContext("webgl",{antialias:false,preserveDrawingBuffer:true,powerPreference:"high-performance"})||cvp.getContext("experimental-webgl");
   if(!gl){ uiAlert("A böngésző nem támogatja a WebGL-t – a pontfelhő nézegető nem indítható.","Pontfelhő"); return null; }
   const vs=gl.createShader(gl.VERTEX_SHADER);
-  gl.shaderSource(vs,"attribute vec3 aPos; attribute vec3 aCol; uniform mat4 uMVP; uniform float uSize; varying vec3 vCol; void main(){ gl_Position=uMVP*vec4(aPos,1.0); gl_PointSize=uSize; vCol=aCol; }");
+  gl.shaderSource(vs,
+    "attribute vec3 aPos; attribute vec3 aCol; uniform mat4 uMVP; uniform float uSize;"+
+    "uniform float uCropOn; uniform vec3 uCropA; uniform vec3 uCropB; uniform vec4 uCropLim;"+
+    "varying vec3 vCol;"+
+    "void main(){"+
+    " if(uCropOn>0.5){ float a=dot(aPos,uCropA); float b=dot(aPos,uCropB);"+
+    "  if(a<uCropLim.x||a>uCropLim.y||b<uCropLim.z||b>uCropLim.w){ gl_Position=vec4(2.0,2.0,2.0,1.0); gl_PointSize=0.0; vCol=vec3(0.0); return; } }"+
+    " gl_Position=uMVP*vec4(aPos,1.0); gl_PointSize=uSize; vCol=aCol; }");
   gl.compileShader(vs);
   const fs=gl.createShader(gl.FRAGMENT_SHADER);
   gl.shaderSource(fs,"precision mediump float; varying vec3 vCol; void main(){ gl_FragColor=vec4(vCol,1.0); }");
@@ -5693,7 +5723,9 @@ function pcInitGL(){
   if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){ uiAlert("WebGL shader hiba: "+gl.getProgramInfoLog(prog),"Pontfelhő"); return null; }
   gl.useProgram(prog);
   pcGL={gl,prog,aPos:gl.getAttribLocation(prog,"aPos"),aCol:gl.getAttribLocation(prog,"aCol"),
-        uMVP:gl.getUniformLocation(prog,"uMVP"),uSize:gl.getUniformLocation(prog,"uSize")};
+        uMVP:gl.getUniformLocation(prog,"uMVP"),uSize:gl.getUniformLocation(prog,"uSize"),
+        uCropOn:gl.getUniformLocation(prog,"uCropOn"),uCropA:gl.getUniformLocation(prog,"uCropA"),
+        uCropB:gl.getUniformLocation(prog,"uCropB"),uCropLim:gl.getUniformLocation(prog,"uCropLim")};
   gl.enable(gl.DEPTH_TEST);
   return pcGL;
 }
@@ -5750,6 +5782,9 @@ function pcResize(){
   const d=window.devicePixelRatio||1;
   const W=Math.max(2,Math.round(r.width*d)), H=Math.max(2,Math.round(r.height*d));
   if(cvp.width!==W||cvp.height!==H){ cvp.width=W; cvp.height=H; }
+  const ov=$("pcOverlay");
+  if(ov && (ov.width!==W||ov.height!==H)){ ov.width=W; ov.height=H; }
+  if(typeof pcOverlayDraw==="function") pcOverlayDraw();
   pcRender();
 }
 /* Rajzolás-ütemezés.
@@ -5773,6 +5808,9 @@ function pcBindAttribs(st){
   gl.bindBuffer(gl.ARRAY_BUFFER,st.colBuf);
   gl.enableVertexAttribArray(G.aCol);
   gl.vertexAttribPointer(G.aCol,3,gl.UNSIGNED_BYTE,true,0,0);
+  const cr=st.crop;
+  gl.uniform1f(G.uCropOn, cr?1:0);
+  if(cr){ gl.uniform3fv(G.uCropA,cr.A); gl.uniform3fv(G.uCropB,cr.B); gl.uniform4fv(G.uCropLim,cr.lim); }
   gl.enable(gl.SCISSOR_TEST);
 }
 function pcCancelProg(){ if(pcProg&&pcProg.raf) cancelAnimationFrame(pcProg.raf); pcProg=null; }
@@ -5862,9 +5900,7 @@ const pcPtrs=new Map();
 function pcViewOf(key){ return pcActive.views[key]; }
 function pcPanView(key,q,dx,dy){
   const v=pcViewOf(key);
-  let R,U;
-  if(key==="iso"){ const B=pcIsoBasis(v); R=B.R; U=B.U; }
-  else { R=v.R; U=v.U; }
+  const {R,U}=pcEffBasis(pcActive,key);
   const wpp=2*v.half/q.h;
   v.c[0]+= -R[0]*dx*wpp + U[0]*dy*wpp;
   v.c[1]+= -R[1]*dx*wpp + U[1]*dy*wpp;
@@ -5872,9 +5908,7 @@ function pcPanView(key,q,dx,dy){
 }
 function pcZoomView(key,q,mx,my,k){
   const v=pcViewOf(key);
-  let R,U;
-  if(key==="iso"){ const B=pcIsoBasis(v); R=B.R; U=B.U; }
-  else { R=v.R; U=v.U; }
+  const {R,U}=pcEffBasis(pcActive,key);
   const hh=v.half, hw=hh*(q.w/q.h);
   const u=((mx-q.x0)-q.w/2)/(q.w/2)*hw;
   const w=-((my-q.y0)-q.h/2)/(q.h/2)*hh;
@@ -5890,6 +5924,7 @@ $("pcCanvas").addEventListener("wheel",ev=>{
   const q=pcQuadAt(mx,my);
   pcZoomView(q.key,q,mx,my,Math.exp(ev.deltaY*0.0011));
   pcRequestRender(q.key,true); pcStatusUpdate(q,mx,my);
+  if(typeof pcOverlayDraw==="function") pcOverlayDraw();
 },{passive:false});
 $("pcCanvas").addEventListener("pointerdown",ev=>{
   if(!pcActive) return;
@@ -5899,6 +5934,7 @@ $("pcCanvas").addEventListener("pointerdown",ev=>{
   const mx=ev.clientX-r.left, my=ev.clientY-r.top;
   pcPtrs.set(ev.pointerId,{x:mx,y:my});
   if(pcPtrs.size===2){ pcDrag=null; return; }
+  if(pcTool){ pcToolDown(mx,my); return; }
   const q=pcQuadAt(mx,my);
   const rot=(q.key==="iso" && ev.button===0 && !ev.shiftKey);
   pcDrag={id:ev.pointerId, q, mode:rot?"rot":"pan", x:mx, y:my};
@@ -5908,6 +5944,10 @@ $("pcCanvas").addEventListener("pointermove",ev=>{
   const r=$("pcWrap").getBoundingClientRect();
   const mx=ev.clientX-r.left, my=ev.clientY-r.top;
   if(pcPtrs.has(ev.pointerId)) pcPtrs.set(ev.pointerId,{x:mx,y:my});
+  if(pcTool){
+    if(pcPtrs.size<2){ pcToolMove(mx,my); const q=pcQuadAt(mx,my); pcStatusUpdate(q,mx,my); }
+    return;
+  }
   if(pcPtrs.size===2){
     const pts=[...pcPtrs.values()];
     if(!pcDrag||pcDrag.mode!=="pinch"){
@@ -5941,10 +5981,16 @@ $("pcCanvas").addEventListener("pointermove",ev=>{
     pcStatusUpdate(q,mx,my);
   }
 });
-function pcPtrEnd(ev){ pcPtrs.delete(ev.pointerId); if(pcDrag&&(pcDrag.id===ev.pointerId||pcPtrs.size<2)) pcDrag=null; }
+function pcPtrEnd(ev){
+  if(pcTool && pcPtrs.has(ev.pointerId)){
+    const r=$("pcWrap").getBoundingClientRect();
+    pcToolUp(ev.clientX-r.left, ev.clientY-r.top);
+  }
+  pcPtrs.delete(ev.pointerId); if(pcDrag&&(pcDrag.id===ev.pointerId||pcPtrs.size<2)) pcDrag=null;
+}
 $("pcCanvas").addEventListener("pointerup",pcPtrEnd);
 $("pcCanvas").addEventListener("pointercancel",pcPtrEnd);
-$("pcCanvas").addEventListener("contextmenu",ev=>ev.preventDefault());
+$("pcCanvas").addEventListener("contextmenu",ev=>{ ev.preventDefault(); if(pcTool) pcToolCancel(); });
 function pcStatusUpdate(q,mx,my){
   if(!pcActive) return;
   const st=pcActive, off=st.cloud.offset;
@@ -5953,11 +5999,160 @@ function pcStatusUpdate(q,mx,my){
   const hw=v.half*(q.w/q.h), hh=v.half;
   const u=((mx-q.x0)-q.w/2)/(q.w/2)*hw;
   const w=-((my-q.y0)-q.h/2)/(q.h/2)*hh;
-  const R=v.R,U=v.U;
+  const {R,U}=pcEffBasis(st,q.key);
   const p=[v.c[0]+R[0]*u+U[0]*w, v.c[1]+R[1]*u+U[1]*w, v.c[2]+R[2]*u+U[2]*w];
   const Y=(p[0]+off[0]).toFixed(2), X=(p[1]+off[1]).toFixed(2), Z=(p[2]+off[2]).toFixed(2);
   $("pcStatus").textContent = q.key==="top"? `Y ${Y}   X ${X}` : q.key==="front"? `Y ${Y}   Z ${Z}` : `X ${X}   Z ${Z}`;
 }
+/* ---------- VÁGÁS (crop) eszközök ---------- */
+let pcTool=null;   // {kind:"rect"|"free", stage:0..2, view, eff:{R,U,F}, p0,p1,p2,cur, pressed, downAt}
+const _pcDot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+function pcQuadRectCss(key){
+  const r=$("pcWrap").getBoundingClientRect();
+  const w2=r.width/2, h2=r.height/2;
+  return key==="top"?   {x0:0,y0:0,w:w2,h:h2}
+       : key==="right"? {x0:w2,y0:0,w:r.width-w2,h:h2}
+       : key==="front"? {x0:0,y0:h2,w:w2,h:r.height-h2}
+       :                {x0:w2,y0:h2,w:r.width-w2,h:r.height-h2};
+}
+function pcToolPt(mx,my){
+  const key=pcTool.view, v=pcActive.views[key], q=pcQuadRectCss(key);
+  const {R,U}=pcTool.eff;
+  const hw=v.half*(q.w/q.h), hh=v.half;
+  const u=((mx-q.x0)-q.w/2)/(q.w/2)*hw, w=-((my-q.y0)-q.h/2)/(q.h/2)*hh;
+  return {a:_pcDot(v.c,R)+u, b:_pcDot(v.c,U)+w};
+}
+function pcToolScr(p){
+  const key=pcTool.view, v=pcActive.views[key], q=pcQuadRectCss(key);
+  const {R,U}=pcTool.eff;
+  const hw=v.half*(q.w/q.h), hh=v.half;
+  const u=p.a-_pcDot(v.c,R), w=p.b-_pcDot(v.c,U);
+  return [q.x0+q.w/2+u/hw*(q.w/2), q.y0+q.h/2-w/hh*(q.h/2)];
+}
+function pcOverlayDraw(){
+  const ov=$("pcOverlay"); if(!ov) return;
+  const g=ov.getContext("2d");
+  const d=window.devicePixelRatio||1;
+  g.setTransform(1,0,0,1,0,0); g.clearRect(0,0,ov.width,ov.height);
+  if(!pcActive||!pcTool||!pcTool.view||!pcTool.cur) return;
+  g.setTransform(d,0,0,d,0,0);
+  g.lineWidth=1.6;
+  if(pcTool.kind==="rect"&&pcTool.stage===1){
+    const A=pcToolScr(pcTool.p0), B=pcToolScr(pcTool.cur);
+    g.strokeStyle="#59c1e8"; g.setLineDash([6,4]);
+    g.strokeRect(Math.min(A[0],B[0]),Math.min(A[1],B[1]),Math.abs(B[0]-A[0]),Math.abs(B[1]-A[1]));
+  } else if(pcTool.kind==="free"){
+    const A=pcToolScr(pcTool.p1);
+    if(pcTool.stage===1){
+      const C=pcToolScr(pcTool.cur);
+      g.strokeStyle="#ffd75e"; g.setLineDash([]);
+      g.beginPath(); g.moveTo(A[0],A[1]); g.lineTo(C[0],C[1]); g.stroke();
+    } else if(pcTool.stage===2){
+      const p1=pcTool.p1,p2=pcTool.p2,cu=pcTool.cur;
+      const th=Math.atan2(p2.b-p1.b,p2.a-p1.a), c=Math.cos(th), s=Math.sin(th);
+      const w=-(cu.a-p1.a)*s+(cu.b-p1.b)*c;
+      const c3={a:p2.a-s*w,b:p2.b+c*w}, c4={a:p1.a-s*w,b:p1.b+c*w};
+      const B=pcToolScr(p2), C3=pcToolScr(c3), C4=pcToolScr(c4);
+      g.strokeStyle="#ffd75e"; g.setLineDash([]);
+      g.beginPath(); g.moveTo(A[0],A[1]); g.lineTo(B[0],B[1]); g.stroke();
+      g.strokeStyle="#59c1e8"; g.setLineDash([6,4]);
+      g.beginPath(); g.moveTo(A[0],A[1]); g.lineTo(B[0],B[1]); g.lineTo(C3[0],C3[1]); g.lineTo(C4[0],C4[1]); g.closePath(); g.stroke();
+    }
+  }
+  g.setLineDash([]);
+}
+function pcSyncCropUi(){
+  const st=pcActive;
+  if($("btnPcCropReset")) $("btnPcCropReset").style.display=(st&&st.crop)?"":"none";
+  if($("btnPcRotReset")) $("btnPcRotReset").style.display=(st&&st.frame)?"":"none";
+  if($("btnPcCropRect")) $("btnPcCropRect").classList.toggle("on",!!(pcTool&&pcTool.kind==="rect"));
+  if($("btnPcCropFree")) $("btnPcCropFree").classList.toggle("on",!!(pcTool&&pcTool.kind==="free"));
+}
+function pcToolCancel(){
+  pcTool=null; pcSyncCropUi(); pcOverlayDraw();
+  setHint("");
+}
+function pcToolStart(kind){
+  if(!pcActive){ setHint("Előbb tölts be (vagy aktiválj) egy pontfelhő fület."); return; }
+  if(pcTool&&pcTool.kind===kind){ pcToolCancel(); return; }
+  pcTool={kind,stage:0,view:null,eff:null,p0:null,p1:null,p2:null,cur:null,pressed:false,downAt:null};
+  setHint(kind==="rect"
+    ? "Téglalap vágás: húzz egy téglalapot a TOP / RIGHT / FRONT nézetben (Esc / jobb klikk: mégse)."
+    : "Szabad vágás: húzd meg az alapvonalat a TOP / RIGHT / FRONT nézetben (Esc / jobb klikk: mégse).");
+  pcSyncCropUi();
+}
+function pcApplyRectCrop(P0,P1){
+  const {R,U}=pcTool.eff;
+  pcActive.crop={A:R.slice(),B:U.slice(),
+    lim:[Math.min(P0.a,P1.a),Math.max(P0.a,P1.a),Math.min(P0.b,P1.b),Math.max(P0.b,P1.b)]};
+  pcToolCancel(); pcSyncCropUi(); pcRender();
+  setHint("Vágás alkalmazva – a „Vágás reset” gombbal visszaállítható.");
+}
+function pcApplyFreeCrop(P1,P2,P3){
+  const {R,U,F}=pcTool.eff;
+  const th=Math.atan2(P2.b-P1.b,P2.a-P1.a);
+  const c=Math.cos(th), s=Math.sin(th);
+  const A=[R[0]*c+U[0]*s, R[1]*c+U[1]*s, R[2]*c+U[2]*s];
+  const B=[-R[0]*s+U[0]*c, -R[1]*s+U[1]*c, -R[2]*s+U[2]*c];
+  const a1=P1.a*c+P1.b*s, a2=P2.a*c+P2.b*s;
+  const b1=-P1.a*s+P1.b*c, b3=-P3.a*s+P3.b*c;
+  pcActive.crop={A,B,lim:[Math.min(a1,a2),Math.max(a1,a2),Math.min(b1,b3),Math.max(b1,b3)]};
+  pcActive.frame=m3mul(m3rot(F,th), pcActive.frame||[1,0,0,0,1,0,0,0,1]);   // alapvonal = új vízszintes tengely
+  pcToolCancel(); pcSyncCropUi(); pcRender();
+  setHint("Szabad vágás alkalmazva, a nézet az alapvonalra forgatva – „Vágás reset” / „Forgatás reset” a visszaállításhoz.");
+}
+function pcToolDown(mx,my){
+  const q=pcQuadAt(mx,my);
+  if(pcTool.stage===0){
+    if(q.key==="iso"){ setHint("Az izometrikus nézetben a vágás nem használható – használd a TOP / RIGHT / FRONT nézetet."); return; }
+    pcTool.view=q.key;
+    pcTool.eff=pcEffBasis(pcActive,q.key);
+    const pt=pcToolPt(mx,my);
+    if(pcTool.kind==="rect") pcTool.p0=pt; else pcTool.p1=pt;
+    pcTool.cur=pt; pcTool.stage=1; pcTool.pressed=true; pcTool.downAt=[mx,my];
+    pcOverlayDraw();
+    return;
+  }
+  if(q.key!==pcTool.view) return;
+  const pt=pcToolPt(mx,my);
+  if(pcTool.stage===1){
+    if(pcTool.kind==="rect"){ pcApplyRectCrop(pcTool.p0,pt); }
+    else { pcTool.p2=pt; pcTool.stage=2; pcTool.cur=pt; setHint("Add meg a merőleges szélességet a harmadik ponttal."); pcOverlayDraw(); }
+    return;
+  }
+  if(pcTool.stage===2){ pcApplyFreeCrop(pcTool.p1,pcTool.p2,pt); }
+}
+function pcToolMove(mx,my){
+  if(!pcTool.view||pcTool.stage<1) return;
+  const q=pcQuadAt(mx,my);
+  if(q.key!==pcTool.view) return;
+  pcTool.cur=pcToolPt(mx,my);
+  pcOverlayDraw();
+}
+function pcToolUp(mx,my){
+  if(!pcTool.pressed) return;
+  pcTool.pressed=false;
+  const d=Math.hypot(mx-pcTool.downAt[0],my-pcTool.downAt[1]);
+  if(d<=8){
+    setHint(pcTool.kind==="rect"? "Kattints a téglalap átellenes sarkára."
+                                : "Kattints az alapvonal végpontjára.");
+    return;
+  }
+  const q=pcQuadAt(mx,my);
+  const pt=(q.key===pcTool.view)? pcToolPt(mx,my) : pcTool.cur;
+  if(pcTool.stage===1){
+    if(pcTool.kind==="rect") pcApplyRectCrop(pcTool.p0,pt);
+    else { pcTool.p2=pt; pcTool.stage=2; pcTool.cur=pt; setHint("Add meg a merőleges szélességet a harmadik ponttal (gumitéglalap)."); pcOverlayDraw(); }
+  }
+}
+$("btnPcCropRect").onclick=()=>pcToolStart("rect");
+$("btnPcCropFree").onclick=()=>pcToolStart("free");
+$("btnPcCropReset").onclick=()=>{ if(pcActive){ pcActive.crop=null; pcSyncCropUi(); pcRender(); setHint("Vágás visszaállítva."); } };
+$("btnPcRotReset").onclick=()=>{ if(pcActive){ pcActive.frame=null; pcSyncCropUi(); pcRender(); setHint("Nézet-forgatás visszaállítva."); } };
+document.addEventListener("keydown",ev=>{
+  if(ev.key==="Escape"&&pcActive&&pcTool){ pcToolCancel(); ev.stopPropagation(); ev.preventDefault(); }
+},true);
+
 $("pcColor").addEventListener("change",()=>{ if(!pcActive)return; pcActive.colorMode=$("pcColor").value; pcApplyColors(pcActive); pcRender(); });
 $("pcSize").addEventListener("input",()=>{ if(!pcActive)return; pcActive.ptSize=parseFloat($("pcSize").value)||2; pcRender(); });
 $("pcPersp").addEventListener("change",()=>pcRender());
@@ -5990,6 +6185,8 @@ function pcTabSync(){
     pcActive=null;
     $("pcPanel").classList.remove("on");
   }
+  if(typeof pcTool!=="undefined" && pcTool) pcToolCancel();
+  if(typeof pcSyncCropUi==="function") pcSyncCropUi();
   pcUpdateRibbon();
 }
 function pcFreeTab(st){
