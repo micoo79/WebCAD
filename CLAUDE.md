@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v3.6** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v3.7** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -717,6 +717,20 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   elérhető opciók tiltva. Pontméret-csúszka, Illesztés (fit), státuszsor EOV-
   koordinátákkal (TOP: Y X, FRONT: Y Z, RIGHT: X Z). `window.PC` teszt-API
   (load/active/render/fit). UI címke v3.6.
+- **v3.7**: **Pontfelhő-teljesítmény: adaptív LOD + progresszív renderelés.** A v3.6
+  minden pointermove-ra szinkron újrarajzolta mind a 4 nézetet a teljes pontszámmal →
+  használhatatlanul lassú. Megoldás: (1) betöltéskor **Fisher–Yates keverés** – így a
+  tömb ELEJE egyenletes véletlen minta, `drawArrays(0,lodN)` = uniform LOD; (2)
+  interakció közben rAF-re kötve **csak az érintett negyed** rajzolódik `lodN`
+  ponttal (`pcRequestRender(key,true)` → `pcDrawInteractive`); a `lodN` a MÉRT
+  rajzidőből adaptív (>36 ms → csökken, <12 ms → nő), a szinkronpont **readPixels**
+  (a `gl.finish` SwiftShaderen nem blokkol!); (3) nyugalomban (220 ms, csak ha nincs
+  lenyomott gomb/ujj) **progresszív teljes rajz**: `pcRender`→`pcProgStep` képkockán-
+  ként `lodN`-nyi pontot AD HOZZÁ minden negyedhez (POINTS + depth test miatt a
+  darabolás korrekt), interakcióra azonnal megszakad (`pcCancelProg`). Kontextus:
+  `powerPreference:"high-performance"`; a `preserveDrawingBuffer` kell a
+  negyed-frissítéshez. Mérés (SwiftShader, 3M pont): húzás képkocka 4700 ms → ~30 ms.
+  UI címke v3.7.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 

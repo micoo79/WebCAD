@@ -938,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v3.6</span>
+      <span class="ver" id="wcVer">v3.7</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -955,7 +955,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v3.6</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v3.7</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -5570,7 +5570,19 @@ function pcFinalize(name,res){
   const diag=Math.hypot(x1-x0,y1-y0,z1-z0)||1;
   const cloud={n,pos,rgb:res.rgb||null,intensity:res.intensity||null,cls:res.cls||null,
                offset:off,bbox,diag,name,total:res.total||n};
-  const st={cloud, colorMode:cloud.rgb?"rgb":"height", ptSize:2,
+  /* Fisher–Yates keverés: így a tömb ELEJE egyenletes véletlen minta →
+     interakció közben elég az első lodN pontot rajzolni (gyors LOD). */
+  { const P=cloud.pos, G=cloud.rgb, I=cloud.intensity, C=cloud.cls;
+    for(let i=n-1;i>0;i--){
+      const j=(Math.random()*(i+1))|0;
+      if(j===i) continue;
+      for(let k=0;k<3;k++){ const t=P[3*i+k]; P[3*i+k]=P[3*j+k]; P[3*j+k]=t; }
+      if(G) for(let k=0;k<3;k++){ const t=G[3*i+k]; G[3*i+k]=G[3*j+k]; G[3*j+k]=t; }
+      if(I){ const t=I[i]; I[i]=I[j]; I[j]=t; }
+      if(C){ const t=C[i]; C[i]=C[j]; C[j]=t; }
+    }
+  }
+  const st={cloud, colorMode:cloud.rgb?"rgb":"height", ptSize:2, lodN:Math.min(n,400000),
             views:null, posBuf:null, colBuf:null, colDirty:true};
   pcFitViews(st);
   saveCurDwg();
@@ -5668,7 +5680,7 @@ function pcMVP(st,key,aspect){
 function pcInitGL(){
   if(pcGL) return pcGL;
   const cvp=$("pcCanvas");
-  const gl=cvp.getContext("webgl",{antialias:false,preserveDrawingBuffer:true})||cvp.getContext("experimental-webgl");
+  const gl=cvp.getContext("webgl",{antialias:false,preserveDrawingBuffer:true,powerPreference:"high-performance"})||cvp.getContext("experimental-webgl");
   if(!gl){ uiAlert("A böngésző nem támogatja a WebGL-t – a pontfelhő nézegető nem indítható.","Pontfelhő"); return null; }
   const vs=gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vs,"attribute vec3 aPos; attribute vec3 aCol; uniform mat4 uMVP; uniform float uSize; varying vec3 vCol; void main(){ gl_Position=uMVP*vec4(aPos,1.0); gl_PointSize=uSize; vCol=aCol; }");
@@ -5740,12 +5752,20 @@ function pcResize(){
   if(cvp.width!==W||cvp.height!==H){ cvp.width=W; cvp.height=H; }
   pcRender();
 }
-function pcRender(){
-  if(!pcActive||!pcGL) return;
-  const st=pcActive, G=pcGL, gl=G.gl;
-  if(!pcEnsureBuffers(st)) return;
-  const W=gl.canvas.width, H=gl.canvas.height;
-  const w2=W>>1, h2=H>>1;
+/* Rajzolás-ütemezés.
+   - Interakció közben: rAF-re kötve CSAK az érintett negyed rajzolódik, az első
+     lodN (kevert → egyenletes minta) ponttal. A lodN a MÉRT rajzolási idő alapján
+     adaptív (readPixels = garantált GPU-szinkron, a gl.finish nem mindenhol az).
+   - Nyugalomban / beállítás-váltásnál: PROGRESSZÍV teljes rajz – képkockánként
+     lodN-nyi pont adódik hozzá minden negyedhez, így sosem fagy meg a felület. */
+let pcRaf=0, pcIdleTimer=0, pcDirtyQuads=null, pcPendInter=false, pcProg=null;
+const _pcPx=new Uint8Array(4);
+function pcQuadRects(gl){
+  const W=gl.canvas.width, H=gl.canvas.height, w2=W>>1, h2=H>>1;
+  return [["top",0,h2,w2,H-h2],["right",w2,h2,W-w2,H-h2],["front",0,0,w2,h2],["iso",w2,0,W-w2,h2]];
+}
+function pcBindAttribs(st){
+  const G=pcGL, gl=G.gl;
   gl.useProgram(G.prog);
   gl.bindBuffer(gl.ARRAY_BUFFER,st.posBuf);
   gl.enableVertexAttribArray(G.aPos);
@@ -5754,17 +5774,79 @@ function pcRender(){
   gl.enableVertexAttribArray(G.aCol);
   gl.vertexAttribPointer(G.aCol,3,gl.UNSIGNED_BYTE,true,0,0);
   gl.enable(gl.SCISSOR_TEST);
+}
+function pcCancelProg(){ if(pcProg&&pcProg.raf) cancelAnimationFrame(pcProg.raf); pcProg=null; }
+function pcRequestRender(key, interactive){
+  if(!interactive){ pcRender(); return; }
+  pcCancelProg();
+  pcPendInter=true;
+  if(key){ (pcDirtyQuads||(pcDirtyQuads=new Set())).add(key); } else pcDirtyQuads=null;
+  if(!pcRaf) pcRaf=requestAnimationFrame(()=>{
+    pcRaf=0;
+    const q=pcDirtyQuads; pcDirtyQuads=null; pcPendInter=false;
+    pcDrawInteractive(q);
+    /* nyugalom-figyelő: ha az ujj/gomb már nincs lenyomva, teljes minőség */
+    if(pcIdleTimer) clearTimeout(pcIdleTimer);
+    const arm=()=>{ pcIdleTimer=setTimeout(()=>{
+      pcIdleTimer=0;
+      if(pcDrag||pcPtrs.size) { arm(); return; }
+      pcRender();
+    },220); };
+    arm();
+  });
+}
+function pcDrawInteractive(quadSet){
+  if(!pcActive||!pcGL) return;
+  const st=pcActive, G=pcGL, gl=G.gl;
+  if(!pcEnsureBuffers(st)) return;
+  pcBindAttribs(st);
   const d=window.devicePixelRatio||1;
-  const quads=[["top",0,h2,w2,H-h2],["right",w2,h2,W-w2,H-h2],["front",0,0,w2,h2],["iso",w2,0,W-w2,h2]];
-  for(const [key,x,y,w,h] of quads){
+  const cnt=Math.max(20000, Math.min(st.cloud.n, st.lodN||400000));
+  const t0=performance.now();
+  for(const [key,x,y,w,h] of pcQuadRects(gl)){
+    if(quadSet && !quadSet.has(key)) continue;
     gl.viewport(x,y,w,h); gl.scissor(x,y,w,h);
     gl.clearColor(0.078,0.094,0.113,1);
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     gl.uniformMatrix4fv(G.uMVP,false,pcMVP(st,key,w/h));
     gl.uniform1f(G.uSize,st.ptSize*d);
-    gl.drawArrays(gl.POINTS,0,st.cloud.n);
+    gl.drawArrays(gl.POINTS,0,cnt);
+  }
+  gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,_pcPx);   // kényszerített szinkron a méréshez
+  gl.disable(gl.SCISSOR_TEST);
+  const dt=performance.now()-t0;
+  if(dt>36) st.lodN=Math.max(20000,(cnt*0.55)|0);          // lassú → kevesebb pont
+  else if(dt<12 && cnt<st.cloud.n) st.lodN=Math.min(st.cloud.n,(cnt*1.35)|0);
+  else st.lodN=cnt;
+}
+function pcRender(){   /* teljes minőség – progresszíven, megszakíthatóan */
+  if(!pcActive) return;
+  pcCancelProg();
+  if(!pcInitGL()) return;
+  pcProg={st:pcActive, i:0, raf:0};
+  pcProgStep();
+}
+function pcProgStep(){
+  const P=pcProg;
+  if(!P||P.st!==pcActive||!pcGL){ pcProg=null; return; }
+  const st=P.st, G=pcGL, gl=G.gl;
+  if(!pcEnsureBuffers(st)){ pcProg=null; return; }
+  const CH=Math.max(150000, Math.min(st.cloud.n, st.lodN||400000));
+  const first=P.i*CH;
+  if(first>=st.cloud.n){ pcProg=null; return; }
+  const count=Math.min(CH, st.cloud.n-first);
+  pcBindAttribs(st);
+  const d=window.devicePixelRatio||1;
+  for(const [key,x,y,w,h] of pcQuadRects(gl)){
+    gl.viewport(x,y,w,h); gl.scissor(x,y,w,h);
+    if(P.i===0){ gl.clearColor(0.078,0.094,0.113,1); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); }
+    gl.uniformMatrix4fv(G.uMVP,false,pcMVP(st,key,w/h));
+    gl.uniform1f(G.uSize,st.ptSize*d);
+    gl.drawArrays(gl.POINTS,first,count);
   }
   gl.disable(gl.SCISSOR_TEST);
+  P.i++;
+  P.raf=requestAnimationFrame(pcProgStep);
 }
 
 /* ---------- interakció ---------- */
@@ -5807,7 +5889,7 @@ $("pcCanvas").addEventListener("wheel",ev=>{
   const mx=ev.clientX-r.left, my=ev.clientY-r.top;
   const q=pcQuadAt(mx,my);
   pcZoomView(q.key,q,mx,my,Math.exp(ev.deltaY*0.0011));
-  pcRender(); pcStatusUpdate(q,mx,my);
+  pcRequestRender(q.key,true); pcStatusUpdate(q,mx,my);
 },{passive:false});
 $("pcCanvas").addEventListener("pointerdown",ev=>{
   if(!pcActive) return;
@@ -5839,7 +5921,7 @@ $("pcCanvas").addEventListener("pointermove",ev=>{
     if(d1>4){ pcZoomView(pcDrag.q.key,pcDrag.q,mid.x,mid.y,pcDrag.d0/d1); pcDrag.d0=d1; }
     pcPanView(pcDrag.q.key,pcDrag.q,mid.x-pcDrag.mid.x,mid.y-pcDrag.mid.y);
     pcDrag.mid=mid;
-    pcRender();
+    pcRequestRender(pcDrag.q.key,true);
     return;
   }
   if(pcDrag&&pcDrag.id===ev.pointerId){
@@ -5849,10 +5931,11 @@ $("pcCanvas").addEventListener("pointermove",ev=>{
       const v=pcActive.views.iso;
       v.yaw-=dx*0.008;
       v.pitch=Math.max(-1.55,Math.min(1.55,v.pitch+dy*0.008));
+      pcRequestRender("iso",true);
     } else {
       pcPanView(pcDrag.q.key,pcDrag.q,dx,dy);
+      pcRequestRender(pcDrag.q.key,true);
     }
-    pcRender();
   } else {
     const q=pcQuadAt(mx,my);
     pcStatusUpdate(q,mx,my);
