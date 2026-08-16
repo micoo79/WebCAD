@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v4.1** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v4.2** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -815,6 +815,13 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   `st.vec` elemeket is konzisztensen áthelyezi, törli a `crop`/`frame`-et (más
   koordinátarendszer). Első alkalmazáskor `st._geoPristine` pillanatkép (pos+offset+vec)
   → **„Georef reset”** ebből állít vissza. UI címke v4.1.
+- **v4.2**: **Javítás: a georeferálás CAD-választó modal indításkor is látszott.** A
+  `#dlgGeoPick{...display:flex...}` szabály ID-szelektora (specificitás 100) felülírta
+  a böngésző natív `dialog:not([open]){display:none}` szabályát (specificitás ~11),
+  így a dialog `open` attribútum nélkül is látszott. Javítás: a `display:flex` átkerült
+  egy `#dlgGeoPick[open]{display:flex}` szabályba, a bázis `#dlgGeoPick{...}` szabály
+  már nem határoz meg `display`-t → zárt állapotban ismét a natív `display:none`
+  érvényesül. UI címke v4.2.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
