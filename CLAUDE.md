@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v3.5** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v3.6** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -694,6 +694,29 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   `case "point"` elején `if(pdfPaperView) break;`, a vektoros PDF-ben a
   `paintPrintScene` `case "point"` üres (`break`). A szerkesztő nézetben továbbra is
   látszik. A COGO-pontok jelkulcsa/felirata változatlan. UI címke v3.5.
+- **v3.6**: **PONTFELHŐ – LAS/E57/PLY beolvasás + négynézetes WebGL nézegető, ÚJ
+  RAJZFÜLBEN.** Új ribbon-fül „Pontfelhő" (`data-tab="pcloud"`): Betöltés (rejtett
+  `#pcFile` input), Nézegető, INFÓ panel. **Parserek:** `pcParseLAS` (1.2–1.4, PDRF
+  0–10, LAZ-t elutasítja; skála+offset, intenzitás, osztály, RGB 16→8 bit
+  autodetekt), `pcParsePLY` (ascii + binary_little_endian + BE; vertex x/y/z +
+  red/green/blue/intensity, típus-normalizálás), `pcParseE57` (ASTM E57: 1024 bájtos
+  CRC-lapok logikai olvasása `e57ReadLogical`, XML DOMParser, CompressedVector
+  szakasz-fejléc + adat-paketek, **bitpack kodek**: Float double/single bájtos,
+  Scaled/Integer LSB-first bitmezők; póz (kvaternió+eltolás), spherical→cartesian,
+  több szken összefűzve). Mindegyik **ritkít** `PC_MAX_POINTS`=5M fölött. **EOV-nagy
+  koordináták offsetelve** (Float32 pontosság): |közép|>5000 → kerekített offset,
+  a kijelzés visszaadja. **Fül-integráció:** a felhő új `drawings[]` elemként jön
+  létre `pc` mezővel (`pcState`: cloud, views, GL-bufferek); `activateDwg` végén
+  `pcTabSync()` mutatja/rejti a `#pcPanel`-t (a `#canvasWrap`-ben, a vászon fölött),
+  `closeDwg` `pcFreeTab`-bal szabadít. NEM mentődik a projektbe. **Nézegető:** egy
+  WebGL-vászon 4 scissor-viewporttal – bal-fent TOP (X/Y), jobb-fent RIGHT (Y/Z),
+  bal-lent FRONT (X/Z), jobb-lent IZOMETRIKUS; **csak az ISO forgatható** (húzás:
+  yaw/pitch), a többi kötött; pan (húzás), zoom-a-kurzorra (görgő), pinch (2 ujj).
+  **Perspektíva** checkbox csak az ISO-ra, alapból KI (ortho). Színezés: RGB /
+  magasság-gradiens / intenzitás / osztályozás (ASPRS paletta) / egyszínű – a nem
+  elérhető opciók tiltva. Pontméret-csúszka, Illesztés (fit), státuszsor EOV-
+  koordinátákkal (TOP: Y X, FRONT: Y Z, RIGHT: X Z). `window.PC` teszt-API
+  (load/active/render/fit). UI címke v3.6.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
