@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v4.2** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v4.3** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -822,6 +822,22 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   egy `#dlgGeoPick[open]{display:flex}` szabályba, a bázis `#dlgGeoPick{...}` szabály
   már nem határoz meg `display`-t → zárt állapotban ismét a natív `display:none`
   érvényesül. UI címke v4.2.
+- **v4.3**: **Georeferálás – rajz-választás, 70%-os modal, húzható panel.** (a)
+  **Javítás: a rajz nem jelent meg a CAD-választó modalban** – a `pcGeoResizeCv()`/
+  `zoomExtents()` a `showModal()` ELŐTT futott, amikor a dialog még `display:none`
+  volt (0×0 méretű), ezért a `view.s` érvénytelen (negatív/végtelen) skálát kapott.
+  Sorrend cserélve: előbb `$("dlgGeoPick").showModal()`, csak utána a vászon
+  méretezése és illesztése. (b) **Több nyitott CAD-rajz esetén választható a cél**:
+  `pcCadDwgList()`/`pcGeoResolveTargetIdx()` – ha csak egy nem-pontfelhő fül van
+  nyitva, automatikus (a választó sor rejtve); ha több, megjelenik a „Cél CAD-rajz”
+  legördülő a georef-panelen (`pcGeoSyncTargetUi`), alapból a legutóbb aktivált CAD
+  fülre (`lastCadDwg`) állva. A választás `pcActive.geoTargetIdx`-ben tárolódik,
+  ugyanezt használja a „Küldés CAD-be” (`pcVexTargetDoc`) is – konzisztens célrajz.
+  (c) **A modal 70vw×70vh** (volt 50×50). (d) **A georef-panel (`#geoBar`) középen
+  felül** (`top:14px; left:50%; transform:translateX(-50%)`, nem jobb szélen), és
+  **a fejlécénél fogva húzható** (pointerdown/move/up a `.gbTitle`-ön, első húzáskor
+  a `transform` törlődik és abszolút `left/top` px-re vált; a ✕ gomb kattintása nem
+  indít húzást). UI címke v4.3.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 

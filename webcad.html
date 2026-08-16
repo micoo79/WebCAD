@@ -938,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v4.2</span>
+      <span class="ver" id="wcVer">v4.3</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -955,7 +955,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v4.2</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v4.3</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -1357,9 +1357,13 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
   </div>
   <input type="file" id="pcFile" accept=".las,.laz,.e57,.ply" style="display:none">
   <style>
-  #geoBar{position:fixed; top:64px; right:14px; z-index:167; width:302px; background:#232a33; color:#e6ebf2; border:1px solid #3a4653; border-radius:8px; box-shadow:0 8px 28px rgba(0,0,0,.5); padding:12px 14px; font-size:12px; display:none;}
-  #geoBar .gbTitle{font-weight:700; font-size:13.5px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;}
+  #geoBar{position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:167; width:302px; background:#232a33; color:#e6ebf2; border:1px solid #3a4653; border-radius:8px; box-shadow:0 8px 28px rgba(0,0,0,.5); padding:12px 14px; font-size:12px; display:none;}
+  #geoBar .gbTitle{font-weight:700; font-size:13.5px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; cursor:grab; margin:-12px -14px 8px; padding:9px 14px; background:#1e252d; border-radius:8px 8px 0 0; user-select:none;}
+  #geoBar .gbTitle.dragging{cursor:grabbing;}
   #geoBar .gbTitle button{background:none; border:none; color:var(--dim); font-size:16px; cursor:pointer; line-height:1;}
+  #geoBar .gbTarget{display:flex; align-items:center; gap:7px; margin-bottom:9px; font-size:11.5px;}
+  #geoBar .gbTarget select{flex:1; background:#12181e; color:#fff; border:1px solid #3a4653; border-radius:4px; padding:4px 5px; font-size:11.5px;}
+  #geoBar .gbTarget .gbTargetLbl{color:var(--dim); white-space:nowrap;}
   #geoBar .gbHint{font-size:11px; color:#9fb3c8; margin-bottom:9px; min-height:15px;}
   #geoPairs{max-height:150px; overflow:auto; margin-bottom:8px; border:1px solid #303945; border-radius:5px;}
   #geoPairs .gpRow{display:flex; align-items:center; gap:6px; padding:4px 7px; font-family:var(--mono); font-size:10.5px; border-bottom:1px solid #262d37;}
@@ -1376,7 +1380,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
   #geoBar .gbSoft{background:#2b333c; border:1px solid #46525f; color:#dfe6ef; font-weight:500;}
   #geoResult{background:#1b222b; border-radius:6px; padding:9px 10px; margin:8px 0; font-family:var(--mono); font-size:11px; line-height:1.6; display:none;}
   #geoResult b{color:#7ee6b0; font-family:var(--sans);}
-  #dlgGeoPick{position:fixed; width:50vw; height:50vh; min-width:560px; min-height:420px; max-width:none; max-height:none; padding:0; flex-direction:column; background:#181d24; border:1px solid #3a4653; border-radius:9px; overflow:hidden;}
+  #dlgGeoPick{position:fixed; width:70vw; height:70vh; min-width:560px; min-height:420px; max-width:none; max-height:none; padding:0; flex-direction:column; background:#181d24; border:1px solid #3a4653; border-radius:9px; overflow:hidden;}
   #dlgGeoPick[open]{display:flex;}   /* csak nyitva jelenjen meg – zárva a böngésző beépített dialog:not([open]){display:none} szabálya érvényesüljön */
   #dlgGeoPick .gpHead{display:flex; align-items:center; gap:10px; padding:9px 13px; background:var(--c3d-title); border-bottom:1px solid #1a2027; font-size:13px; font-weight:650; flex:0 0 auto;}
   #dlgGeoPick .gpHead button{margin-left:auto; background:none; border:none; color:var(--dim); font-size:18px; cursor:pointer; width:26px; height:26px; border-radius:5px;}
@@ -1391,6 +1395,10 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
   </style>
   <div id="geoBar">
     <div class="gbTitle"><span>Georeferálás</span><button id="geoBarClose" title="Bezárás (a pontpárok megmaradnak)">✕</button></div>
+    <div class="gbTarget" id="geoTargetRow" style="display:none">
+      <span class="gbTargetLbl">Cél CAD-rajz:</span>
+      <select id="geoTargetDwg"></select>
+    </div>
     <div class="gbHint" id="geoHint">Adj meg legalább 2 (javasolt 3+) pontpárt: pontfelhő-pont ↔ CAD-pont.</div>
     <div id="geoPairs"></div>
     <div class="gbRow"><button class="gbGo gbSoft" id="geoAddPair" style="width:100%">+ Új pontpár</button></div>
@@ -6151,10 +6159,13 @@ function pcProjScreen(st,key,p){
 function pcVexMissing(){ const P=pcTool.pend; return P.x==null?"x":P.y==null?"y":"z"; }
 function pcVexOtherViews(){ return ["top","front","right"].filter(k=>k!==pcTool.pend.src); }
 function pcVexTargetDoc(){
-  /* a "CAD nézetben aktív rajz": az utoljára aktivált nem-pontfelhő fül; ha nincs
-     ilyen (a felhasználó még sosem járt CAD fülön), az első nem-pontfelhő fül,
-     vagy ha egy sincs, egy új rajz jön létre. */
-  let rec=(lastCadDwg!=null && drawings[lastCadDwg] && !drawings[lastCadDwg].pc)? drawings[lastCadDwg] : null;
+  /* a "CAD nézetben aktív rajz": ha a georeferáláshoz már választott célrajz van, azt
+     használjuk; egyébként az utoljára aktivált nem-pontfelhő fül; ha egyik sincs
+     (a felhasználó még sosem járt CAD fülön), az első nem-pontfelhő fül, vagy ha
+     egy sincs, egy új rajz jön létre. */
+  const idx=pcActive? pcGeoResolveTargetIdx(pcActive) : null;
+  let rec=(idx!=null)? drawings[idx] : null;
+  if(!rec) rec=(lastCadDwg!=null && drawings[lastCadDwg] && !drawings[lastCadDwg].pc)? drawings[lastCadDwg] : null;
   if(!rec) rec=drawings.find(r=>!r.pc);
   if(!rec){
     dwgCounter++;
@@ -6388,14 +6399,37 @@ let _geoSave=null;         // {doc,view:{s,tx,ty},secLayersNext,snapBarNext,cvHo
 let _geoPending=null;      // a folyamatban lévő pontpár pontfelhő-oldali (abszolút) koordinátája
 let _geoPickPt=null;       // a modalban kijelölt CAD-pont (világ)
 function pcGeoEnsure(st){ st.geo=st.geo||{pairs:[],scaleMode:"compute"}; return st.geo; }
+/* --- Cél CAD-rajz feloldása: ha egy van nyitva, automatikus; ha több, választható --- */
+function pcCadDwgList(){ return drawings.map((r,i)=>({r,i})).filter(o=>!o.r.pc); }
+function pcGeoResolveTargetIdx(st){
+  const list=pcCadDwgList();
+  if(!list.length) return null;
+  if(st.geoTargetIdx!=null && drawings[st.geoTargetIdx] && !drawings[st.geoTargetIdx].pc) return st.geoTargetIdx;
+  if(list.length===1) return list[0].i;
+  if(lastCadDwg!=null && drawings[lastCadDwg] && !drawings[lastCadDwg].pc) return lastCadDwg;
+  return list[0].i;
+}
+function pcGeoSyncTargetUi(){
+  const st=pcActive; if(!st) return;
+  const list=pcCadDwgList();
+  st.geoTargetIdx=pcGeoResolveTargetIdx(st);
+  const row=$("geoTargetRow"), sel=$("geoTargetDwg");
+  if(list.length<=1){ row.style.display="none"; return; }
+  row.style.display="flex";
+  sel.innerHTML=list.map(o=>`<option value="${o.i}">${escHtml(o.r.name)}</option>`).join("");
+  sel.value=String(st.geoTargetIdx);
+}
+$("geoTargetDwg").addEventListener("change",()=>{ if(pcActive) pcActive.geoTargetIdx=+$("geoTargetDwg").value; });
 function pcGeoOpen(){
   if(!pcActive){ setHint("Előbb tölts be (vagy aktiválj) egy pontfelhő fület."); return; }
+  if(!pcCadDwgList().length){ uiAlert("Nincs elérhető CAD-rajz. Nyiss meg / hozz létre egy rajzfület, majd próbáld újra.","Georeferálás"); return; }
   const geo=pcGeoEnsure(pcActive);
   if(pcActive.georef){ setHint("A pontfelhő már georeferálva van – új pontpárokkal tovább finomítható, vagy a „Georef reset” gombbal visszaállítható az eredeti."); }
   $("geoScaleCompute").checked=(geo.scaleMode!=="keep");
   $("geoScaleKeep").checked=(geo.scaleMode==="keep");
   $("geoResult").style.display="none"; $("geoApplyRow").style.display="none";
   document.querySelector("#geoBar .gbBtns").style.display="flex";
+  pcGeoSyncTargetUi();
   pcGeoBuildPairsUi();
   $("geoBar").style.display="block";
 }
@@ -6434,7 +6468,9 @@ function pcGeoResizeCv(){
   render();
 }
 function pcGeoOpenPickModal(){
-  let rec=(lastCadDwg!=null && drawings[lastCadDwg] && !drawings[lastCadDwg].pc)? drawings[lastCadDwg] : drawings.find(r=>!r.pc);
+  const st=pcActive;
+  const idx=(st.geoTargetIdx!=null && drawings[st.geoTargetIdx] && !drawings[st.geoTargetIdx].pc)? st.geoTargetIdx : pcGeoResolveTargetIdx(st);
+  const rec=(idx!=null)? drawings[idx] : null;
   if(!rec){
     uiAlert("Nincs elérhető CAD-rajz a georeferáláshoz. Nyiss meg / hozz létre egy rajzfület, majd próbáld újra.","Georeferálás");
     _geoPending=null; return;
@@ -6451,6 +6487,7 @@ function pcGeoOpenPickModal(){
   $("geoSideHost").appendChild($("secLayers"));
   refreshLayerPanel(); refreshProps();
   geoModalOpen=true;
+  $("dlgGeoPick").showModal();     // ELŐBB látszódjon a dialog (layoutot kap), csak UTÁNA mérjük/illesztjük a vásznat
   pcGeoResizeCv();
   if(!rec._geoViewed){ rec._geoViewed=true; zoomExtents(); }   // első megnyitáskor ráillesztünk a rajz tartalmára
   _geoPickPt=null;
@@ -6461,7 +6498,6 @@ function pcGeoOpenPickModal(){
     $("geoPickOk").disabled=false;
     $("geoPickInfo").textContent=`Kijelölve: Y ${p[0].toFixed(3)}  X ${p[1].toFixed(3)}  Z ${p[2].toFixed(3)}`;
   };
-  $("dlgGeoPick").showModal();
 }
 function pcGeoClosePickModal(){
   geoPickCapture=null; geoModalOpen=false;
@@ -6583,6 +6619,29 @@ function pcGeoReset(){
 }
 $("btnPcGeoref").onclick=pcGeoOpen;
 $("geoBarClose").onclick=()=>{ $("geoBar").style.display="none"; };
+/* --- Georeferálás-panel húzása a fejlécnél fogva --- */
+(function(){
+  const bar=$("geoBar"), head=bar.querySelector(".gbTitle");
+  let drag=null;
+  head.addEventListener("pointerdown",ev=>{
+    if(ev.target.closest("button")) return;         // a ✕ gomb saját kattintása maradjon
+    const r=bar.getBoundingClientRect();
+    bar.style.left=r.left+"px"; bar.style.top=r.top+"px"; bar.style.transform="none";
+    drag={x:ev.clientX,y:ev.clientY,left:r.left,top:r.top};
+    head.classList.add("dragging");
+    try{ head.setPointerCapture(ev.pointerId); }catch(_){}
+  });
+  head.addEventListener("pointermove",ev=>{
+    if(!drag) return;
+    let nl=drag.left+(ev.clientX-drag.x), nt=drag.top+(ev.clientY-drag.y);
+    nl=Math.max(4,Math.min(window.innerWidth-40,nl));
+    nt=Math.max(4,Math.min(window.innerHeight-40,nt));
+    bar.style.left=nl+"px"; bar.style.top=nt+"px";
+  });
+  const end=()=>{ drag=null; head.classList.remove("dragging"); };
+  head.addEventListener("pointerup",end);
+  head.addEventListener("pointercancel",end);
+})();
 $("geoAddPair").onclick=pcGeoAddPairStart;
 $("geoClearPairs").onclick=()=>{ const geo=pcGeoEnsure(pcActive); geo.pairs=[]; pcGeoBuildPairsUi(); };
 $("geoCompute").onclick=pcGeoCompute;
