@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v3.4** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v3.5** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -689,6 +689,11 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   Csak a nyomtatásra hat; a képernyőn és DXF/DWG-ben az eredeti színek maradnak; a
   `penColors`/`penUseOriginal` a `doc`-on van → **WCD-be mentődik**. Undo: `penMarkDirty`
   (egy snapshot editálási munkamenetenként). UI címke v3.4.
+- **v3.5**: **Pont-kereszt elrejtése nyomtatáskor.** A `point` (csomópont) entitás
+  keresztjelölője nyomtatáskor nem jelenik meg: a papír-előnézetben a `drawEntity`
+  `case "point"` elején `if(pdfPaperView) break;`, a vektoros PDF-ben a
+  `paintPrintScene` `case "point"` üres (`break`). A szerkesztő nézetben továbbra is
+  látszik. A COGO-pontok jelkulcsa/felirata változatlan. UI címke v3.5.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 
