@@ -20,7 +20,7 @@ COGO pontok, területszámítás, sraffozás, vektoros PDF-nyomtatás.
 - Eredeti név: **GeoCAD** (v5.x) → átnevezve **WebCad**-re, verziószámozás
   v1.0-tól újraindítva (a „Webcad" beszélgetésben).
 - Szerző/tulajdonos: © 2026 WebCad · Csóri Miklós.
-- Aktuális állapot: **v4.3** a munkafájl (`webcad.html`).
+- Aktuális állapot: **v4.4** a munkafájl (`webcad.html`).
   A látható verziócímke (`#wcVer`, `#verTag`) v1.94-re frissítve.
 
 ### 1.1 Melléktermék: WebCad Sraff Lite
@@ -838,6 +838,21 @@ a ~3670-es sortól (pipa-hit, sraffClick, measClick, modPointClick sorrend);
   **a fejlécénél fogva húzható** (pointerdown/move/up a `.gbTitle`-ön, első húzáskor
   a `transform` törlődik és abszolút `left/top` px-re vált; a ✕ gomb kattintása nem
   indít húzást). UI címke v4.3.
+- **v4.4**: **Javítás: Területkimutatás – egyenkénti kijelölésnél a nem kijelölt
+  alakzatok is a listába/TXT-be kerültek.** Az `arGetResults()` (a lista-összesítő,
+  a vágólap-másolás `arCopyAll` és a TXT-export `arExportTxt` közös forrása)
+  eddig MINDIG a réteg összes névvel rendelkező alakzatát adta vissza
+  (`areaRep.all`-ból szűrve), függetlenül attól, hogy „Egyenkénti kijelölés"
+  módban a felhasználó ténylegesen csak néhányat választott ki a
+  `areaRep.results`-ba. Új `areaRep.source` mező (`"all"` a Teljes rajz, `"pick"`
+  az Egyenkénti módnál, `arRunAll`/`arRunPick`-ben beállítva) – ez a kijelölés
+  BEFEJEZÉSE UTÁN is megmarad (nem a `mode` alapján dönt, ami a „Kész" gombra
+  null-ra vált). `arGetResults()` és `arRefreshList()` mostantól `source==="pick"`
+  esetén KIZÁRÓLAG a `results`-ban lévő (ténylegesen kattintott) alakzatokat adja
+  vissza/jeleníti meg – a rétegen lévő, nem kijelölt (akár nevesített) alakzatok
+  nem kerülnek sem a listába, sem a vágólapra/TXT-be. A „Teljes rajz" mód
+  (`source==="all"`) viselkedése változatlan (minden nevesített alakzat számít).
+  UI címke v4.4.
 - **Lite v1.0 → v1.1**: melléktermék létrehozva; FreeTR import/export a
   RAJZOLÁS panelre, Import/Export fülek törölve, FreeTR ikon keret nélkül.
 

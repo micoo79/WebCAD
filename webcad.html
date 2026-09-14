@@ -938,7 +938,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
     <div class="word">
       <span class="w1">Web</span><span class="w2">CAD</span>
       <div class="sub">FÖLDMÉRŐ CAD INGYEN, A BÖNGÉSZŐDBEN</div>
-      <span class="ver" id="wcVer">v4.3</span>
+      <span class="ver" id="wcVer">v4.4</span>
     </div>
     <div class="legal">© 2026 WebCad · Csóri Miklós</div>
   </div>
@@ -955,7 +955,7 @@ dialog::backdrop{background:rgba(8,10,13,.62);}
       <button class="qbtn" id="btnUndo" title="Visszavonás (Ctrl+Z)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M8 5L3 10l5 5"/><path d="M3 10h11a6 6 0 016 6v3"/></svg></button>
       <button class="qbtn" id="btnRedo" title="Ismét (Ctrl+Y)"><svg viewBox="0 0 24 24" stroke="#79b6f2"><path d="M16 5l5 5-5 5"/><path d="M21 10H10a6 6 0 00-6 6v3"/></svg></button>
     </div>
-    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v4.3</span></div>
+    <div id="titleCenter"><span id="titleDoc">WebCad — Rajz1.dwg</span> <span style="opacity:.55;font-size:11px" id="verTag">v4.4</span></div>
   </div>
   <div id="ribTop">
     <button class="ribTab on" data-tab="home">Kezdőlap</button>
@@ -14208,14 +14208,14 @@ function sraffBarBind(){
 /* ==================================================================
    TERÜLETKIMUTATÁS – több zárt alakzat területe azonosítókkal
    ================================================================== */
-var areaRep=null;        /* {pick:"area"|"id"|null, mode:null|"pick", all:[], results:[], hilite:rec|null} */
+var areaRep=null;        /* {pick:"area"|"id"|null, mode:null|"pick", source:null|"all"|"pick", all:[], results:[], hilite:rec|null} */
 var areaRepFilter=null;  /* Set(entity id) – 2. opciónál csak ezek látszanak */
 var AR={layers:new Set(), idLayer:""};
 
 function arOpen(){
   if(typeof measState!=="undefined" && measState) measCancel(true);
   if(typeof modOp!=="undefined" && modOp) modCancel(true);
-  if(!areaRep) areaRep={pick:null, mode:null, all:[], results:[], hilite:null};
+  if(!areaRep) areaRep={pick:null, mode:null, source:null, all:[], results:[], hilite:null};
   arFillLayers();
   arUpdateUI();
   arRefreshList();
@@ -14274,7 +14274,12 @@ function arUpdateSummaries(){
 }
 /* ---- Gombok láthatóság ---- */
 function arGetResults(){
-  return (areaRep?.all||[]).filter(r=>r.status==="named"||r.status==="accepted");
+  if(!areaRep) return [];
+  /* Egyenkénti kijelölés után KIZÁRÓLAG a manuálisan kiválasztott (results) alakzatok
+     érvényesek – a rétegen lévő többi (nem kattintott) alakzat nem kerül sem a
+     listába, sem a vágólapra/TXT-be, még ha névvel is rendelkezik. */
+  const src = areaRep.source==="pick" ? (areaRep.results||[]) : (areaRep.all||[]);
+  return src.filter(r=>r.status==="named"||r.status==="accepted");
 }
 function arUpdateUI(){
   arUpdateSummaries();
@@ -14450,7 +14455,7 @@ function arRunAll(){
   if(!AR.layers.size){setHint("Válassz legalább egy területszámítási réteget.");return;}
   arStopPick(true);
   const all=arCompute();
-  areaRep.all=all; areaRep.hilite=null;
+  areaRep.all=all; areaRep.hilite=null; areaRep.source="all";
   /* areaRep.results: kompatibilitásra megtartjuk, de arGetResults() a mérvadó */
   areaRep.results=all.filter(r=>r.status==="named");
   arRefreshList(); arUpdateUI(); render();
@@ -14467,7 +14472,7 @@ function arRunPick(){
   const all=arCompute();
   const validAll=all.filter(r=>r.status!=="invalid");
   if(!validAll.length){setHint("Nem találtam körülhatárolt területet a kiválasztott rétegeken.");return;}
-  areaRep.all=validAll; areaRep.results=[]; areaRep.hilite=null;
+  areaRep.all=validAll; areaRep.results=[]; areaRep.hilite=null; areaRep.source="pick";
   const f=new Set();
   for(const r of validAll){r.ids.forEach(id=>f.add(id));if(r.labId)f.add(r.labId);}
   areaRepFilter=f;
@@ -14527,8 +14532,9 @@ function arSampleClick(sx,sy){
 function arRefreshList(){
   const box=$("arList"); box.innerHTML="";
   const all=areaRep?(areaRep.all||[]):[];
-  /* egyenkénti módban csak a results-ban lévők látszanak a listában */
-  const inPick=areaRep&&areaRep.mode==="pick";
+  /* egyenkénti kijelölésből származó eredménynél (a kijelölés befejezése UTÁN is)
+     csak a results-ban lévők látszanak a listában – a rétegen lévő többi alakzat nem */
+  const inPick=areaRep&&areaRep.source==="pick";
   const showItems = inPick ? (areaRep.results||[]) : all;
 
   /* 1. szekció: nevesített + elfogadott */
